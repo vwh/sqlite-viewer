@@ -27,7 +27,6 @@ export function DBTable({ tableName, rowCount }: DBTableProps) {
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
-  const [isEmpty, setIsEmpty] = useState(true);
 
   const rowsPerPage = 30;
   const totalPages = Math.ceil(rowCount / rowsPerPage);
@@ -43,12 +42,16 @@ export function DBTable({ tableName, rowCount }: DBTableProps) {
   };
 
   useEffect(() => {
-    if (db) {
+    // Reset page when table name changes
+    setPage(0);
+  }, [tableName]);
+
+  useEffect(() => {
+    if (db && tableName) {
       const tableResult: QueryExecResult[] = query(
-        `SELECT * FROM ${tableName} LIMIT ${rowsPerPage} OFFSET ${page};`
+        `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
       );
       if (tableResult.length > 0) {
-        setIsEmpty(false);
         const tableData: TableRow[] = tableResult[0].values.map((row) =>
           tableResult[0].columns.reduce((acc, col, index) => {
             acc[col] = row[index];
@@ -58,8 +61,6 @@ export function DBTable({ tableName, rowCount }: DBTableProps) {
         setColumns(tableResult[0].columns);
         setData(tableData);
         console.log(tableData);
-      } else {
-        setIsEmpty(true);
       }
     }
   }, [db, query, tableName, page]);
