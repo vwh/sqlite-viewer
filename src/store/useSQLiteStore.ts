@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import initSqlJs, { Database, QueryExecResult, SqlValue } from "sql.js";
+import initSqlJs, { Database, QueryExecResult } from "sql.js";
 
 interface SQLiteState {
   db: Database | null;
   loadDatabase: (file: File) => Promise<void>;
   query: (sql: string) => QueryExecResult[] | [];
-  tables: SqlValue[][];
-  setTables: (tables: SqlValue[][]) => void;
+  tables: { name: string; count: number }[];
+  setTables: (tables: { name: string; count: number }[]) => void;
 }
 
 const useSQLiteStore = create<SQLiteState>((set, get) => ({
@@ -34,7 +34,7 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
   },
 
   tables: [],
-  setTables: (tables: SqlValue[][]) => set({ tables }),
+  setTables: (tables: { name: string; count: number }[]) => set({ tables }),
 }));
 
 export default useSQLiteStore;

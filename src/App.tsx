@@ -12,8 +12,17 @@ function App() {
         "SELECT name FROM sqlite_master WHERE type='table';"
       );
       if (tablesResult.length > 0) {
-        console.log("Tables:", tablesResult);
-        setTables(tablesResult[0].values);
+        const tableNames = tablesResult[0].values.map((row) => row[0]);
+        const tableCountsPromises = tableNames.map(async (tableName) => {
+          const countResult = query(`SELECT COUNT(*) FROM ${tableName}`);
+          const count = parseInt(countResult[0].values[0][0] as string, 10);
+          return { name: tableName as string, count };
+        });
+
+        Promise.all(tableCountsPromises).then((tablesWithCounts) => {
+          console.log("Tables with row counts:", tablesWithCounts);
+          setTables(tablesWithCounts);
+        });
       }
     }
   }, [db, query, setTables]);
@@ -38,7 +47,7 @@ function App() {
   if (tables.length > 0) {
     return (
       <div className="dark">
-        <DBTable tableName={tables[0][0]} />
+        <DBTable tableName={tables[0].name} rowCount={tables[0].count} />
       </div>
     );
   }
