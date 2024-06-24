@@ -14,6 +14,8 @@ import {
 import { Separator } from "./ui/separator";
 import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 interface TableRow {
   [key: string]: SqlValue;
@@ -24,17 +26,20 @@ export function DBTable() {
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
+  const [customQuery, setCustomQuery] = useState<string>("");
+  const [isCustomQuery, setIsCustomQuery] = useState<boolean>(false);
 
-  const tableName = tables[parseInt(selectedTable)].name;
-  const rowCount = tables[parseInt(selectedTable)].count;
+  const tableName = tables[parseInt(selectedTable)]?.name;
+  const rowCount = tables[parseInt(selectedTable)]?.count || 0;
   const rowsPerPage = 30;
 
   useEffect(() => {
     setPage(0);
+    setIsCustomQuery(false);
   }, [tableName]);
 
   useEffect(() => {
-    if (db && tableName) {
+    if (db && tableName && !isCustomQuery) {
       const tableResult: QueryExecResult[] = query(
         `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
       );
@@ -50,11 +55,39 @@ export function DBTable() {
         console.log(tableData);
       }
     }
-  }, [db, query, tableName, page]);
+  }, [db, query, tableName, page, isCustomQuery]);
+
+  const handleCustomQuery = () => {
+    if (db && customQuery.trim() !== "") {
+      const customResult: QueryExecResult[] = query(customQuery);
+      if (customResult.length > 0) {
+        const customData: TableRow[] = customResult[0].values.map((row) =>
+          customResult[0].columns.reduce((acc, col, index) => {
+            acc[col] = row[index];
+            return acc;
+          }, {} as TableRow)
+        );
+        setColumns(customResult[0].columns);
+        setData(customData);
+        setIsCustomQuery(true);
+        console.log(customData);
+      }
+    }
+  };
 
   return (
     <div>
       <TableSelect />
+      <div className="flex gap-2 mt-2">
+        <Input
+          type="text"
+          value={customQuery}
+          onChange={(e) => setCustomQuery(e.target.value)}
+          placeholder="Enter your custom query"
+          className="w-full"
+        />
+        <Button onClick={handleCustomQuery}>Run Query</Button>
+      </div>
       <Separator className="mt-2" />
       {data.length > 0 && (
         <Table>
@@ -77,12 +110,14 @@ export function DBTable() {
         </Table>
       )}
       <Separator />
-      <PageSelect
-        page={page}
-        setPage={setPage}
-        rowsPerPage={rowsPerPage}
-        rowCount={rowCount}
-      />
+      {!isCustomQuery && (
+        <PageSelect
+          page={page}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          rowCount={rowCount}
+        />
+      )}
     </div>
   );
 }

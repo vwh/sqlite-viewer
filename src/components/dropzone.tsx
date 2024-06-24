@@ -63,7 +63,7 @@ export function UploadFile() {
           <input {...getInputProps()} />
           <p>Drag drop a file here, or click to select</p>
           <a
-            href="https://github.com/vwh/sqlite-viewer/examples/chinook.db"
+            href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
             className="text-sm text-[#003B57] hover:underline"
             title="Download sample file"
           >

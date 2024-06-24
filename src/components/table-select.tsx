@@ -16,7 +16,7 @@ export function TableSelect() {
   return (
     <section className="flex justify-center items-center gap-2">
       <Select value={selectedTable} onValueChange={setSelectedTable}>
-        <SelectTrigger className="w-[300px]">
+        <SelectTrigger className="w-[200px] md:w-[300px]">
           <SelectValue placeholder="Select a table" />
         </SelectTrigger>
         <SelectContent>
