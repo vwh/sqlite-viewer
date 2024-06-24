@@ -9,12 +9,15 @@ interface SQLiteState {
   setTables: (tables: { name: string; count: number }[]) => void;
   selectedTable: string;
   setSelectedTable: (value: string) => void;
+  isLoading: boolean;
 }
 
 const useSQLiteStore = create<SQLiteState>((set, get) => ({
   db: null,
+  isLoading: false,
 
   loadDatabase: async (file: File) => {
+    set({ isLoading: true });
     const arrayBuffer = await file.arrayBuffer();
     const SQL = await initSqlJs({
       locateFile: (fileName) => `https://sql.js.org/dist/${fileName}`,
@@ -22,6 +25,8 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
     const database = new SQL.Database(new Uint8Array(arrayBuffer));
     set({ db: database });
     console.log("Database loaded successfully");
+
+    set({ isLoading: false });
   },
 
   query: (sql: string): QueryExecResult[] | [] => {

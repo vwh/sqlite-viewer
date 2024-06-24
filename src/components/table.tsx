@@ -13,6 +13,7 @@ import {
 } from "./ui/table";
 import { Separator } from "./ui/separator";
 import PageSelect from "./page-select";
+import { TableSelect } from "./table-select";
 
 interface TableRow {
   [key: string]: SqlValue;
@@ -53,6 +54,8 @@ export function DBTable() {
 
   return (
     <div>
+      <TableSelect />
+      <Separator className="mt-2" />
       {data.length > 0 && (
         <Table>
           <TableHeader>

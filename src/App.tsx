@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import useSQLiteStore from "./store/useSQLiteStore";
 
 import { DBTable } from "./components/table";
-import { Separator } from "./components/ui/separator";
-import { TableSelect } from "./components/table-select";
 import { UploadFile } from "./components/dropzone";
+import Loading from "./components/loading";
 
 function App() {
   const { db, query, tables, setTables } = useSQLiteStore();
@@ -41,29 +40,9 @@ function App() {
           </section>
         </>
       )}
-
-      {db ? <UploadFile /> : <UploadFile isLandingPage />}
-      {/* {!db && !tables.length && <p>Loading...</p>} */}
-      {db && tables.length > 0 && (
-        <>
-          <TableSelect />
-          <Separator className="mt-2" />
-          <DBTable />
-        </>
-      )}
-
-      <section>
-        <p className="text-xs mt-2">
-          No file will be uploaded - this website use JavaScript/sql.js
-        </p>
-        <a
-          href="https://github.com/vwh/sqlite-viewer"
-          target="_blank"
-          className="text-sm text-[#003B57] hover:underline"
-        >
-          Star this project on GitHub
-        </a>
-      </section>
+      <UploadFile />
+      <Loading />
+      {tables.length > 0 && <DBTable />}
     </div>
   );
 }

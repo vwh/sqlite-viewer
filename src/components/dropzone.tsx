@@ -4,12 +4,8 @@ import { useDropzone, type FileError } from "react-dropzone";
 
 import { FileStats, FileData } from "./dropzone-helpers";
 
-interface DropzoneProps {
-  isLandingPage?: boolean;
-}
-
-export function UploadFile({ isLandingPage = false }: DropzoneProps) {
-  const { loadDatabase, setTables, setSelectedTable } = useSQLiteStore();
+export function UploadFile() {
+  const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FileError[]>([]);
 
@@ -51,27 +47,27 @@ export function UploadFile({ isLandingPage = false }: DropzoneProps) {
 
   return (
     <section>
-      {isLandingPage ? (
-        <div
-          {...getRootProps()}
-          className="border p-6 py-24 rounded cursor-pointer text-center"
-        >
-          <input {...getInputProps()} />
-          <p>Drag drop a SQLite file here, or click to select one</p>
-          <a
-            href="https://github.com/vwh/sqlite-viewer/examples/chinook.db"
-            className="text-sm text-[#003B57] hover:underline"
-          >
-            … or download & try this sample file
-          </a>
-        </div>
-      ) : (
+      {db ? (
         <div
           {...getRootProps()}
           className="border p-6 rounded cursor-pointer text-center"
         >
           <input {...getInputProps()} />
           <p>Drag drop a SQLite file here, or click to select one</p>
+        </div>
+      ) : (
+        <div
+          {...getRootProps()}
+          className="border p-6 py-24 rounded cursor-pointer text-center"
+        >
+          <input {...getInputProps()} />
+          <p>Drag drop a file here, or click to select</p>
+          <a
+            href="https://github.com/vwh/sqlite-viewer/examples/chinook.db"
+            className="text-sm text-[#003B57] hover:underline"
+          >
+            Or download & try this sample file
+          </a>
         </div>
       )}
       <div className="my-2">
