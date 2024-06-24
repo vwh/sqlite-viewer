@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useSQLiteStore from "../store/useSQLiteStore";
 
-import { SqlValue, QueryExecResult } from "sql.js";
+import type { SqlValue, QueryExecResult } from "sql.js";
 
 import {
   Table,
@@ -11,7 +11,8 @@ import {
   TableHeader,
   TableRow as TTableRow,
 } from "./ui/table";
-import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
+import PageSelect from "./page-select";
 
 interface TableRow {
   [key: string]: SqlValue;
@@ -25,19 +26,7 @@ export function DBTable() {
 
   const tableName = tables[parseInt(selectedTable)].name;
   const rowCount = tables[parseInt(selectedTable)].count;
-
   const rowsPerPage = 30;
-  const totalPages = Math.ceil(rowCount / rowsPerPage);
-
-  const nextPage = () => {
-    setPage((prev) =>
-      prev + rowsPerPage < rowCount ? prev + rowsPerPage : prev
-    );
-  };
-
-  const prevPage = () => {
-    setPage((prev) => (prev > 0 ? prev - rowsPerPage : 0));
-  };
 
   useEffect(() => {
     setPage(0);
@@ -84,19 +73,13 @@ export function DBTable() {
           </TableBody>
         </Table>
       )}
-      <section className="flex items-center justify-center fixed bottom-2 left-0 right-0">
-        <div className="flex justify-between gap-2 bg-secondary p-2 border rounded">
-          <Button onClick={prevPage} disabled={page === 0}>
-            Prev
-          </Button>
-          <span className="text-sm flex items-center justify-center">
-            Page {Math.floor(page / rowsPerPage) + 1} of {totalPages}
-          </span>
-          <Button onClick={nextPage} disabled={page + rowsPerPage >= rowCount}>
-            Next
-          </Button>
-        </div>
-      </section>
+      <Separator />
+      <PageSelect
+        page={page}
+        setPage={setPage}
+        rowsPerPage={rowsPerPage}
+        rowCount={rowCount}
+      />
     </div>
   );
 }
