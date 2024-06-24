@@ -16,13 +16,14 @@ import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 interface TableRow {
   [key: string]: SqlValue;
 }
 
 export function DBTable() {
-  const { query, db, tables, selectedTable } = useSQLiteStore();
+  const { query, db, tables, selectedTable, tableSchemas } = useSQLiteStore();
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
@@ -94,7 +95,18 @@ export function DBTable() {
           <TableHeader>
             <TTableRow>
               {columns.map((col, index) => (
-                <TableHead key={index}>{col}</TableHead>
+                <TableHead key={index}>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <span className="hover:underline cursor-pointer">
+                        {col}
+                      </span>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="bottom" align="start">
+                      {tableSchemas[tableName][col]}
+                    </HoverCardContent>
+                  </HoverCard>
+                </TableHead>
               ))}
             </TTableRow>
           </TableHeader>
