@@ -4,7 +4,7 @@ import useSQLiteStore from "./store/useSQLiteStore";
 import { DBTable } from "./components/table";
 import { Separator } from "./components/ui/separator";
 import { TableSelect } from "./components/table-select";
-import { UploadFile } from "./components/upload-file";
+import { UploadFile } from "./components/dropzone";
 
 function App() {
   const { db, query, tables, setTables } = useSQLiteStore();
