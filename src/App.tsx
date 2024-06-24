@@ -39,7 +39,6 @@ function App() {
         Promise.all(tableCountsPromises).then((tablesWithCounts) => {
           console.log("Tables with row counts:", tablesWithCounts);
           setTables(tablesWithCounts);
-          setSelectedTable("0"); // Reset selected table
         });
       }
     }
@@ -50,8 +49,9 @@ function App() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      setTables([]);
+      setSelectedTable("0");
       await loadDatabase(file);
-      setSelectedTable("0"); // Reset selected table when new file is loaded
     }
   };
 
