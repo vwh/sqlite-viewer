@@ -7,6 +7,8 @@ interface SQLiteState {
   query: (sql: string) => QueryExecResult[] | [];
   tables: { name: string; count: number }[];
   setTables: (tables: { name: string; count: number }[]) => void;
+  selectedTable: string;
+  setSelectedTable: (value: string) => void;
 }
 
 const useSQLiteStore = create<SQLiteState>((set, get) => ({
@@ -35,6 +37,9 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
 
   tables: [],
   setTables: (tables: { name: string; count: number }[]) => set({ tables }),
+
+  selectedTable: "0",
+  setSelectedTable: (value: string) => set({ selectedTable: value }),
 }));
 
 export default useSQLiteStore;

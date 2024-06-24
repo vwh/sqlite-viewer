@@ -17,16 +17,14 @@ interface TableRow {
   [key: string]: SqlValue;
 }
 
-interface DBTableProps {
-  tableName: string;
-  rowCount: number;
-}
-
-export function DBTable({ tableName, rowCount }: DBTableProps) {
-  const { query, db } = useSQLiteStore();
+export function DBTable() {
+  const { query, db, tables, selectedTable } = useSQLiteStore();
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
+
+  const tableName = tables[parseInt(selectedTable)].name;
+  const rowCount = tables[parseInt(selectedTable)].count;
 
   const rowsPerPage = 30;
   const totalPages = Math.ceil(rowCount / rowsPerPage);
@@ -42,7 +40,6 @@ export function DBTable({ tableName, rowCount }: DBTableProps) {
   };
 
   useEffect(() => {
-    // Reset page when table name changes
     setPage(0);
   }, [tableName]);
 
