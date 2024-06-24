@@ -30,8 +30,19 @@ function App() {
   }, [db, query, setTables]);
 
   return (
-    <>
-      <UploadFile />
+    <div className="flex flex-col gap-2">
+      {!db && (
+        <>
+          <section className="flex justify-center border rounded py-2">
+            <div className="flex flex-col items-center gap-2">
+              <img src="/logo.webp" alt="SQLite Logo" className="h-20" />
+              <p className="text-sm">View SQLite file online</p>
+            </div>
+          </section>
+        </>
+      )}
+
+      {db ? <UploadFile /> : <UploadFile isLandingPage />}
       {/* {!db && !tables.length && <p>Loading...</p>} */}
       {db && tables.length > 0 && (
         <>
@@ -40,7 +51,20 @@ function App() {
           <DBTable />
         </>
       )}
-    </>
+
+      <section>
+        <p className="text-xs mt-2">
+          No file will be uploaded - this website use JavaScript/sql.js
+        </p>
+        <a
+          href="https://github.com/vwh/sqlite-viewer"
+          target="_blank"
+          className="text-sm text-[#003B57] hover:underline"
+        >
+          Star this project on GitHub
+        </a>
+      </section>
+    </div>
   );
 }
 
