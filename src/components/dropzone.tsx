@@ -65,6 +65,7 @@ export function UploadFile() {
           <a
             href="https://github.com/vwh/sqlite-viewer/examples/chinook.db"
             className="text-sm text-[#003B57] hover:underline"
+            title="Download sample file"
           >
             Or download & try this sample file
           </a>

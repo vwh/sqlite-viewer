@@ -34,7 +34,12 @@ function App() {
         <>
           <section className="flex justify-center border rounded py-2">
             <div className="flex flex-col items-center gap-2">
-              <img src="/logo.webp" alt="SQLite Logo" className="h-20" />
+              <img
+                title="SQLite Logo"
+                src="/logo.webp"
+                alt="SQLite Logo"
+                className="h-20"
+              />
               <p className="text-sm">View SQLite file online</p>
             </div>
           </section>

@@ -1,13 +1,13 @@
 import { Button } from "./ui/button";
 
+import { ChevronRight, ChevronLeft } from "lucide-react";
+
 interface PageSelectProps {
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   rowsPerPage: number;
   rowCount: number;
 }
-
-import { ChevronRight, ChevronLeft } from "lucide-react";
 
 export default function PageSelect({
   page,
