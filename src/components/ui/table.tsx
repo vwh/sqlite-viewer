@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
+
 import { cn } from "../../lib/utils";
 
 const Table = React.forwardRef<
@@ -84,12 +86,24 @@ TableHead.displayName = "TableHead";
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn(
+      "p-4 align-middle [&:has([role=checkbox])]:pr-0 truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap",
+      className
+    )}
     {...props}
-  />
+  >
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <span className="hover:underline cursor-pointer">{children}</span>
+      </HoverCardTrigger>
+      <HoverCardContent side="bottom" align="start">
+        {children}
+      </HoverCardContent>
+    </HoverCard>
+  </td>
 ));
 TableCell.displayName = "TableCell";
 

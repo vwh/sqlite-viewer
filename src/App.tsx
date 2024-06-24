@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
+import { Separator } from "./components/ui/separator";
+import { Badge } from "./components/ui/badge";
 
 function App() {
   const { db, query, loadDatabase, tables, setTables } = useSQLiteStore();
@@ -63,21 +65,27 @@ function App() {
       </div>
       {db && tables.length > 0 && (
         <>
-          <Select value={selectedTable} onValueChange={setSelectedTable}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a table" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Tables</SelectLabel>
-                {tables.map((table, index) => (
-                  <SelectItem key={table.name} value={`${index}`}>
-                    {table.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <section className="flex justify-center items-center gap-2">
+            <Select value={selectedTable} onValueChange={setSelectedTable}>
+              <SelectTrigger className="w-[300px]">
+                <SelectValue placeholder="Select a table" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Tables</SelectLabel>
+                  {tables.map((table, index) => (
+                    <SelectItem key={table.name} value={`${index}`}>
+                      {table.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Badge className="text-sm">
+              {tables[parseInt(selectedTable)].count} rows
+            </Badge>
+          </section>
+          <Separator className="mt-2" />
           {tables[parseInt(selectedTable)] && (
             <DBTable
               tableName={tables[parseInt(selectedTable)].name}
