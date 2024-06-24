@@ -36,7 +36,7 @@ function App() {
             <div className="flex flex-col items-center gap-2">
               <img
                 title="SQLite Logo"
-                src="/logo.webp"
+                src="https://raw.githubusercontent.com/vwh/sqlite-viewer/main/public/logo.webp"
                 alt="SQLite Logo"
                 className="h-20"
               />
