@@ -24,7 +24,15 @@ function App() {
       )}
       <UploadFile />
       <Loading />
-      {!isLoading && tables.length > 0 && <DBTable />}
+      {!isLoading &&
+        db &&
+        (tables.length > 0 ? (
+          <DBTable />
+        ) : (
+          <p className="text-center font-semibold">
+            Your database is empty, no tables found
+          </p>
+        ))}
     </div>
   );
 }

@@ -114,7 +114,13 @@ export function DBTable() {
             {data.map((row, rowIndex) => (
               <TTableRow key={rowIndex}>
                 {columns.map((col, cellIndex) => (
-                  <TableCell key={cellIndex}>{row[col]}</TableCell>
+                  <TableCell key={cellIndex}>
+                    {row[col] ? (
+                      row[col]
+                    ) : (
+                      <span className="italic opacity-40">NULL</span>
+                    )}
+                  </TableCell>
                 ))}
               </TTableRow>
             ))}
