@@ -18,6 +18,8 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
+import { KeyRound } from "lucide-react";
+
 interface TableRow {
   [key: string]: SqlValue;
 }
@@ -53,7 +55,8 @@ export function DBTable() {
         );
         setColumns(tableResult[0].columns);
         setData(tableData);
-        console.log(tableData);
+      } else {
+        setData([]);
       }
     }
   }, [db, query, tableName, page, isCustomQuery]);
@@ -71,7 +74,6 @@ export function DBTable() {
         setColumns(customResult[0].columns);
         setData(customData);
         setIsCustomQuery(true);
-        console.log(customData);
       }
     }
   };
@@ -90,7 +92,7 @@ export function DBTable() {
         <Button onClick={handleCustomQuery}>Run Query</Button>
       </div>
       <Separator className="mt-2" />
-      {data.length > 0 && (
+      {data.length > 0 ? (
         <Table>
           <TableHeader>
             <TTableRow>
@@ -99,11 +101,16 @@ export function DBTable() {
                   <HoverCard>
                     <HoverCardTrigger asChild>
                       <span className="hover:underline cursor-pointer">
-                        {col}
+                        <div className="flex gap-1">
+                          {col}
+                          {tableSchemas[tableName][col]?.isPrimaryKey && (
+                            <KeyRound className="h-4 w-4" />
+                          )}
+                        </div>
                       </span>
                     </HoverCardTrigger>
                     <HoverCardContent side="bottom" align="start">
-                      {tableSchemas[tableName][col]}
+                      {tableSchemas[tableName][col]?.type}
                     </HoverCardContent>
                   </HoverCard>
                 </TableHead>
@@ -126,6 +133,8 @@ export function DBTable() {
             ))}
           </TableBody>
         </Table>
+      ) : (
+        <p className="text-center py-2 font-semibold">No data on the table</p>
       )}
       <Separator />
       {!isCustomQuery && (

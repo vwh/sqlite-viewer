@@ -2,7 +2,9 @@ import { create } from "zustand";
 import initSqlJs, { Database, QueryExecResult } from "sql.js";
 
 interface TableInfo {
-  [key: string]: { [columnName: string]: string };
+  [key: string]: {
+    [columnName: string]: { type: string; isPrimaryKey: boolean };
+  };
 }
 
 interface SQLiteState {
@@ -51,17 +53,16 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
           `PRAGMA table_info("${tableName}")`
         );
         const tableSchema = tableInfoResult[0].values.reduce((acc, row) => {
-          acc[row[1] as string] = row[2] as string; // row[1] is the column name, row[2] is the type
+          acc[row[1] as string] = {
+            type: row[2] as string,
+            isPrimaryKey: (row[5] as number) === 1, // row[5] indicates if the column is a primary key
+          };
           return acc;
-        }, {} as { [columnName: string]: string });
+        }, {} as { [columnName: string]: { type: string; isPrimaryKey: boolean } });
         return { name: tableName as string, count, schema: tableSchema };
       });
 
       const tablesWithCountsAndSchemas = await Promise.all(tableCountsPromises);
-      console.log(
-        "Tables with row counts and schemas:",
-        tablesWithCountsAndSchemas
-      );
       set({
         tables: tablesWithCountsAndSchemas.map(({ name, count }) => ({
           name,
