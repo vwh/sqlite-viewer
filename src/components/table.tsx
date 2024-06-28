@@ -68,6 +68,7 @@ export function DBTable() {
         setColumns(columns);
         setData(data);
         setIsCustomQuery(true);
+        setQueryError(null);
       } catch (error) {
         if (error instanceof Error) {
           setQueryError(error.message);
