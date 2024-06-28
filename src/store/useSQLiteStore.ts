@@ -3,7 +3,11 @@ import initSqlJs, { Database, QueryExecResult } from "sql.js";
 
 interface TableInfo {
   [key: string]: {
-    [columnName: string]: { type: string; isPrimaryKey: boolean };
+    [columnName: string]: {
+      type: string;
+      isPrimaryKey: boolean;
+      isForeignKey: boolean;
+    };
   };
 }
 
@@ -49,6 +53,7 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
           `SELECT COUNT(*) FROM "${tableName}"`
         );
         const count = parseInt(countResult[0].values[0][0] as string, 10);
+
         const tableInfoResult = database.exec(
           `PRAGMA table_info("${tableName}")`
         );
@@ -56,9 +61,24 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
           acc[row[1] as string] = {
             type: row[2] as string,
             isPrimaryKey: (row[5] as number) === 1, // row[5] indicates if the column is a primary key
+            isForeignKey: false, // default value, will be updated later
           };
           return acc;
-        }, {} as { [columnName: string]: { type: string; isPrimaryKey: boolean } });
+        }, {} as { [columnName: string]: { type: string; isPrimaryKey: boolean; isForeignKey: boolean } });
+
+        // Check for foreign keys
+        const foreignKeyInfoResult = database.exec(
+          `PRAGMA foreign_key_list("${tableName}")`
+        );
+        if (foreignKeyInfoResult.length > 0) {
+          foreignKeyInfoResult[0].values.forEach((row) => {
+            const columnName = row[3] as string; // row[3] is the column name that is a foreign key
+            if (tableSchema[columnName]) {
+              tableSchema[columnName].isForeignKey = true;
+            }
+          });
+        }
+
         return { name: tableName as string, count, schema: tableSchema };
       });
 
