@@ -53,7 +53,10 @@ export function UploadFile() {
           className="border p-6 rounded cursor-pointer text-center"
         >
           <input {...getInputProps()} />
-          <p>Drag drop a SQLite file here, or click to select one</p>
+          <p className="hidden sm:block">
+            Drag drop a SQLite file here, or click to select one
+          </p>
+          <p className="block sm:hidden">Click to select a SQLite file</p>
         </div>
       ) : (
         <div
@@ -61,7 +64,10 @@ export function UploadFile() {
           className="border p-6 py-24 rounded cursor-pointer text-center"
         >
           <input {...getInputProps()} />
-          <p>Drag drop a file here, or click to select</p>
+          <p className="hidden sm:block">
+            Drag drop a SQLite file here, or click to select one
+          </p>
+          <p className="block sm:hidden">Click to select a SQLite file</p>
           <a
             href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
             className="text-sm text-[#003B57] hover:underline"

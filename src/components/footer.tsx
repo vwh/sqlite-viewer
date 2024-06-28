@@ -3,8 +3,11 @@ import { Github } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="z-[100]">
-      <p className="text-xs mt-2">
+      <p className="hidden sm:block text-xs mt-2">
         No file will be uploaded to server. using JavaScript, sql.js
+      </p>
+      <p className="block sm:hidden text-xs mt-2">
+        No file will be uploaded to server.
       </p>
       <a
         href="https://github.com/vwh/sqlite-viewer"
