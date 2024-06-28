@@ -17,6 +17,8 @@ interface SQLiteState {
   db: Database | null;
   loadDatabase: (file: File) => Promise<void>;
   query: (sql: string) => QueryExecResult[] | [];
+  queryError: string | null;
+  setQueryError: (value: string | null) => void;
   tables: { name: string; count: number }[];
   setTables: (tables: { name: string; count: number }[]) => void;
   selectedTable: string;
@@ -84,6 +86,9 @@ const initializeStore = create<SQLiteState>((set, get) => ({
 
   tableSchemas: {},
   setTableSchemas: (schemas: TableInfo) => set({ tableSchemas: schemas }),
+
+  queryError: null,
+  setQueryError: (value: string | null) => set({ queryError: value }),
 }));
 
 export default initializeStore;

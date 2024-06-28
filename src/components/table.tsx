@@ -25,7 +25,15 @@ interface TableRow {
 }
 
 export function DBTable() {
-  const { query, db, tables, selectedTable, tableSchemas } = useSQLiteStore();
+  const {
+    query,
+    db,
+    tables,
+    selectedTable,
+    tableSchemas,
+    queryError,
+    setQueryError,
+  } = useSQLiteStore();
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
@@ -43,37 +51,50 @@ export function DBTable() {
 
   useEffect(() => {
     if (db && tableName && !isCustomQuery) {
-      const tableResult: QueryExecResult[] = query(
-        `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
-      );
-      if (tableResult.length > 0) {
-        const tableData: TableRow[] = tableResult[0].values.map((row) =>
-          tableResult[0].columns.reduce((acc, col, index) => {
-            acc[col] = row[index];
-            return acc;
-          }, {} as TableRow)
+      try {
+        const tableResult: QueryExecResult[] = query(
+          `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
         );
-        setColumns(tableResult[0].columns);
-        setData(tableData);
-      } else {
-        setData([]);
+        if (tableResult.length > 0) {
+          const tableData: TableRow[] = tableResult[0].values.map((row) =>
+            tableResult[0].columns.reduce((acc, col, index) => {
+              acc[col] = row[index];
+              return acc;
+            }, {} as TableRow)
+          );
+          setColumns(tableResult[0].columns);
+          setData(tableData);
+        } else {
+          setData([]);
+        }
+        setQueryError(null);
+      } catch (error) {
+        if (error instanceof Error) {
+          setQueryError(error.message);
+        }
       }
     }
-  }, [db, query, tableName, page, isCustomQuery]);
+  }, [db, query, tableName, page, isCustomQuery, setQueryError]);
 
   const handleCustomQuery = () => {
     if (db && customQuery.trim() !== "") {
-      const customResult: QueryExecResult[] = query(customQuery);
-      if (customResult.length > 0) {
-        const customData: TableRow[] = customResult[0].values.map((row) =>
-          customResult[0].columns.reduce((acc, col, index) => {
-            acc[col] = row[index];
-            return acc;
-          }, {} as TableRow)
-        );
-        setColumns(customResult[0].columns);
-        setData(customData);
-        setIsCustomQuery(true);
+      try {
+        const customResult: QueryExecResult[] = query(customQuery);
+        if (customResult.length > 0) {
+          const customData: TableRow[] = customResult[0].values.map((row) =>
+            customResult[0].columns.reduce((acc, col, index) => {
+              acc[col] = row[index];
+              return acc;
+            }, {} as TableRow)
+          );
+          setColumns(customResult[0].columns);
+          setData(customData);
+          setIsCustomQuery(true);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          setQueryError(error.message);
+        }
       }
     }
   };
@@ -91,6 +112,7 @@ export function DBTable() {
         />
         <Button onClick={handleCustomQuery}>Run Query</Button>
       </div>
+      <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>
       <Separator className="mt-2" />
       {data.length > 0 ? (
         <Table>
