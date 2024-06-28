@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
+import { Badge } from "./badge";
 
 import { cn } from "../../lib/utils";
 
@@ -83,28 +84,46 @@ const TableHead = React.forwardRef<
 ));
 TableHead.displayName = "TableHead";
 
-const TableCell = React.forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, children, ...props }, ref) => (
-  <td
-    ref={ref}
-    className={cn(
-      "p-4 align-middle [&:has([role=checkbox])]:pr-0 truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap",
-      className
-    )}
-    {...props}
-  >
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <span className="hover:underline cursor-pointer">{children}</span>
-      </HoverCardTrigger>
-      <HoverCardContent side="bottom" align="start">
-        {children}
-      </HoverCardContent>
-    </HoverCard>
-  </td>
-));
+interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  dataType?: string;
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, children, dataType, ...props }, ref) => (
+    <td
+      ref={ref}
+      className={cn(
+        "p-4 align-middle [&:has([role=checkbox])]:pr-0 truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap",
+        className
+      )}
+      {...props}
+    >
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <span className="hover:underline cursor-pointer">
+            {dataType === "BLOB" ? (
+              <span className="italic opacity-40">BLOB</span>
+            ) : (
+              children
+            )}
+          </span>
+        </HoverCardTrigger>
+        <HoverCardContent side="bottom" align="start">
+          <div className="flex flex-col gap-1">
+            {dataType === "BLOB" ? (
+              <span className="truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                {children}
+              </span>
+            ) : (
+              children
+            )}
+            {dataType && <Badge className="text-xs">{dataType}</Badge>}
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    </td>
+  )
+);
 TableCell.displayName = "TableCell";
 
 const TableCaption = React.forwardRef<

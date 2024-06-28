@@ -10,7 +10,7 @@ import {
   TableRow as TTableRow,
 } from "./ui/table";
 
-import { KeyRound, KeySquare, Cuboid } from "lucide-react";
+import { KeyRound, KeySquare, Cuboid, Clock9 } from "lucide-react";
 
 interface DBTableComponentProps {
   data: TableRow[];
@@ -45,6 +45,9 @@ export default function DBTableComponent({
                       {tableSchemas[tableName][col]?.type === "BLOB" && (
                         <Cuboid className="h-4 w-4" />
                       )}
+                      {tableSchemas[tableName][col]?.type === "DATETIME" && (
+                        <Clock9 className="h-4 w-4" />
+                      )}
                     </div>
                   </span>
                 </HoverCardTrigger>
@@ -60,7 +63,10 @@ export default function DBTableComponent({
         {data.map((row, rowIndex) => (
           <TTableRow key={rowIndex}>
             {columns.map((col, cellIndex) => (
-              <TableCell key={cellIndex}>
+              <TableCell
+                key={cellIndex}
+                dataType={tableSchemas[tableName][col]?.type}
+              >
                 {row[col] ? (
                   row[col]
                 ) : (
