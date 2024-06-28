@@ -1,28 +1,17 @@
 import { useState, useEffect } from "react";
 import useSQLiteStore from "../store/useSQLiteStore";
 
-import type { SqlValue, QueryExecResult } from "sql.js";
+import type { QueryExecResult } from "sql.js";
+import type { TableRow } from "../types";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow as TTableRow,
-} from "./ui/table";
+import { mapQueryResults } from "../lib/sqlite";
+
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-
-import { KeyRound, KeySquare, Cuboid } from "lucide-react";
-
-interface TableRow {
-  [key: string]: SqlValue;
-}
+import DBTableComponent from "./table-data";
 
 export function DBTable() {
   const {
@@ -55,18 +44,9 @@ export function DBTable() {
         const tableResult: QueryExecResult[] = query(
           `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
         );
-        if (tableResult.length > 0) {
-          const tableData: TableRow[] = tableResult[0].values.map((row) =>
-            tableResult[0].columns.reduce((acc, col, index) => {
-              acc[col] = row[index];
-              return acc;
-            }, {} as TableRow)
-          );
-          setColumns(tableResult[0].columns);
-          setData(tableData);
-        } else {
-          setData([]);
-        }
+        const { data, columns } = mapQueryResults(tableResult);
+        setColumns(columns);
+        setData(data);
         setQueryError(null);
       } catch (error) {
         if (error instanceof Error) {
@@ -77,20 +57,17 @@ export function DBTable() {
   }, [db, query, tableName, page, isCustomQuery, setQueryError]);
 
   const handleCustomQuery = () => {
+    if (customQuery.trim() === "") {
+      setQueryError(null);
+    }
+
     if (db && customQuery.trim() !== "") {
       try {
         const customResult: QueryExecResult[] = query(customQuery);
-        if (customResult.length > 0) {
-          const customData: TableRow[] = customResult[0].values.map((row) =>
-            customResult[0].columns.reduce((acc, col, index) => {
-              acc[col] = row[index];
-              return acc;
-            }, {} as TableRow)
-          );
-          setColumns(customResult[0].columns);
-          setData(customData);
-          setIsCustomQuery(true);
-        }
+        const { data, columns } = mapQueryResults(customResult);
+        setColumns(columns);
+        setData(data);
+        setIsCustomQuery(true);
       } catch (error) {
         if (error instanceof Error) {
           setQueryError(error.message);
@@ -115,52 +92,12 @@ export function DBTable() {
       <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>
       <Separator className="mt-2" />
       {data.length > 0 ? (
-        <Table>
-          <TableHeader>
-            <TTableRow>
-              {columns.map((col, index) => (
-                <TableHead key={index}>
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <span className="hover:underline cursor-pointer">
-                        <div className="flex gap-1">
-                          {col}
-                          {tableSchemas[tableName][col]?.isPrimaryKey && (
-                            <KeyRound className="h-4 w-4" />
-                          )}
-                          {tableSchemas[tableName][col]?.isForeignKey && (
-                            <KeySquare className="h-4 w-4" />
-                          )}
-                          {tableSchemas[tableName][col]?.type === "BLOB" && (
-                            <Cuboid className="h-4 w-4" />
-                          )}
-                        </div>
-                      </span>
-                    </HoverCardTrigger>
-                    <HoverCardContent side="bottom" align="start">
-                      {tableSchemas[tableName][col]?.type}
-                    </HoverCardContent>
-                  </HoverCard>
-                </TableHead>
-              ))}
-            </TTableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row, rowIndex) => (
-              <TTableRow key={rowIndex}>
-                {columns.map((col, cellIndex) => (
-                  <TableCell key={cellIndex}>
-                    {row[col] ? (
-                      row[col]
-                    ) : (
-                      <span className="italic opacity-40">NULL</span>
-                    )}
-                  </TableCell>
-                ))}
-              </TTableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <DBTableComponent
+          data={data}
+          columns={columns}
+          tableName={tableName}
+          tableSchemas={tableSchemas}
+        />
       ) : (
         <p className="text-center py-2 font-semibold">No data on the table</p>
       )}

@@ -1,17 +1,9 @@
 import { create } from "zustand";
 
 import type { Database, QueryExecResult } from "sql.js";
-import { getTableSchema, getTableNames, loadDatabase } from "../lib/sqlite";
+import type { TableInfo } from "../types";
 
-interface TableInfo {
-  [key: string]: {
-    [columnName: string]: {
-      type: string;
-      isPrimaryKey: boolean;
-      isForeignKey: boolean;
-    };
-  };
-}
+import { getTableSchema, getTableNames, loadDatabase } from "../lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;

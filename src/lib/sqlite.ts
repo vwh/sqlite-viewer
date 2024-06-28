@@ -1,4 +1,5 @@
-import initSqlJs, { type Database } from "sql.js";
+import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
+import type { TableRow } from "../types";
 
 export const loadDatabase = async (file: File): Promise<Database> => {
   const arrayBuffer = await file.arrayBuffer();
@@ -39,3 +40,19 @@ export const getTableSchema = async (database: Database, tableName: string) => {
   }
   return tableSchema;
 };
+
+export function mapQueryResults(result: QueryExecResult[]): {
+  data: TableRow[];
+  columns: string[];
+} {
+  if (result.length > 0) {
+    const data: TableRow[] = result[0].values.map((row) =>
+      result[0].columns.reduce((acc, col, index) => {
+        acc[col] = row[index];
+        return acc;
+      }, {} as TableRow)
+    );
+    return { data, columns: result[0].columns };
+  }
+  return { data: [], columns: [] };
+}
