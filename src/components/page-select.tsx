@@ -1,5 +1,4 @@
 import { Button } from "./ui/button";
-
 import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface PageSelectProps {
@@ -15,28 +14,31 @@ export default function PageSelect({
   rowsPerPage,
   rowCount,
 }: PageSelectProps) {
+  const totalPages = Math.ceil(rowCount / rowsPerPage);
+  const currentPage = Math.floor(page / rowsPerPage) + 1;
+
   const nextPage = () => {
-    setPage((prev) =>
-      prev + rowsPerPage < rowCount ? prev + rowsPerPage : prev
-    );
+    if (currentPage < totalPages) {
+      setPage(page + rowsPerPage);
+    }
   };
 
   const prevPage = () => {
-    setPage((prev) => (prev > 0 ? prev - rowsPerPage : 0));
+    if (currentPage > 1) {
+      setPage(page - rowsPerPage);
+    }
   };
-
-  const totalPages = Math.ceil(rowCount / rowsPerPage);
 
   return (
     <section className="fixed bottom-2 left-0 right-0 w-[250px] mx-auto">
       <div className="flex justify-between gap-2 bg-secondary p-[6px] border rounded">
-        <Button onClick={prevPage} disabled={page === 0}>
+        <Button onClick={prevPage} disabled={currentPage === 1}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <span className="text-sm flex items-center justify-center">
-          Page {Math.floor(page / rowsPerPage) + 1} of {totalPages}
+          Page {currentPage} of {totalPages}
         </span>
-        <Button onClick={nextPage} disabled={page + rowsPerPage >= rowCount}>
+        <Button onClick={nextPage} disabled={currentPage >= totalPages}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

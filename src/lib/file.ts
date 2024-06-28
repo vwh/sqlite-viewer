@@ -7,14 +7,3 @@ export function bytesToValue(bytes: number): string {
   const value = bytes / Math.pow(1024, i);
   return `${value.toFixed(2)} ${size}`;
 }
-
-export function dropzoneValidator(file: File, maxSize: number) {
-  if (file.size > maxSize) {
-    return {
-      code: "file-too-large-custom",
-      message: `File is larger than 100 MB`,
-    };
-  }
-
-  return null;
-}

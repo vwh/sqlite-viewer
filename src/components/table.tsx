@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import useSQLiteStore from "../store/useSQLiteStore";
 
 import type { QueryExecResult } from "sql.js";
@@ -23,14 +23,23 @@ export function DBTable() {
     queryError,
     setQueryError,
   } = useSQLiteStore();
+
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [customQuery, setCustomQuery] = useState<string>("");
   const [isCustomQuery, setIsCustomQuery] = useState<boolean>(false);
 
-  const tableName = tables[parseInt(selectedTable)]?.name;
-  const rowCount = tables[parseInt(selectedTable)]?.count || 0;
+  const tableName = useMemo(
+    () => tables[parseInt(selectedTable)]?.name,
+    [tables, selectedTable]
+  );
+
+  const rowCount = useMemo(
+    () => tables[parseInt(selectedTable)]?.count || 0,
+    [tables, selectedTable]
+  );
+
   const rowsPerPage = 30;
 
   useEffect(() => {
@@ -54,11 +63,12 @@ export function DBTable() {
         }
       }
     }
-  }, [db, query, tableName, page, isCustomQuery, setQueryError]);
+  }, [tableName, page]);
 
-  const handleCustomQuery = () => {
+  const handleCustomQuery = useCallback(() => {
     if (customQuery.trim() === "") {
       setQueryError(null);
+      return;
     }
 
     if (db && customQuery.trim() !== "") {
@@ -75,7 +85,7 @@ export function DBTable() {
         }
       }
     }
-  };
+  }, [customQuery, db, query, setQueryError]);
 
   return (
     <div>
