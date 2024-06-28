@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sqlite-viewer/dev-sw.js?dev-sw', { scope: '/sqlite-viewer/', type: 'classic' })
