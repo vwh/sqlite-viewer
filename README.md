@@ -6,16 +6,16 @@ View and query SQLite databases directly in your browser. Built with `sql.js` an
 
 ### Main Interface
 
-![Main Interface](https://github.com/vwh/sqlite-viewer/assets/172333718/be699092-a8ec-4e83-af2a-2acd1efa2a9d)
+![Main Interface](https://github.com/vwh/sqlite-viewer/assets/172333718/3f9628e4-ecfb-4a17-915f-f70c7ab34924)
 
 ### Query Execution
 
-![Table View](https://github.com/vwh/sqlite-viewer/assets/172333718/e2503690-1302-47bf-a6de-577b44e69c4f)
+![Query Execution](https://github.com/vwh/sqlite-viewer/assets/172333718/57ac0530-5ac6-47ad-878a-5eacd7df1371)
 
 
 ### Structure View
 
-![Query Execution](https://github.com/vwh/sqlite-viewer/assets/172333718/8d938863-e87f-4759-ac50-8caf493b2904)
+![Structure View](https://github.com/vwh/sqlite-viewer/assets/172333718/2316c91a-93ce-480a-a350-d8053df589e8)
 
 ## Getting Started
 
