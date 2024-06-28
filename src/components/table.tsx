@@ -18,7 +18,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
-import { KeyRound, KeySquare } from "lucide-react";
+import { KeyRound, KeySquare, Cuboid } from "lucide-react";
 
 interface TableRow {
   [key: string]: SqlValue;
@@ -108,6 +108,9 @@ export function DBTable() {
                           )}
                           {tableSchemas[tableName][col]?.isForeignKey && (
                             <KeySquare className="h-4 w-4" />
+                          )}
+                          {tableSchemas[tableName][col]?.type === "BLOB" && (
+                            <Cuboid className="h-4 w-4" />
                           )}
                         </div>
                       </span>

@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import initSqlJs, { Database, QueryExecResult } from "sql.js";
+
+import type { Database, QueryExecResult } from "sql.js";
+import { getTableSchema, getTableNames, loadDatabase } from "../lib/sqlite";
 
 interface TableInfo {
   [key: string]: {
@@ -24,62 +26,25 @@ interface SQLiteState {
   setTableSchemas: (schemas: TableInfo) => void;
 }
 
-const useSQLiteStore = create<SQLiteState>((set, get) => ({
+const initializeStore = create<SQLiteState>((set, get) => ({
   db: null,
   isLoading: false,
 
   loadDatabase: async (file: File) => {
     set({ isLoading: true });
+    try {
+      const database = await loadDatabase(file);
+      set({ db: database });
 
-    // Load database from file
-    const arrayBuffer = await file.arrayBuffer();
-    const SQL = await initSqlJs({
-      locateFile: (fileName) => `https://sql.js.org/dist/${fileName}`,
-    });
-    const database = new SQL.Database(new Uint8Array(arrayBuffer));
-    set({ db: database });
-    console.log("Database loaded successfully");
+      const tableNames = getTableNames(database);
 
-    // Load table information here after database is loaded
-    const tablesResult = database.exec(
-      "SELECT name FROM sqlite_master WHERE type='table';"
-    );
-    if (tablesResult.length > 0) {
-      const tableNames = tablesResult[0].values.map((row) => row[0]);
-
-      // Get row count and schema for each table
       const tableCountsPromises = tableNames.map(async (tableName) => {
         const countResult = database.exec(
           `SELECT COUNT(*) FROM "${tableName}"`
         );
         const count = parseInt(countResult[0].values[0][0] as string, 10);
-
-        const tableInfoResult = database.exec(
-          `PRAGMA table_info("${tableName}")`
-        );
-        const tableSchema = tableInfoResult[0].values.reduce((acc, row) => {
-          acc[row[1] as string] = {
-            type: row[2] as string,
-            isPrimaryKey: (row[5] as number) === 1, // row[5] indicates if the column is a primary key
-            isForeignKey: false, // default value, will be updated later
-          };
-          return acc;
-        }, {} as { [columnName: string]: { type: string; isPrimaryKey: boolean; isForeignKey: boolean } });
-
-        // Check for foreign keys
-        const foreignKeyInfoResult = database.exec(
-          `PRAGMA foreign_key_list("${tableName}")`
-        );
-        if (foreignKeyInfoResult.length > 0) {
-          foreignKeyInfoResult[0].values.forEach((row) => {
-            const columnName = row[3] as string; // row[3] is the column name that is a foreign key
-            if (tableSchema[columnName]) {
-              tableSchema[columnName].isForeignKey = true;
-            }
-          });
-        }
-
-        return { name: tableName as string, count, schema: tableSchema };
+        const schema = await getTableSchema(database, tableName);
+        return { name: tableName, count, schema };
       });
 
       const tablesWithCountsAndSchemas = await Promise.all(tableCountsPromises);
@@ -96,8 +61,9 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
           {} as TableInfo
         ),
       });
+    } catch (error) {
+      console.error("Failed to load database:", error);
     }
-
     set({ isLoading: false });
   },
 
@@ -107,11 +73,7 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
       console.warn("Database is not loaded.");
       return [];
     }
-
-    const result: QueryExecResult[] = db.exec(sql);
-    console.log("Query executed:", sql, result);
-
-    return result.length > 0 ? result : [];
+    return db.exec(sql);
   },
 
   tables: [],
@@ -124,4 +86,4 @@ const useSQLiteStore = create<SQLiteState>((set, get) => ({
   setTableSchemas: (schemas: TableInfo) => set({ tableSchemas: schemas }),
 }));
 
-export default useSQLiteStore;
+export default initializeStore;
