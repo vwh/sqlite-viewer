@@ -100,13 +100,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     >
       <HoverCard>
         <HoverCardTrigger asChild>
-          <span className="hover:underline cursor-pointer">
-            {dataType === "BLOB" ? (
-              <span className="italic opacity-40">BLOB</span>
-            ) : (
-              children
-            )}
-          </span>
+          <span className="hover:underline cursor-pointer">{children}</span>
         </HoverCardTrigger>
         <HoverCardContent side="bottom" align="start">
           <div className="flex flex-col gap-1">
