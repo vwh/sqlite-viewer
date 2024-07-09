@@ -2,14 +2,12 @@ import useSQLiteStore from "./store/useSQLiteStore";
 import { DBTable } from "./components/table";
 import { UploadFile } from "./components/dropzone";
 import Loading from "./components/loading";
-import DarkModeToggle from "./components/dark-mode";
 
 function App() {
   const { db, tables, isLoading } = useSQLiteStore();
 
   return (
     <div className="flex flex-col gap-2">
-      <DarkModeToggle />
       {!db && (
         <section className="flex justify-center border rounded py-2">
           <div className="flex flex-col items-center gap-2">
