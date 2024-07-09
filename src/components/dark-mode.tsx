@@ -14,12 +14,6 @@ function DarkModeToggle() {
     setDarkMode(newMode);
     localStorage.setItem("darkMode", newMode.toString());
     document.body.classList.toggle("dark", newMode);
-
-    document.body.classList.add("animate-circular-reveal");
-
-    setTimeout(() => {
-      document.body.classList.remove("animate-circular-reveal");
-    }, 500);
   };
 
   return (

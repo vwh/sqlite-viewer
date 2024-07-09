@@ -27,7 +27,7 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 5.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -60,4 +60,14 @@
 
 body {
   font-family: "Fira Mono", monospace;
+}
+
+#logo {
+  filter: brightness(0) saturate(100%) invert(15%) sepia(80%) saturate(1534%)
+    hue-rotate(172deg) brightness(95%) contrast(104%);
+}
+
+[class="dark"] #logo {
+  filter: brightness(0) saturate(100%) invert(46%) sepia(10%) saturate(3150%)
+    hue-rotate(154deg) brightness(87%) contrast(82%);
 }

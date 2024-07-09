@@ -12,6 +12,7 @@ function App() {
         <section className="flex justify-center border rounded py-2">
           <div className="flex flex-col items-center gap-2">
             <img
+              id="logo"
               title="SQLite Logo"
               src="https://raw.githubusercontent.com/vwh/sqlite-viewer/main/public/logo.webp"
               alt="SQLite Logo"
@@ -28,7 +29,7 @@ function App() {
         (tables.length > 0 ? (
           <DBTable />
         ) : (
-          <p className="text-center font-semibold">
+          <p className="text-center font-semibold md:text-3xl p-20 border rounded mb-2">
             Your database is empty, no tables found
           </p>
         ))}

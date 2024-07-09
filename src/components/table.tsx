@@ -110,7 +110,9 @@ export function DBTable() {
           tableSchemas={tableSchemas}
         />
       ) : (
-        <p className="text-center py-2 font-semibold">No data on the table</p>
+        <p className="text-center font-semibold md:text-3xl p-20 border rounded my-2">
+          No data on the table
+        </p>
       )}
       <Separator />
       {!isCustomQuery && (
