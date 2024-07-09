@@ -1,5 +1,4 @@
 import useSQLiteStore from "./store/useSQLiteStore";
-
 import { DBTable } from "./components/table";
 import { UploadFile } from "./components/dropzone";
 import Loading from "./components/loading";
