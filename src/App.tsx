@@ -14,7 +14,7 @@ function App() {
             <img
               id="logo"
               title="SQLite Logo"
-              src="https://raw.githubusercontent.com/vwh/sqlite-viewer/main/public/logo.webp"
+              src="./logo.webp"
               alt="SQLite Logo"
               width="160"
               height="80"
