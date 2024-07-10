@@ -22,17 +22,15 @@ export function FileStats({ errors }: { errors?: FileError[] }) {
     return (
       <>
         {errors.map((e) => {
-          if (e.code !== "file-too-large") {
-            return (
-              <li
-                className="flex w-full items-center justify-center text-sm text-red-600"
-                key={e.code}
-              >
-                <FileWarning className="mr-2" />
-                {e.message}
-              </li>
-            );
-          }
+          return (
+            <div
+              className="flex items-center justify-center text-sm text-red-600 gap-2 rounded border border-red-600 p-4"
+              key={e.code}
+            >
+              <FileWarning />
+              {e.message}
+            </div>
+          );
         })}
       </>
     );
