@@ -16,6 +16,8 @@ function App() {
               title="SQLite Logo"
               src="https://raw.githubusercontent.com/vwh/sqlite-viewer/main/public/logo.webp"
               alt="SQLite Logo"
+              width="160"
+              height="80"
               className="h-20"
             />
             <p className="text-sm">View SQLite file online</p>
