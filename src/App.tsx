@@ -18,6 +18,7 @@ function App() {
               alt="SQLite Logo"
               width="160"
               height="80"
+              draggable="false"
               className="h-20"
             />
             <p className="text-sm">View SQLite file online</p>
