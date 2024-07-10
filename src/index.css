@@ -22,6 +22,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 80%;
     --input: 240 5.9% 80%;
+    --link: 198, 100%, 16%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
   }
@@ -45,6 +46,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
+    --link: 198, 56%, 40%;
     --ring: 0 0% 83.1%;
   }
 }
@@ -63,11 +65,13 @@ body {
 }
 
 #logo {
+  /* #003B57 */
   filter: brightness(0) saturate(100%) invert(15%) sepia(80%) saturate(1534%)
     hue-rotate(172deg) brightness(95%) contrast(104%);
 }
 
 [class="dark"] #logo {
+  /* #2d7a9e */
   filter: brightness(0) saturate(100%) invert(46%) sepia(10%) saturate(3150%)
     hue-rotate(154deg) brightness(87%) contrast(82%);
 }

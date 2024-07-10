@@ -70,7 +70,7 @@ export function UploadFile() {
           <p className="block sm:hidden">Click to select a SQLite file</p>
           <a
             href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
-            className="text-sm text-[#003B57] dark:text-[#2d7a9e] hover:underline"
+            className="text-sm text-link hover:underline"
             title="Download sample file"
           >
             Or download & try this sample file

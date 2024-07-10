@@ -1,3 +1,5 @@
+const { link } = require("fs");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -46,6 +48,9 @@ module.exports = {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
+        },
+        link: {
+          DEFAULT: "hsl(var(--link))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",

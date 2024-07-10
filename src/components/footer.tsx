@@ -15,7 +15,7 @@ export default function Footer() {
         <a
           href="https://github.com/vwh/sqlite-viewer"
           target="_blank"
-          className="text-sm text-[#003B57] dark:text-[#2d7a9e] hover:underline flex gap-1 items-center"
+          className="text-sm text-link hover:underline flex gap-1 items-center"
           title="Star on GitHub"
         >
           <Github className="h-4 w-4 mt-1" />
