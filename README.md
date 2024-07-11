@@ -17,6 +17,10 @@ View and query SQLite databases directly in your browser. Built with `sql.js` an
 
 ![Structure View](https://github.com/vwh/sqlite-viewer/assets/172333718/2316c91a-93ce-480a-a350-d8053df589e8)
 
+### Dark Mode
+
+![Dark Mode](https://github.com/user-attachments/assets/6e361443-e03b-4ce9-ba38-e943401b5a1f)
+
 ## Getting Started
 
 ### Clone the Repository
