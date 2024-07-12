@@ -123,8 +123,8 @@ export function DBTable() {
           tableSchemas={tableSchemas}
         />
       ) : (
-        <p className="text-center font-semibold md:text-3xl p-20 border rounded my-2">
-          No data on the table
+        <p className="text-center font-semibold md:text-2xl p-20 border rounded my-2">
+          Table {tableName} is empty
         </p>
       )}
       <Separator />
