@@ -52,7 +52,9 @@ export default function DBTableComponent({
                   </span>
                 </HoverCardTrigger>
                 <HoverCardContent side="bottom" align="start">
-                  {tableSchemas[tableName][col]?.type}
+                  {tableSchemas[tableName][col]?.type.length == 0
+                    ? "Unknown" // sqlite_sequence table doesn't have type
+                    : tableSchemas[tableName][col]?.type}
                 </HoverCardContent>
               </HoverCard>
             </TableHead>
