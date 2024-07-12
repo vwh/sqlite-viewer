@@ -13,6 +13,8 @@ import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import DBTableComponent from "./table-data";
 
+import { RotateCcw, Play } from "lucide-react";
+
 export function DBTable() {
   const {
     query,
@@ -50,13 +52,13 @@ export function DBTable() {
   useEffect(() => {
     if (db && tableName && !isCustomQuery) {
       try {
-        const tableResult: QueryExecResult[] = query(
-          `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`
-        );
+        const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
+        const tableResult: QueryExecResult[] = query(queryString);
         const { data, columns } = mapQueryResults(tableResult);
         setColumns(columns);
         setData(data);
         setQueryError(null);
+        setCustomQuery(queryString);
       } catch (error) {
         if (error instanceof Error) {
           setQueryError(error.message);
@@ -64,6 +66,12 @@ export function DBTable() {
       }
     }
   }, [tableName, page]);
+
+  const handleResetQuery = useCallback(() => {
+    setQueryError(null);
+    setCustomQuery("");
+    setIsCustomQuery(false);
+  }, [setIsCustomQuery, setQueryError]);
 
   const handleCustomQuery = useCallback(() => {
     if (customQuery.trim() === "") {
@@ -98,7 +106,12 @@ export function DBTable() {
           placeholder="Enter your custom query"
           className="w-full"
         />
-        <Button onClick={handleCustomQuery}>Run Query</Button>
+        <Button onClick={handleCustomQuery}>
+          <Play className="h-5 w-5" />
+        </Button>
+        <Button disabled={!isCustomQuery} onClick={handleResetQuery}>
+          <RotateCcw className="h-5 w-5" />
+        </Button>
       </div>
       <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>
       <Separator className="mt-2" />

@@ -24,7 +24,7 @@ export function FileStats({ errors }: { errors?: FileError[] }) {
         {errors.map((e) => {
           return (
             <div
-              className="flex items-center justify-center text-sm text-red-600 gap-2 rounded border border-red-600 p-4"
+              className="flex items-center justify-center text-sm text-red-600 gap-2 rounded border border-red-600 p-4 mb-2"
               key={e.code}
             >
               <FileWarning />
