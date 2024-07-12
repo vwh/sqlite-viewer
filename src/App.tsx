@@ -32,7 +32,7 @@ function App() {
         (tables.length > 0 ? (
           <DBTable />
         ) : (
-          <p className="text-center font-semibold md:text-2xl p-20 border rounded my-2">
+          <p className="text-center font-semibold md:text-2xl p-20 border rounded mb-2">
             Your database is empty, no tables found
           </p>
         ))}

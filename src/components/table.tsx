@@ -109,19 +109,22 @@ export function DBTable() {
         <Button onClick={handleCustomQuery}>
           <Play className="h-5 w-5" />
         </Button>
-        <Button disabled={!isCustomQuery} onClick={handleResetQuery}>
+        <Button onClick={handleResetQuery}>
           <RotateCcw className="h-5 w-5" />
         </Button>
       </div>
       <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>
-      <Separator className="mt-2" />
+
       {data.length > 0 ? (
-        <DBTableComponent
-          data={data}
-          columns={columns}
-          tableName={tableName}
-          tableSchemas={tableSchemas}
-        />
+        <>
+          <Separator className="mt-2" />
+          <DBTableComponent
+            data={data}
+            columns={columns}
+            tableName={tableName}
+            tableSchemas={tableSchemas}
+          />
+        </>
       ) : (
         <p className="text-center font-semibold md:text-2xl p-20 border rounded my-2">
           Table {tableName} is empty
