@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        theme_color: "#181b1b",
+        theme_color: "#e6e6e6",
         background_color: "#e6e6e6",
         icons: [
           {
@@ -35,7 +35,8 @@ export default defineConfig({
         start_url: "/sqlite-viewer/",
         scope: "/sqlite-viewer/",
         description: "View and query SQLite databases",
-        id: "sqlite-viewer-pwa-1.0.0",
+        id: "sqlite-viewer-pwa",
+        categories: ["utilities"],
       },
     }),
   ],

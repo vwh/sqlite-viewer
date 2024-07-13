@@ -24,5 +24,6 @@
   "start_url": "/sqlite-viewer/",
   "scope": "/sqlite-viewer/",
   "description": "View and query SQLite databases",
-  "id": "sqlite-viewer-pwa"
+  "id": "sqlite-viewer-pwa",
+  "categories": ["utilities"]
 }
