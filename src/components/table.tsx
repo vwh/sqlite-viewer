@@ -42,7 +42,20 @@ export function DBTable() {
     [tables, selectedTable]
   );
 
-  const rowsPerPage = 30;
+  let rowHeight = 100;
+  const screenHeight = window.innerHeight;
+  const isXLScreen = screenHeight > 1500;
+  const isLGScreen = screenHeight > 1000;
+  const isSMScreen = screenHeight < 750;
+
+  console.log({ screenHeight });
+
+  if (isXLScreen) rowHeight = 75;
+  else if (isLGScreen) rowHeight = 90;
+  else if (isSMScreen) rowHeight = 130;
+
+  const rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
+  console.log({ rowCount, rowsPerPage });
 
   useEffect(() => {
     setPage(0);
