@@ -52,7 +52,10 @@ export function UploadFile() {
           {...getRootProps()}
           className="border p-6 rounded cursor-pointer text-center"
         >
-          <input {...getInputProps()} />
+          <input id="file-upload" {...getInputProps()} />
+          <label htmlFor="file-upload" className="sr-only">
+            Upload SQLite File
+          </label>
           <p className="hidden sm:block">
             Drag drop a SQLite file here, or click to select one
           </p>
@@ -63,7 +66,10 @@ export function UploadFile() {
           {...getRootProps()}
           className="border p-6 py-24 rounded cursor-pointer text-center"
         >
-          <input {...getInputProps()} />
+          <input id="file-upload" {...getInputProps()} />
+          <label htmlFor="file-upload" className="sr-only">
+            Upload SQLite File
+          </label>
           <p className="hidden sm:block">
             Drag drop a SQLite file here, or click to select one
           </p>
