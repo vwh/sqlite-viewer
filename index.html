@@ -1,92 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="site.webmanifest" />
-    <meta name="msapplication-TileColor" content="#da532c" />
-    <meta name="theme-color" content="#181b1b" />
-    <meta name="robots" content="index, follow" />
-    <title>SQLite Viewer</title>
-    <!-- Favicon and icons -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="android-chrome-192x192.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="android-chrome-512x512.png"
-    />
-    <!-- Meta Data -->
-    <meta
-      name="description"
-      content="SQLite Viewer - View and query SQLite databases in the browser"
-    />
-    <meta
-      name="keywords"
-      content="SQLite, Database, Viewer, Browser, Web App"
-    />
-    <meta property="og:title" content="SQLite Viewer" />
-    <meta
-      property="og:description"
-      content="SQLite Viewer - View and query SQLite databases in the browser"
-    />
-    <meta name="author" content="vwh" />
-    <!-- Fonts -->
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      as="style"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      />
-    </noscript>
-    <!-- Critical CSS -->
-    <style>
-      body {
-        font-family: "Fira Mono", monospace;
-      }
-    </style>
-    <script type="module" crossorigin src="/sqlite-viewer/assets/index-B3utmsGo.js"></script>
-    <link rel="stylesheet" crossorigin href="/sqlite-viewer/assets/index-Dms-F0Hp.css">
-  <link rel="manifest" href="/sqlite-viewer/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/sqlite-viewer/registerSW.js"></script></head>
-  <body>
-    <div id="root"></div>
-    <noscript>
-      <div class="no-js-message">
-        <h1>JavaScript Required</h1>
-        <p>
-          We're sorry, but this application requires JavaScript to function
-          correctly. Please enable JavaScript in your browser and reload the
-          page.
-        </p>
-      </div>
-      <style>
-        .no-js-message {
-          text-align: center;
-          margin-top: 20%;
-        }
-        h1 {
-          font-size: 2rem;
-        }
-      </style>
-    </noscript>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#181b1b">
+  <meta name="robots" content="index, follow">
+  <title>SQLite Viewer</title>
+  <!-- Favicon and icons -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+  <!-- Meta Data -->
+  <meta name="description" content="SQLite Viewer - View and query SQLite databases in the browser">
+  <meta name="keywords" content="SQLite, Database, Viewer, Browser, Web App">
+  <meta property="og:title" content="SQLite Viewer">
+  <meta property="og:description" content="SQLite Viewer - View and query SQLite databases in the browser">
+  <meta name="author" content="vwh">
+  <!-- Fonts -->
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    as="style">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+  </noscript>
+  <!-- Critical CSS -->
+  <style>
+    body {
+      font-family: "Fira Mono", monospace;
+    }
+
+    .no-js-message {
+      text-align: center;
+      margin-top: 20%;
+    }
+
+    .no-js-h1 {
+      font-size: 2rem;
+    }
+  </style>
+  <script type="module" crossorigin src="/sqlite-viewer/assets/index-BjLg7kB9.js"></script>
+  <link rel="stylesheet" crossorigin href="/sqlite-viewer/assets/index-C1os7u42.css">
+<link rel="manifest" href="/sqlite-viewer/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/sqlite-viewer/registerSW.js"></script></head>
+
+<body>
+  <div id="root"></div>
+  <noscript>
+    <div class="no-js-message">
+      <h1 class="no-js-h1">JavaScript Required</h1>
+      <p>
+        We're sorry, but this application requires JavaScript to function
+        correctly. Please enable JavaScript in your browser and reload the
+        page.
+      </p>
+    </div>
+  </noscript>
+</body>
+
 </html>
