@@ -21,6 +21,7 @@ function DarkModeToggle() {
       {darkMode ? (
         <img
           src="./Sun.webp"
+          title="Light Mode"
           draggable="false"
           className="transition-transform transform scale-75 dark:scale-100 duration-500 ease-in-out bg-white display-inline-block rounded-full h-6 w-6 p-1 shadow-sm"
           alt="Sun Icon"
@@ -30,6 +31,7 @@ function DarkModeToggle() {
       ) : (
         <img
           src="./Moon.webp"
+          title="Dark Mode"
           draggable="false"
           className="transition-transform transform scale-75 dark:scale-100 duration-500 ease-in-out"
           alt="Moon Icon"
