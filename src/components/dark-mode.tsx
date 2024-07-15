@@ -4,9 +4,32 @@ function DarkModeToggle() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const savedMode = localStorage.getItem("darkMode") === "true";
-    setDarkMode(savedMode);
-    document.body.classList.toggle("dark", savedMode);
+    const updateDarkModeBasedOnSystemTheme = () => {
+      const systemDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      setDarkMode(systemDarkMode);
+      document.body.classList.toggle("dark", systemDarkMode);
+    };
+
+    const savedMode = localStorage.getItem("darkMode");
+    if (savedMode !== null) {
+      const isDarkMode = savedMode === "true";
+      setDarkMode(isDarkMode);
+      document.body.classList.toggle("dark", isDarkMode);
+    } else {
+      updateDarkModeBasedOnSystemTheme();
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", updateDarkModeBasedOnSystemTheme);
+
+    return () => {
+      mediaQuery.removeEventListener(
+        "change",
+        updateDarkModeBasedOnSystemTheme
+      );
+    };
   }, []);
 
   const toggleDarkMode = () => {
