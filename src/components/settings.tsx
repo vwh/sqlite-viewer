@@ -18,7 +18,13 @@ import { Button } from "./ui/button";
 import { Settings2 } from "lucide-react";
 
 export default function Settings() {
-  const { setRowPerPageOrAuto, downloadDatabase } = useSQLiteStore();
+  const {
+    setRowPerPageOrAuto,
+    downloadDatabase,
+    exportAllTablesAsCSV,
+    exportTableAsCSV,
+    selectedTable,
+  } = useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
@@ -106,10 +112,13 @@ export default function Settings() {
                 <Button variant="outline" onClick={downloadDatabase}>
                   <span className="ml-2">Export as SQLite</span>
                 </Button>
-                <Button variant="outline" disabled>
+                <Button
+                  variant="outline"
+                  onClick={() => exportTableAsCSV(parseInt(selectedTable))}
+                >
                   <span className="ml-2">Export selected table as CSV</span>
                 </Button>
-                <Button variant="outline" disabled>
+                <Button variant="outline" onClick={exportAllTablesAsCSV}>
                   <span className="ml-2">Export all tables as CSV</span>
                 </Button>
               </div>

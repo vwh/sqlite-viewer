@@ -1,4 +1,6 @@
 import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
+import { saveAs } from "file-saver";
+
 import type { TableRow } from "../types";
 
 // Load the SQLite database from a file.
@@ -85,4 +87,55 @@ export const exportDatabase = (database: Database): Uint8Array => {
     console.error("Failed to export database:", error);
     throw error;
   }
+};
+
+// Function to convert array of rows to CSV format
+const arrayToCSV = (columns: string[], rows: any[]): string => {
+  const header = columns.join(",");
+  const csvRows = rows.map((row) =>
+    columns.map((col) => `"${row[col]}"`).join(",")
+  );
+  return [header, ...csvRows].join("\n");
+};
+
+// Export a single table as CSV and initiate download
+export const exportTableAsCSV = (
+  database: Database,
+  tableIndex: number
+): void => {
+  const tableNames = getTableNames(database);
+  const tableName = tableNames[tableIndex];
+  try {
+    const result = database.exec(`SELECT * FROM ${tableName}`);
+    if (result.length === 0) {
+      throw new Error(`Table ${tableName} is empty or does not exist.`);
+    }
+    const { data, columns } = mapQueryResults(result);
+    const csvContent = arrayToCSV(columns, data);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `${tableName}.csv`);
+  } catch (error) {
+    console.error(`Failed to export table "${tableName}" as CSV:`, error);
+    throw error;
+  }
+};
+
+// Export all tables as CSV and initiate download
+export const exportAllTablesAsCSV = (database: Database): void => {
+  const tableNames = getTableNames(database);
+
+  tableNames.forEach((tableName) => {
+    try {
+      const result = database.exec(`SELECT * FROM ${tableName}`);
+      if (result.length === 0) {
+        throw new Error(`Table ${tableName} is empty or does not exist.`);
+      }
+      const { data, columns } = mapQueryResults(result);
+      const csvContent = arrayToCSV(columns, data);
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      saveAs(blob, `${tableName}.csv`);
+    } catch (error) {
+      console.error(`Failed to export table "${tableName}" as CSV:`, error);
+    }
+  });
 };

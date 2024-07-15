@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import type { Database, QueryExecResult } from "sql.js";
 import type { TableInfo } from "../types";
+
 import {
   getTableSchema,
   getTableNames,
   loadDatabase,
   exportDatabase,
 } from "../lib/sqlite";
+import { exportTableAsCSV, exportAllTablesAsCSV } from "../lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;
@@ -24,6 +26,8 @@ interface SQLiteState {
   rowPerPageOrAuto: number | "auto";
   setRowPerPageOrAuto: (value: number | "auto") => void;
   downloadDatabase: () => void;
+  exportTableAsCSV: (tableIndex: number) => void;
+  exportAllTablesAsCSV: () => { [tableName: string]: void };
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -107,6 +111,26 @@ const initializeStore = create<SQLiteState>((set, get) => ({
       URL.revokeObjectURL(url);
     } else {
       console.warn("Database is not loaded.");
+    }
+  },
+
+  exportTableAsCSV: (tableIndex: number): void => {
+    const db = get().db;
+    if (db) {
+      exportTableAsCSV(db, tableIndex);
+    } else {
+      console.warn("Database is not loaded.");
+    }
+  },
+
+  exportAllTablesAsCSV: (): { [tableName: string]: void } => {
+    const db = get().db;
+    if (db) {
+      exportAllTablesAsCSV(db);
+      return {};
+    } else {
+      console.warn("Database is not loaded.");
+      return {};
     }
   },
 }));
