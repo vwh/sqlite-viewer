@@ -8,7 +8,6 @@ import { mapQueryResults } from "../lib/sqlite";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
 import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import DBTableComponent from "./table-data";
@@ -119,48 +118,49 @@ export function DBTable() {
   }, [customQuery, db, query, setQueryError]);
 
   return (
-    <div>
-      <TableSelect />
-      <div className="flex gap-1 mt-2">
-        <Input
-          type="text"
-          value={customQuery}
-          onChange={(e) => setCustomQuery(e.target.value)}
-          placeholder="Enter your custom query"
-          className="w-full"
-        />
-        <Button onClick={handleCustomQuery} title="Run custom query">
-          <Play className="h-5 w-5" />
-        </Button>
-        <Button onClick={handleResetQuery} title="Reset query">
-          <Delete className="h-5 w-5" />
-        </Button>
-        <Button
-          onClick={handleResetPage}
-          title="Reset to first page"
-          disabled={page === 0}
-        >
-          <ListRestart className="h-5 w-5" />
-        </Button>
-      </div>
-      <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>
-
+    <div className="flex flex-col gap-2 mb-2">
+      <section className="flex flex-col gap-2 p-3 pb-1 border rounded">
+        <TableSelect />
+        <div className="flex gap-1">
+          <Input
+            type="text"
+            value={customQuery}
+            onChange={(e) => setCustomQuery(e.target.value)}
+            placeholder="Enter your custom query"
+            className="w-full"
+          />
+          <Button onClick={handleCustomQuery} title="Run custom query">
+            <Play className="h-5 w-5" />
+          </Button>
+          <Button onClick={handleResetQuery} title="Reset query">
+            <Delete className="h-5 w-5" />
+          </Button>
+          <Button
+            onClick={handleResetPage}
+            title="Reset to first page"
+            disabled={page === 0}
+          >
+            <ListRestart className="h-5 w-5" />
+          </Button>
+        </div>
+        <p className="text-xs text-red-500 capitalize text-center">
+          {queryError}
+        </p>
+      </section>
       {data.length > 0 ? (
-        <>
-          <Separator className="mt-2" />
+        <div className="border rounded">
           <DBTableComponent
             data={data}
             columns={columns}
             tableName={tableName}
             tableSchemas={tableSchemas}
           />
-        </>
+        </div>
       ) : (
-        <p className="text-center font-semibold md:text-2xl p-20 border rounded my-2">
+        <p className="text-center font-semibold md:text-2xl p-20 border rounded">
           Table {tableName} is empty
         </p>
       )}
-      <Separator className="mb-1" />
       {!isCustomQuery && (
         <PageSelect
           page={page}

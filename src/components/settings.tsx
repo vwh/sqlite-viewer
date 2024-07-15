@@ -73,7 +73,7 @@ export default function Settings() {
           <div className="p-4 pb-0 flex flex-col gap-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">
-                Rows per page
+                Rows Per Page
               </p>
               <div className="border rounded p-2 flex gap-1 justify-center items-center">
                 <Input
@@ -99,7 +99,11 @@ export default function Settings() {
                   Auto calculate
                 </Button>
               </div>
-              <Button className="w-full mt-2" onClick={handleSave}>
+              <Button
+                className="w-full mt-2"
+                onClick={handleSave}
+                variant="outline"
+              >
                 <span>Save</span>
               </Button>
             </div>

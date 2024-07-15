@@ -9,14 +9,12 @@ export default function Footer() {
   const { db } = useSQLiteStore();
 
   return (
-    <footer className="flex items-center justify-between mb-2">
+    <footer className="flex items-center justify-between mb-2 p-4 border rounded">
       <div>
-        <p className="hidden sm:block text-xs mt-2">
+        <p className="hidden sm:block text-xs">
           No file will be uploaded to server. using JavaScript, sql.js
         </p>
-        <p className="block sm:hidden text-xs mt-2">
-          No file will be uploaded to server.
-        </p>
+        <p className="block sm:hidden text-xs">No file uploads to server.</p>
         <a
           href="https://github.com/vwh/sqlite-viewer"
           target="_blank"
@@ -24,7 +22,7 @@ export default function Footer() {
           title="Star on GitHub"
         >
           <Github className="h-4 w-4 mt-1" />
-          <span>Star this project on GitHub</span>
+          <span>Star us on GitHub</span>
         </a>
       </div>
       <div className="flex gap-1">
