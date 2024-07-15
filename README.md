@@ -2,24 +2,7 @@
 
 View and query SQLite databases directly in your browser. Built with `sql.js` and ReactJS.
 
----
-
-### Main Interface
-
-![Main Interface](https://github.com/vwh/sqlite-viewer/assets/172333718/3f9628e4-ecfb-4a17-915f-f70c7ab34924)
-
-### Query Execution
-
-![Query Execution](https://github.com/vwh/sqlite-viewer/assets/172333718/57ac0530-5ac6-47ad-878a-5eacd7df1371)
-
-
-### Structure View
-
-![Structure View](https://github.com/vwh/sqlite-viewer/assets/172333718/2316c91a-93ce-480a-a350-d8053df589e8)
-
-### Dark Mode
-
-![Dark Mode](https://github.com/user-attachments/assets/6e361443-e03b-4ce9-ba38-e943401b5a1f)
+![Screen Shots](https://github.com/user-attachments/assets/fee082aa-37d6-462f-b342-f413aa49092c)
 
 ## Getting Started
 
