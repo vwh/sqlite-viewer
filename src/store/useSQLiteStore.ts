@@ -1,9 +1,12 @@
 import { create } from "zustand";
-
 import type { Database, QueryExecResult } from "sql.js";
 import type { TableInfo } from "../types";
-
-import { getTableSchema, getTableNames, loadDatabase } from "../lib/sqlite";
+import {
+  getTableSchema,
+  getTableNames,
+  loadDatabase,
+  exportDatabase,
+} from "../lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;
@@ -20,6 +23,7 @@ interface SQLiteState {
   setTableSchemas: (schemas: TableInfo) => void;
   rowPerPageOrAuto: number | "auto";
   setRowPerPageOrAuto: (value: number | "auto") => void;
+  downloadDatabase: () => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -87,6 +91,24 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   rowPerPageOrAuto: "auto",
   setRowPerPageOrAuto: (value: number | "auto") =>
     set({ rowPerPageOrAuto: value }),
+
+  downloadDatabase: () => {
+    const db = get().db;
+    if (db) {
+      const binaryArray = exportDatabase(db);
+      const blob = new Blob([binaryArray], {
+        type: "application/octet-stream",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "database.sqlite";
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      console.warn("Database is not loaded.");
+    }
+  },
 }));
 
 export default initializeStore;

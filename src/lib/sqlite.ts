@@ -77,3 +77,12 @@ export function mapQueryResults(result: QueryExecResult[]): {
   }
   return { data: [], columns: [] };
 }
+
+export const exportDatabase = (database: Database): Uint8Array => {
+  try {
+    return database.export();
+  } catch (error) {
+    console.error("Failed to export database:", error);
+    throw error;
+  }
+};

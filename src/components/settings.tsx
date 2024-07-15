@@ -18,7 +18,7 @@ import { Button } from "./ui/button";
 import { Settings2 } from "lucide-react";
 
 export default function Settings() {
-  const { setRowPerPageOrAuto } = useSQLiteStore();
+  const { setRowPerPageOrAuto, downloadDatabase } = useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
@@ -103,7 +103,7 @@ export default function Settings() {
                 Exports Settings
               </p>
               <div className="border rounded p-2 flex flex-col gap-1">
-                <Button variant="outline" disabled>
+                <Button variant="outline" onClick={downloadDatabase}>
                   <span className="ml-2">Export as SQLite</span>
                 </Button>
                 <Button variant="outline" disabled>
