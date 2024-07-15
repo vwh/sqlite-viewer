@@ -1,9 +1,13 @@
+import useSQLiteStore from "../store/useSQLiteStore";
+
 import DarkModeToggle from "../components/dark-mode";
 import Settings from "./settings";
 
 import { Github } from "lucide-react";
 
 export default function Footer() {
+  const { db } = useSQLiteStore();
+
   return (
     <footer className="flex items-center justify-between mb-2">
       <div>
@@ -25,7 +29,7 @@ export default function Footer() {
       </div>
       <div className="flex gap-1">
         <DarkModeToggle />
-        <Settings />
+        {db && <Settings />}
       </div>
     </footer>
   );
