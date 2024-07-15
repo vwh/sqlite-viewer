@@ -18,6 +18,8 @@ interface SQLiteState {
   setTables: (tables: { name: string; count: number }[]) => void;
   setSelectedTable: (value: string) => void;
   setTableSchemas: (schemas: TableInfo) => void;
+  rowPerPageOrAuto: number | "auto";
+  setRowPerPageOrAuto: (value: number | "auto") => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -81,6 +83,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setSelectedTable: (value: string) => set({ selectedTable: value }),
 
   setTableSchemas: (schemas: TableInfo) => set({ tableSchemas: schemas }),
+
+  rowPerPageOrAuto: "auto",
+  setRowPerPageOrAuto: (value: number | "auto") =>
+    set({ rowPerPageOrAuto: value }),
 }));
 
 export default initializeStore;

@@ -1,4 +1,5 @@
 import DarkModeToggle from "../components/dark-mode";
+import Settings from "./settings";
 
 import { Github } from "lucide-react";
 
@@ -22,7 +23,10 @@ export default function Footer() {
           <span>Star this project on GitHub</span>
         </a>
       </div>
-      <DarkModeToggle />
+      <div className="flex gap-2">
+        <DarkModeToggle />
+        <Settings />
+      </div>
     </footer>
   );
 }

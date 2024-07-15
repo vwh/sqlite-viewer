@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 
+import { Button } from "./ui/button";
+
+import { Moon, Sun } from "lucide-react";
+
 function DarkModeToggle() {
   const [darkMode, setDarkMode] = useState(false);
 
@@ -40,29 +44,9 @@ function DarkModeToggle() {
   };
 
   return (
-    <button onClick={toggleDarkMode} className="relative">
-      {darkMode ? (
-        <img
-          src="./Sun.webp"
-          title="Light Mode"
-          draggable="false"
-          className="transition-transform transform scale-75 dark:scale-100 duration-500 ease-in-out bg-white display-inline-block rounded-full h-6 w-6 p-1 shadow-sm"
-          alt="Sun Icon"
-          width={24}
-          height={24}
-        />
-      ) : (
-        <img
-          src="./Moon.webp"
-          title="Dark Mode"
-          draggable="false"
-          className="transition-transform transform scale-75 dark:scale-100 duration-500 ease-in-out"
-          alt="Moon Icon"
-          width={24}
-          height={24}
-        />
-      )}
-    </button>
+    <Button onClick={toggleDarkMode} className="relative" variant="outline">
+      {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    </Button>
   );
 }
 

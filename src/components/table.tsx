@@ -24,6 +24,7 @@ export function DBTable() {
     tableSchemas,
     queryError,
     setQueryError,
+    rowPerPageOrAuto,
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
@@ -42,17 +43,22 @@ export function DBTable() {
     [tables, selectedTable]
   );
 
-  let rowHeight = 100;
-  const screenHeight = window.innerHeight;
-  const isXLScreen = screenHeight > 1500;
-  const isLGScreen = screenHeight > 1000;
-  const isSMScreen = screenHeight < 750;
+  let rowsPerPage = 30;
+  console.log(rowPerPageOrAuto, rowsPerPage);
+  if (rowPerPageOrAuto === "auto") {
+    let rowHeight = 100;
+    const screenHeight = window.innerHeight;
+    const isXLScreen = screenHeight > 1500;
+    const isLGScreen = screenHeight > 1000;
+    const isSMScreen = screenHeight < 750;
 
-  if (isXLScreen) rowHeight = 75;
-  else if (isLGScreen) rowHeight = 90;
-  else if (isSMScreen) rowHeight = 130;
-
-  const rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
+    if (isXLScreen) rowHeight = 75;
+    else if (isLGScreen) rowHeight = 90;
+    else if (isSMScreen) rowHeight = 130;
+    rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
+  } else {
+    rowsPerPage = rowPerPageOrAuto;
+  }
 
   useEffect(() => {
     setPage(0);
@@ -75,7 +81,7 @@ export function DBTable() {
         }
       }
     }
-  }, [tableName, page]);
+  }, [tableName, page, rowsPerPage]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
@@ -140,7 +146,7 @@ export function DBTable() {
           Table {tableName} is empty
         </p>
       )}
-      <Separator />
+      <Separator className="mb-1" />
       {!isCustomQuery && (
         <PageSelect
           page={page}
