@@ -13,7 +13,7 @@ import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import DBTableComponent from "./table-data";
 
-import { RotateCcw, Play } from "lucide-react";
+import { Delete, Play, ListRestart } from "lucide-react";
 
 export function DBTable() {
   const {
@@ -89,6 +89,13 @@ export function DBTable() {
     setIsCustomQuery(false);
   }, [setIsCustomQuery, setQueryError]);
 
+  const handleResetPage = useCallback(() => {
+    setPage(0);
+    setQueryError(null);
+    setCustomQuery("");
+    setIsCustomQuery(false);
+  }, [setIsCustomQuery, setQueryError]);
+
   const handleCustomQuery = useCallback(() => {
     if (customQuery.trim() === "") {
       setQueryError(null);
@@ -114,7 +121,7 @@ export function DBTable() {
   return (
     <div>
       <TableSelect />
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-1 mt-2">
         <Input
           type="text"
           value={customQuery}
@@ -122,11 +129,18 @@ export function DBTable() {
           placeholder="Enter your custom query"
           className="w-full"
         />
-        <Button onClick={handleCustomQuery}>
+        <Button onClick={handleCustomQuery} title="Run custom query">
           <Play className="h-5 w-5" />
         </Button>
-        <Button onClick={handleResetQuery}>
-          <RotateCcw className="h-5 w-5" />
+        <Button onClick={handleResetQuery} title="Reset query">
+          <Delete className="h-5 w-5" />
+        </Button>
+        <Button
+          onClick={handleResetPage}
+          title="Reset to first page"
+          disabled={page === 0}
+        >
+          <ListRestart className="h-5 w-5" />
         </Button>
       </div>
       <p className="text-xs text-red-500 mt-1 capitalize">{queryError}</p>

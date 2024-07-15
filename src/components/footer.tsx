@@ -23,7 +23,7 @@ export default function Footer() {
           <span>Star this project on GitHub</span>
         </a>
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <DarkModeToggle />
         <Settings />
       </div>
