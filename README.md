@@ -6,7 +6,7 @@ View and query SQLite databases directly in your browser. Built with `sql.js` an
   <img src="https://github.com/user-attachments/assets/820dc71c-b0e8-4c08-bcb7-44906d70e2b8" alt="Preview">
 </p>
 
-Visit [SQLite Viewer](https://vwh.github.io/sqlite-viewer/) to see it in action!
+Visit [SQLite Viewer](https://sqlite3.online/) to see it in action!
 
 ## Getting Started
 
