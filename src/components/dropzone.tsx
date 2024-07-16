@@ -83,7 +83,7 @@ export function UploadFile() {
           </a>
         </div>
       )}
-      <div className="my-2">
+      <div className="mt-2">
         {file && <FileData file={file} />}
         <FileStats errors={errors} />
       </div>

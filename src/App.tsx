@@ -7,10 +7,10 @@ function App() {
   const { db, tables, isLoading } = useSQLiteStore();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
       {!db && (
-        <section className="flex justify-center border rounded py-2">
-          <div className="flex flex-col items-center gap-2">
+        <section className="flex justify-center border rounded py-3">
+          <div className="flex flex-col items-center gap-3">
             <img
               id="logo"
               title="SQLite Logo"

@@ -9,7 +9,7 @@ export default function Footer() {
   const { db } = useSQLiteStore();
 
   return (
-    <footer className="flex items-center justify-between mb-2 p-4 border rounded">
+    <footer className="flex items-center justify-between my-1 p-4 border rounded">
       <div>
         <p className="hidden sm:block text-xs">
           No file will be uploaded to server. using JavaScript, sql.js

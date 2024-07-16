@@ -45,7 +45,7 @@ export function DBTable() {
   let rowsPerPage = 30;
   console.log(rowPerPageOrAuto, rowsPerPage);
   if (rowPerPageOrAuto === "auto") {
-    let rowHeight = 100;
+    let rowHeight = 110;
     const screenHeight = window.innerHeight;
     const isXLScreen = screenHeight > 1500;
     const isLGScreen = screenHeight > 1000;
@@ -118,7 +118,7 @@ export function DBTable() {
   }, [customQuery, db, query, setQueryError]);
 
   return (
-    <div className="flex flex-col gap-2 mb-2">
+    <div className="flex flex-col gap-3 mb-2">
       <section className="flex flex-col gap-2 p-3 pb-1 border rounded">
         <TableSelect />
         <div className="flex gap-1">
