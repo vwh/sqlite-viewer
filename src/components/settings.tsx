@@ -24,6 +24,7 @@ export default function Settings() {
     exportAllTablesAsCSV,
     exportTableAsCSV,
     selectedTable,
+    setIsCustomQuery,
   } = useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
@@ -48,6 +49,7 @@ export default function Settings() {
   };
 
   const handleSave = () => {
+    setIsCustomQuery(false);
     if (isAutoRowsPerPage) {
       setRowPerPageOrAuto("auto");
     } else {

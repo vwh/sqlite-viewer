@@ -28,6 +28,8 @@ interface SQLiteState {
   downloadDatabase: () => void;
   exportTableAsCSV: (tableIndex: number) => void;
   exportAllTablesAsCSV: () => { [tableName: string]: void };
+  isCustomQuery: boolean;
+  setIsCustomQuery: (value: boolean) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -133,6 +135,9 @@ const initializeStore = create<SQLiteState>((set, get) => ({
       return {};
     }
   },
+
+  isCustomQuery: false,
+  setIsCustomQuery: (value: boolean) => set({ isCustomQuery: value }),
 }));
 
 export default initializeStore;

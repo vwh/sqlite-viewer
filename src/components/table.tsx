@@ -24,13 +24,14 @@ export function DBTable() {
     queryError,
     setQueryError,
     rowPerPageOrAuto,
+    isCustomQuery,
+    setIsCustomQuery,
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [customQuery, setCustomQuery] = useState<string>("");
-  const [isCustomQuery, setIsCustomQuery] = useState<boolean>(false);
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
