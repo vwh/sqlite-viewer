@@ -59,15 +59,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-#logo {
-  /* #003B57 */
-  filter: brightness(0) saturate(100%) invert(15%) sepia(80%) saturate(1534%)
-    hue-rotate(172deg) brightness(95%) contrast(104%);
-}
-
-[class="dark"] #logo {
-  /* #2d7a9e */
-  filter: brightness(0) saturate(100%) invert(46%) sepia(10%) saturate(3150%)
-    hue-rotate(154deg) brightness(87%) contrast(82%);
-}

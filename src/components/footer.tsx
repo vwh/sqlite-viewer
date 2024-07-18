@@ -21,7 +21,7 @@ export default function Footer() {
           className="text-sm text-link hover:underline flex gap-1 items-center"
           title="Star on GitHub"
         >
-          <Github className="h-4 w-4 mt-1" />
+          <Github className="h-4 w-4" />
           <span>Star us on GitHub</span>
         </a>
       </div>

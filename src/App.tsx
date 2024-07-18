@@ -1,30 +1,16 @@
 import useSQLiteStore from "./store/useSQLiteStore";
+
 import { DBTable } from "./components/table";
 import { UploadFile } from "./components/dropzone";
 import Loading from "./components/loading";
+import Logo from "./components/logo";
 
 function App() {
   const { db, tables, isLoading } = useSQLiteStore();
 
   return (
     <div className="flex flex-col gap-3">
-      {!db && (
-        <section className="flex justify-center border rounded py-3">
-          <div className="flex flex-col items-center gap-3">
-            <img
-              id="logo"
-              title="SQLite Logo"
-              src="./logo.webp"
-              alt="SQLite Logo"
-              width="160"
-              height="80"
-              draggable="false"
-              className="h-20"
-            />
-            <p className="text-sm">View SQLite file online</p>
-          </div>
-        </section>
-      )}
+      {!db && <Logo />}
       <UploadFile />
       <Loading />
       {!isLoading &&
