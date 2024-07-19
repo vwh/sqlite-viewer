@@ -1,14 +1,15 @@
 import { create } from "zustand";
 import type { Database, QueryExecResult } from "sql.js";
-import type { TableInfo } from "../types";
+import type { TableInfo } from "@/types";
 
 import {
   getTableSchema,
   getTableNames,
   loadDatabase,
   exportDatabase,
-} from "../lib/sqlite";
-import { exportTableAsCSV, exportAllTablesAsCSV } from "../lib/sqlite";
+  exportTableAsCSV,
+  exportAllTablesAsCSV,
+} from "@/lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;

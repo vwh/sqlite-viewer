@@ -1,6 +1,6 @@
-import useSQLiteStore from "../store/useSQLiteStore";
+import useSQLiteStore from "@/store/useSQLiteStore";
 
-import DarkModeToggle from "../components/dark-mode";
+import DarkModeToggle from "./dark-mode";
 import Settings from "./settings";
 
 import { Github } from "lucide-react";

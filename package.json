@@ -11,6 +11,19 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vwh/sqlite-viewer.git"
+  },
+  "keywords": [
+    "sqlite",
+    "viewer",
+    "browser",
+    "sql.js",
+    "react"
+  ],
+  "author": "vwh",
+  "license": "MIT",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-hover-card": "^1.1.1",

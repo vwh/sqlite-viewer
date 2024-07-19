@@ -1,4 +1,4 @@
-import type { TableInfo, TableRow } from "../types";
+import type { TableInfo, TableRow } from "@/types";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import {

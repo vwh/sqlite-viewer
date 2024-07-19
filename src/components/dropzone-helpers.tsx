@@ -1,5 +1,5 @@
 import type { FileError } from "react-dropzone";
-import { bytesToValue } from "../lib/file.ts";
+import { bytesToValue } from "@/lib/file";
 
 import { FileWarning, FileCheck } from "lucide-react";
 

@@ -1,7 +1,7 @@
 import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
 import { saveAs } from "file-saver";
 
-import type { TableRow } from "../types";
+import type { TableRow } from "@/types";
 
 // Load the SQLite database from a file.
 export const loadDatabase = async (file: File): Promise<Database> => {

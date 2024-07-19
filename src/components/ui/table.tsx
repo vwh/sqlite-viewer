@@ -3,7 +3,7 @@ import * as React from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
 import { Badge } from "./badge";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<
   HTMLTableElement,

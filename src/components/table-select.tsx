@@ -1,4 +1,4 @@
-import useSQLiteStore from "../store/useSQLiteStore";
+import useSQLiteStore from "@/store/useSQLiteStore";
 
 import {
   Select,

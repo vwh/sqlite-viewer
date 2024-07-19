@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import useSQLiteStore from "../store/useSQLiteStore";
+import useSQLiteStore from "@/store/useSQLiteStore";
 
 import type { QueryExecResult } from "sql.js";
-import type { TableRow } from "../types";
+import type { TableRow } from "@/types";
 
-import { mapQueryResults } from "../lib/sqlite";
+import { mapQueryResults } from "@/lib/sqlite";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
