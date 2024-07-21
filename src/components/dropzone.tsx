@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useDropzone, type FileError } from "react-dropzone";
-
 import { FileStats, FileData } from "./dropzone-helpers";
 
 export function UploadFile() {

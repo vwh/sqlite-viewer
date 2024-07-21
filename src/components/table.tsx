@@ -158,7 +158,7 @@ export function DBTable() {
           />
         </div>
       ) : (
-        <p className="text-center font-semibold md:text-2xl p-20 border rounded">
+        <p className="text-center font-semibold md:text-2xl p-10 border rounded">
           Table {tableName} is empty
         </p>
       )}
