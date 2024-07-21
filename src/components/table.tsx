@@ -12,7 +12,7 @@ import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import DBTableComponent from "./table-data";
 
-import { Delete, Play, ListRestart } from "lucide-react";
+import { Trash, Play, ListRestart } from "lucide-react";
 
 export function DBTable() {
   const {
@@ -134,7 +134,7 @@ export function DBTable() {
             <Play className="h-5 w-5" />
           </Button>
           <Button onClick={handleResetQuery} title="Reset query">
-            <Delete className="h-5 w-5" />
+            <Trash className="h-5 w-5" />
           </Button>
           <Button
             onClick={handleResetPage}
