@@ -2,20 +2,11 @@ import useSQLiteStore from "./store/useSQLiteStore";
 import { useEffect, useState, useRef } from "react";
 
 import { DBTable } from "./components/table";
-import { UploadFile } from "./components/dropzone";
+import UploadFile from "./components/dropzone";
 import Loading from "./components/loading";
 import Logo from "./components/logo";
 import ErrorMessage from "./components/error";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import Dialog from "./components/dialog";
 
 function App() {
   const { db, tables, isLoading, loadDatabase } = useSQLiteStore();
@@ -90,28 +81,11 @@ function App() {
         ) : (
           <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
         ))}
-      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Retry using a proxy?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Failed to load the database from the provided URL due to possible
-              CORS restrictions.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="text-sm font-semibold">
-            Using the proxy may expose your database to corsproxy.io services.
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowDialog(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleRetryWithProxy}>
-              Confirm
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        fn={handleRetryWithProxy}
+      />
     </div>
   );
 }

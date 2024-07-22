@@ -1,6 +1,11 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-
 import { useState, useEffect } from "react";
+
+import {
+  exportTableAsCSV,
+  exportAllTablesAsCSV,
+  downloadDatabase,
+} from "@/lib/sqlite";
 
 import {
   Drawer,
@@ -14,18 +19,11 @@ import {
 } from "./ui/drawer";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-
 import { Settings2 } from "lucide-react";
 
 export default function Settings() {
-  const {
-    setRowPerPageOrAuto,
-    downloadDatabase,
-    exportAllTablesAsCSV,
-    exportTableAsCSV,
-    selectedTable,
-    setIsCustomQuery,
-  } = useSQLiteStore();
+  const { setRowPerPageOrAuto, selectedTable, setIsCustomQuery, db } =
+    useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
@@ -50,12 +48,18 @@ export default function Settings() {
 
   const handleSave = () => {
     setIsCustomQuery(false);
-    if (isAutoRowsPerPage) {
-      setRowPerPageOrAuto("auto");
-    } else {
-      setRowPerPageOrAuto(selectedRowsPerPage);
-    }
+    setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : selectedRowsPerPage);
   };
+
+  const renderExportButton = (
+    onClick: () => void,
+    label: string,
+    className?: string
+  ) => (
+    <Button variant="outline" onClick={onClick} className={className}>
+      <span className="ml-2">{label}</span>
+    </Button>
+  );
 
   return (
     <Drawer>
@@ -114,20 +118,22 @@ export default function Settings() {
               <p className="text-sm text-muted-foreground mb-1">
                 Exports Settings
               </p>
-              <div className="border rounded p-2 flex flex-col gap-1">
-                <Button variant="outline" onClick={downloadDatabase}>
-                  <span className="ml-2">Export as SQLite</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => exportTableAsCSV(parseInt(selectedTable))}
-                >
-                  <span className="ml-2">Export selected table as CSV</span>
-                </Button>
-                <Button variant="outline" onClick={exportAllTablesAsCSV}>
-                  <span className="ml-2">Export all tables as CSV</span>
-                </Button>
-              </div>
+              {db && (
+                <div className="border rounded p-2 flex flex-col gap-1">
+                  {renderExportButton(
+                    () => downloadDatabase(db),
+                    "Export as SQLite"
+                  )}
+                  {renderExportButton(
+                    () => exportTableAsCSV(db, parseInt(selectedTable)),
+                    "Export selected table as CSV"
+                  )}
+                  {renderExportButton(
+                    () => exportAllTablesAsCSV(db),
+                    "Export all tables as CSV"
+                  )}
+                </div>
+              )}
             </div>
           </div>
           <DrawerFooter>

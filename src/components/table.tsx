@@ -9,10 +9,10 @@ import { mapQueryResults } from "@/lib/sqlite";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import PageSelect from "./page-select";
-import { TableSelect } from "./table-select";
+import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
 import ErrorMessage from "./error";
-
+import Loading from "./loading";
 import { Trash, Play, ListRestart } from "lucide-react";
 
 export function DBTable() {
@@ -33,32 +33,28 @@ export function DBTable() {
   const [columns, setColumns] = useState<string[]>([]);
   const [page, setPage] = useState(0);
   const [customQuery, setCustomQuery] = useState<string>("");
+  const [isQueryLoading, setIsQueryLoading] = useState(true);
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
     [tables, selectedTable]
   );
-
   const rowCount = useMemo(
     () => tables[parseInt(selectedTable)]?.count || 0,
     [tables, selectedTable]
   );
 
-  let rowsPerPage = 30;
-  if (rowPerPageOrAuto === "auto") {
-    let rowHeight = 110;
-    const screenHeight = window.innerHeight;
-    const isXLScreen = screenHeight > 1500;
-    const isLGScreen = screenHeight > 1000;
-    const isSMScreen = screenHeight < 750;
-
-    if (isXLScreen) rowHeight = 75;
-    else if (isLGScreen) rowHeight = 90;
-    else if (isSMScreen) rowHeight = 130;
-    rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
-  } else {
-    rowsPerPage = rowPerPageOrAuto;
-  }
+  const rowsPerPage = useMemo(() => {
+    if (rowPerPageOrAuto === "auto") {
+      const screenHeight = window.innerHeight;
+      let rowHeight = 110;
+      if (screenHeight > 1500) rowHeight = 75;
+      else if (screenHeight > 1000) rowHeight = 90;
+      else if (screenHeight < 750) rowHeight = 130;
+      return Math.max(1, Math.floor(screenHeight / rowHeight));
+    }
+    return rowPerPageOrAuto;
+  }, [rowPerPageOrAuto]);
 
   useEffect(() => {
     setPage(0);
@@ -67,21 +63,24 @@ export function DBTable() {
 
   useEffect(() => {
     if (db && tableName && !isCustomQuery) {
-      try {
-        const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
-        const tableResult: QueryExecResult[] = query(queryString);
-        const { data, columns } = mapQueryResults(tableResult);
-        setColumns(columns);
-        setData(data);
-        setQueryError(null);
-        setCustomQuery(queryString);
-      } catch (error) {
-        if (error instanceof Error) {
-          setQueryError(error.message);
+      setIsQueryLoading(true);
+      const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
+      (async () => {
+        try {
+          const tableResult: QueryExecResult[] = query(queryString);
+          const { data, columns } = mapQueryResults(tableResult);
+          setColumns(columns);
+          setData(data);
+          setQueryError(null);
+          setCustomQuery(queryString);
+        } catch (error) {
+          if (error instanceof Error) setQueryError(error.message);
+        } finally {
+          setIsQueryLoading(false);
         }
-      }
+      })();
     }
-  }, [tableName, page, rowsPerPage]);
+  }, [db, tableName, page, rowsPerPage, isCustomQuery, query, setQueryError]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
@@ -91,10 +90,8 @@ export function DBTable() {
 
   const handleResetPage = useCallback(() => {
     setPage(0);
-    setQueryError(null);
-    setCustomQuery("");
-    setIsCustomQuery(false);
-  }, [setIsCustomQuery, setQueryError]);
+    handleResetQuery();
+  }, [handleResetQuery]);
 
   const handleCustomQuery = useCallback(() => {
     if (customQuery.trim() === "") {
@@ -102,7 +99,8 @@ export function DBTable() {
       return;
     }
 
-    if (db && customQuery.trim() !== "") {
+    setIsQueryLoading(true);
+    (async () => {
       try {
         const customResult: QueryExecResult[] = query(customQuery);
         const { data, columns } = mapQueryResults(customResult);
@@ -111,18 +109,18 @@ export function DBTable() {
         setIsCustomQuery(true);
         setQueryError(null);
       } catch (error) {
-        if (error instanceof Error) {
-          setQueryError(error.message);
-        }
+        if (error instanceof Error) setQueryError(error.message);
+      } finally {
+        setIsQueryLoading(false);
       }
-    }
-  }, [customQuery, db, query, setQueryError]);
+    })();
+  }, [customQuery, db, query, setQueryError, setIsCustomQuery]);
 
   return (
     <div className="flex flex-col gap-3 mb-2">
       <section className="flex flex-col gap-2 p-3 pb-1 border rounded">
         <TableSelect />
-        <div className="flex gap-1">
+        <div className="flex gap-1 mb-1">
           <Input
             type="text"
             value={customQuery}
@@ -144,11 +142,15 @@ export function DBTable() {
             <ListRestart className="h-5 w-5" />
           </Button>
         </div>
-        <p className="text-xs text-red-500 capitalize text-center">
-          {queryError}
-        </p>
+        {queryError && (
+          <p className="text-xs text-red-500 capitalize text-center">
+            {queryError}
+          </p>
+        )}
       </section>
-      {data.length > 0 ? (
+      {isQueryLoading ? (
+        <Loading>Loading {tableName}</Loading>
+      ) : data.length > 0 ? (
         <div className="border rounded">
           <DBTableComponent
             data={data}

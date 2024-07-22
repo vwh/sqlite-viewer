@@ -80,13 +80,25 @@ export function mapQueryResults(result: QueryExecResult[]): {
   return { data: [], columns: [] };
 }
 
-export const exportDatabase = (database: Database): Uint8Array => {
+const exportDatabase = (database: Database): Uint8Array => {
   try {
     return database.export();
   } catch (error) {
     console.error("Failed to export database:", error);
     throw error;
   }
+};
+
+// Download the entire database as sqlite file
+export const downloadDatabase = (database: Database): void => {
+  const binaryArray = exportDatabase(database);
+  const blob = new Blob([binaryArray], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "database.sqlite";
+  a.click();
+  URL.revokeObjectURL(url);
 };
 
 // Function to convert array of rows to CSV format

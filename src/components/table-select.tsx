@@ -11,7 +11,7 @@ import {
 } from "./ui/select";
 import { Badge } from "./ui/badge";
 
-export function TableSelect() {
+export default function TableSelect() {
   const { tables, selectedTable, setSelectedTable } = useSQLiteStore();
   return (
     <section className="flex justify-center items-center gap-2">

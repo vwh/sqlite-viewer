@@ -1,9 +1,10 @@
 import { useState, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
+
 import { useDropzone, type FileError } from "react-dropzone";
 import { FileStats, FileData } from "./dropzone-helpers";
 
-export function UploadFile() {
+export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FileError[]>([]);
@@ -44,44 +45,36 @@ export function UploadFile() {
     },
   });
 
+  const renderDropzoneContent = (hasDatabase: boolean) => (
+    <div
+      {...getRootProps()}
+      className={`border p-6 rounded cursor-pointer text-center ${
+        hasDatabase ? "" : "py-24"
+      }`}
+    >
+      <input id="file-upload" {...getInputProps()} />
+      <label htmlFor="file-upload" className="sr-only">
+        Upload SQLite File
+      </label>
+      <p className="hidden sm:block">
+        Drag and drop a SQLite file here, or click to select one
+      </p>
+      <p className="block sm:hidden">Click to select a SQLite file</p>
+      {!hasDatabase && (
+        <a
+          href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
+          className="text-sm text-link hover:underline"
+          title="Download sample file"
+        >
+          Or download & try this sample file
+        </a>
+      )}
+    </div>
+  );
+
   return (
     <section>
-      {db ? (
-        <div
-          {...getRootProps()}
-          className="border p-6 rounded cursor-pointer text-center"
-        >
-          <input id="file-upload" {...getInputProps()} />
-          <label htmlFor="file-upload" className="sr-only">
-            Upload SQLite File
-          </label>
-          <p className="hidden sm:block">
-            Drag drop a SQLite file here, or click to select one
-          </p>
-          <p className="block sm:hidden">Click to select a SQLite file</p>
-        </div>
-      ) : (
-        <div
-          {...getRootProps()}
-          className="border p-6 py-24 rounded cursor-pointer text-center"
-        >
-          <input id="file-upload" {...getInputProps()} />
-          <label htmlFor="file-upload" className="sr-only">
-            Upload SQLite File
-          </label>
-          <p className="hidden sm:block">
-            Drag drop a SQLite file here, or click to select one
-          </p>
-          <p className="block sm:hidden">Click to select a SQLite file</p>
-          <a
-            href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
-            className="text-sm text-link hover:underline"
-            title="Download sample file"
-          >
-            Or download & try this sample file
-          </a>
-        </div>
-      )}
+      {renderDropzoneContent(Boolean(db))}
       <div className="mt-2">
         {file && <FileData file={file} />}
         <FileStats errors={errors} />
