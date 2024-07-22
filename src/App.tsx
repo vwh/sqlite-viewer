@@ -22,10 +22,12 @@ function App() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [urlToFetch, setUrlToFetch] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
   const hasFetched = useRef(false);
 
   const fetchDatabase = async (url: string, useProxy: boolean = false) => {
     try {
+      setIsFetching(true);
       const fetchUrl = useProxy ? `https://corsproxy.io/?${url}` : url;
       const response = await fetch(fetchUrl);
       if (!response.ok) {
@@ -47,6 +49,8 @@ function App() {
           );
         }
       }
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -73,7 +77,11 @@ function App() {
     <div className="flex flex-col gap-3">
       {!db && <Logo />}
       <UploadFile />
-      <Loading />
+      {isLoading ? (
+        <Loading>Loading SQLite file</Loading>
+      ) : isFetching ? (
+        <Loading>Fetching SQLite file</Loading>
+      ) : null}
       {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
       {!isLoading &&
         db &&
@@ -82,7 +90,6 @@ function App() {
         ) : (
           <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
         ))}
-
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
