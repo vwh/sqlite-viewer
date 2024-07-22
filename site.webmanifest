@@ -21,9 +21,22 @@
   "lang": "en-US",
   "name": "SQLite Viewer",
   "short_name": "SQLite",
-  "start_url": "/sqlite-viewer/",
-  "scope": "/sqlite-viewer/",
+  "start_url": "/",
+  "scope": "/",
   "description": "View and query SQLite databases",
   "id": "sqlite-viewer-pwa",
-  "categories": ["utilities"]
+  "categories": ["utilities"],
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.hassaneltantawy.sqliteviewer",
+      "id": "com.hassaneltantawy.sqliteviewer"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/us/app/sqlite-mobile-client/id1465080890",
+      "id": "id1465080890"
+    }
+  ]
 }
