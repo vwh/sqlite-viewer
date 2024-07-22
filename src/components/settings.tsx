@@ -1,5 +1,5 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   exportTableAsCSV,
