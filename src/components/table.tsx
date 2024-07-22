@@ -56,12 +56,14 @@ export function DBTable() {
     return rowPerPageOrAuto;
   }, [rowPerPageOrAuto]);
 
+  // Reset query and page when table changes
   useEffect(() => {
     setPage(0);
     setIsCustomQuery(false);
   }, [tableName]);
 
   useEffect(() => {
+    console.log("render");
     if (db && tableName && !isCustomQuery) {
       setIsQueryLoading(true);
       const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
@@ -80,7 +82,7 @@ export function DBTable() {
         }
       })();
     }
-  }, [db, tableName, page, rowsPerPage, isCustomQuery, query, setQueryError]);
+  }, [db, tableName, page, rowsPerPage]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);

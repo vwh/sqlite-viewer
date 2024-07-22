@@ -34,7 +34,7 @@ export default function DarkModeToggle() {
     return () => {
       mediaQuery.removeEventListener("change", handleSystemThemeChange);
     };
-  }, [applyDarkMode]);
+  }, []);
 
   return (
     <Button

@@ -28,12 +28,6 @@ export default function Settings() {
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
 
-  useEffect(() => {
-    if (isAutoRowsPerPage) {
-      setSelectedRowsPerPage(30);
-    }
-  }, [isAutoRowsPerPage]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (!isNaN(value)) {
