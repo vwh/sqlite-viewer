@@ -38,6 +38,7 @@ export default function DarkModeToggle() {
 
   return (
     <Button
+      title={darkMode ? "Enable light mode" : "Enable dark mode"}
       onClick={() => {
         applyDarkMode(!darkMode);
       }}
