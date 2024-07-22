@@ -9,7 +9,7 @@ View and query SQLite databases directly in your browser. Built with `sql.js` an
 Visit [SQLite Viewer](https://sqlite3.online/) to see it in action!
 
 > [!NOTE]
-> You can load a database directly from a URL by passing a `url` parameter.<br> Example: [`https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db)<br> No need to worry about CORS errors, we use [corsproxy.io](https://corsproxy.io).
+> You can load a database directly from a URL by passing a `url` parameter.<br> Example: [`https://sqlite3.online/?url=...examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db)
 
 ## Getting Started
 
