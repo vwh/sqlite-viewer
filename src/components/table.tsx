@@ -44,7 +44,6 @@ export function DBTable() {
   );
 
   let rowsPerPage = 30;
-  console.log(rowPerPageOrAuto, rowsPerPage);
   if (rowPerPageOrAuto === "auto") {
     let rowHeight = 110;
     const screenHeight = window.innerHeight;
