@@ -44,18 +44,6 @@ export function DBTable() {
     [tables, selectedTable]
   );
 
-  const rowsPerPage = useMemo(() => {
-    if (rowPerPageOrAuto === "auto") {
-      const screenHeight = window.innerHeight;
-      let rowHeight = 110;
-      if (screenHeight > 1500) rowHeight = 75;
-      else if (screenHeight > 1000) rowHeight = 90;
-      else if (screenHeight < 750) rowHeight = 130;
-      return Math.max(1, Math.floor(screenHeight / rowHeight));
-    }
-    return rowPerPageOrAuto;
-  }, [rowPerPageOrAuto]);
-
   // Reset query and page when table changes
   useEffect(() => {
     setPage(0);
@@ -63,7 +51,6 @@ export function DBTable() {
   }, [tableName]);
 
   useEffect(() => {
-    console.log("render");
     if (db && tableName && !isCustomQuery) {
       setIsQueryLoading(true);
       const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
@@ -82,7 +69,7 @@ export function DBTable() {
         }
       })();
     }
-  }, [db, tableName, page, rowsPerPage]);
+  }, [db, tableName, page]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
@@ -117,6 +104,17 @@ export function DBTable() {
       }
     })();
   }, [customQuery, db, query, setQueryError, setIsCustomQuery]);
+
+  let rowsPerPage = 30;
+  if (rowPerPageOrAuto === "auto") {
+    let rowHeight = 110;
+    const screenHeight = window.innerHeight;
+    console.log(screenHeight);
+    if (screenHeight > 1500) rowHeight = 75;
+    else if (screenHeight > 1000) rowHeight = 90;
+    else if (screenHeight < 750) rowHeight = 150;
+    rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
+  }
 
   return (
     <div className="flex flex-col gap-3 mb-2">
