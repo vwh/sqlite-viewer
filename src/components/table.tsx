@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import PageSelect from "./page-select";
 import { TableSelect } from "./table-select";
 import DBTableComponent from "./table-data";
+import ErrorMessage from "./error";
 
 import { Trash, Play, ListRestart } from "lucide-react";
 
@@ -157,9 +158,7 @@ export function DBTable() {
           />
         </div>
       ) : (
-        <p className="text-center font-semibold md:text-2xl p-10 border rounded">
-          Table {tableName} is empty
-        </p>
+        <ErrorMessage>Table {tableName} is empty</ErrorMessage>
       )}
       {!isCustomQuery && (
         <PageSelect

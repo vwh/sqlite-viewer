@@ -5,6 +5,7 @@ import { DBTable } from "./components/table";
 import { UploadFile } from "./components/dropzone";
 import Loading from "./components/loading";
 import Logo from "./components/logo";
+import ErrorMessage from "./components/error";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,19 +74,13 @@ function App() {
       {!db && <Logo />}
       <UploadFile />
       <Loading />
-      {fetchError && !db && (
-        <div className="text-center text-red-500 font-semibold md:text-2xl p-10 border rounded mb-2">
-          {fetchError}
-        </div>
-      )}
+      {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
       {!isLoading &&
         db &&
         (tables.length > 0 ? (
           <DBTable />
         ) : (
-          <div className="text-center font-semibold md:text-2xl p-10 border rounded mb-2">
-            Your database is empty, no tables found
-          </div>
+          <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
         ))}
 
       <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
@@ -94,12 +89,11 @@ function App() {
             <AlertDialogTitle>Retry using a proxy?</AlertDialogTitle>
             <AlertDialogDescription>
               Failed to load the database from the provided URL due to possible
-              CORS restrictions. Retry using a proxy?
+              CORS restrictions.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="text-sm font-semibold">
-            Using the proxy may expose your database to the corsproxy.io
-            service.
+            Using the proxy may expose your database to corsproxy.io services.
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setShowDialog(false)}>
