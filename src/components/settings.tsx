@@ -48,7 +48,7 @@ export default function Settings() {
   const renderExportButton = (
     onClick: () => void,
     label: string,
-    className?: string
+    className?: string,
   ) => (
     <Button variant="outline" onClick={onClick} className={className}>
       <span className="ml-2">{label}</span>
@@ -116,15 +116,15 @@ export default function Settings() {
                 <div className="border rounded p-2 flex flex-col gap-1">
                   {renderExportButton(
                     () => downloadDatabase(db),
-                    "Export as SQLite"
+                    "Export as SQLite",
                   )}
                   {renderExportButton(
                     () => exportTableAsCSV(db, parseInt(selectedTable)),
-                    "Export selected table as CSV"
+                    "Export selected table as CSV",
                   )}
                   {renderExportButton(
                     () => exportAllTablesAsCSV(db),
-                    "Export all tables as CSV"
+                    "Export all tables as CSV",
                   )}
                 </div>
               )}

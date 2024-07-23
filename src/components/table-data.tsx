@@ -29,7 +29,7 @@ const getIcon = (columnSchema: any) => {
 const renderTableHead = (
   columns: string[],
   tableSchemas: TableInfo,
-  tableName: string
+  tableName: string,
 ) => (
   <TableHeader>
     <TTableRow>
@@ -58,7 +58,7 @@ const renderTableBody = (
   data: TableRow[],
   columns: string[],
   tableSchemas: TableInfo,
-  tableName: string
+  tableName: string,
 ) => (
   <TableBody>
     {data.map((row, rowIndex) => (

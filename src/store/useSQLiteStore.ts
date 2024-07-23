@@ -46,7 +46,7 @@ const initializeStore = create<SQLiteState>((set, get) => ({
           const count = parseInt(countResult[0].values[0][0] as string, 10);
           const schema = await getTableSchema(database, name);
           return { name, count, schema };
-        })
+        }),
       );
 
       const tables = tableCountsAndSchemas.map(({ name, count }) => ({
@@ -58,7 +58,7 @@ const initializeStore = create<SQLiteState>((set, get) => ({
           acc[name] = schema;
           return acc;
         },
-        {} as TableInfo
+        {} as TableInfo,
       );
 
       set({ db: database, tables, tableSchemas, isLoading: false });

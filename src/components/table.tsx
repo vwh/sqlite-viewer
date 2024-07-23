@@ -37,11 +37,11 @@ export function DBTable() {
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
-    [tables, selectedTable]
+    [tables, selectedTable],
   );
   const rowCount = useMemo(
     () => tables[parseInt(selectedTable)]?.count || 0,
-    [tables, selectedTable]
+    [tables, selectedTable],
   );
 
   // Reset query and page when table changes
