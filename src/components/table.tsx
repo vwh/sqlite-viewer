@@ -37,11 +37,11 @@ export function DBTable() {
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
   const rowCount = useMemo(
     () => tables[parseInt(selectedTable)]?.count || 0,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
 
   // Reset query and page when table changes
@@ -69,7 +69,7 @@ export function DBTable() {
         }
       })();
     }
-  }, [db, tableName, page]);
+  }, [db, tableName, page, rowPerPageOrAuto]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
@@ -109,11 +109,12 @@ export function DBTable() {
   if (rowPerPageOrAuto === "auto") {
     let rowHeight = 110;
     const screenHeight = window.innerHeight;
-    console.log(screenHeight);
     if (screenHeight > 1500) rowHeight = 75;
     else if (screenHeight > 1000) rowHeight = 90;
     else if (screenHeight < 750) rowHeight = 150;
     rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
+  } else {
+    rowsPerPage = rowPerPageOrAuto;
   }
 
   return (
