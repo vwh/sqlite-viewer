@@ -62,7 +62,7 @@ export default function UploadFile() {
       <p className="block sm:hidden">Click to select a SQLite file</p>
       {!hasDatabase && (
         <a
-          href="https://github.com/vwh/sqlite-viewer/raw/main/examples/chinook.db"
+          href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
           className="text-sm text-link hover:underline"
           title="Download sample file"
         >
