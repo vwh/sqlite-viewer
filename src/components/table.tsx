@@ -37,11 +37,11 @@ export function DBTable() {
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
   const rowCount = useMemo(
     () => tables[parseInt(selectedTable)]?.count || 0,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
 
   // Reset query and page when table changes
@@ -107,11 +107,29 @@ export function DBTable() {
 
   let rowsPerPage = 30;
   if (rowPerPageOrAuto === "auto") {
-    let rowHeight = 110;
     const screenHeight = window.innerHeight;
-    if (screenHeight > 1500) rowHeight = 75;
-    else if (screenHeight > 1000) rowHeight = 90;
-    else if (screenHeight < 750) rowHeight = 150;
+    const thresholds = [
+      { height: 1600, rowHeight: 70 },
+      { height: 1400, rowHeight: 75 },
+      { height: 1100, rowHeight: 80 },
+      { height: 1000, rowHeight: 90 },
+      { height: 900, rowHeight: 110 },
+      { height: 850, rowHeight: 110 },
+      { height: 750, rowHeight: 120 },
+      { height: 700, rowHeight: 130 },
+      { height: 600, rowHeight: 140 },
+      { height: 550, rowHeight: 160 },
+      { height: 500, rowHeight: 200 },
+      { height: 0, rowHeight: 300 },
+    ];
+    const defaultRowHeight = 120;
+    let rowHeight = defaultRowHeight;
+    for (const threshold of thresholds) {
+      if (screenHeight > threshold.height) {
+        rowHeight = threshold.rowHeight;
+        break;
+      }
+    }
     rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
   } else {
     rowsPerPage = rowPerPageOrAuto;
