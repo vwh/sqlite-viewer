@@ -58,7 +58,7 @@ export default function Settings() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="grow">
           <Settings2 className="h-5 w-5" />
         </Button>
       </DrawerTrigger>

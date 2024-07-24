@@ -1,15 +1,10 @@
-import useSQLiteStore from "@/store/useSQLiteStore";
-
 import DarkModeToggle from "./dark-mode";
-import Settings from "./settings";
 
 import { Github } from "lucide-react";
 
 export default function Footer() {
-  const { db } = useSQLiteStore();
-
   return (
-    <footer className="flex items-center justify-between my-1 p-4 border rounded">
+    <footer className="flex items-center justify-between my-1 p-4 border rounded mt-3">
       <div>
         <p className="hidden sm:block text-xs">
           No file will be uploaded to server. using JavaScript, sql.js
@@ -27,7 +22,6 @@ export default function Footer() {
       </div>
       <div className="flex gap-1">
         <DarkModeToggle />
-        {db && <Settings />}
       </div>
     </footer>
   );

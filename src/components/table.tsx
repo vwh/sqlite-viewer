@@ -109,14 +109,17 @@ export function DBTable() {
   if (rowPerPageOrAuto === "auto") {
     const screenHeight = window.innerHeight;
     const thresholds = [
-      { height: 1600, rowHeight: 60 },
-      { height: 1400, rowHeight: 65 },
+      { height: 1700, rowHeight: 65 },
+      { height: 1300, rowHeight: 70 },
+      { height: 1200, rowHeight: 75 },
       { height: 1100, rowHeight: 75 },
       { height: 1000, rowHeight: 80 },
-      { height: 900, rowHeight: 90 },
-      { height: 850, rowHeight: 90 },
-      { height: 750, rowHeight: 100 },
-      { height: 700, rowHeight: 110 },
+      { height: 950, rowHeight: 80 },
+      { height: 900, rowHeight: 85 },
+      { height: 850, rowHeight: 85 },
+      { height: 800, rowHeight: 90 },
+      { height: 750, rowHeight: 95 },
+      { height: 700, rowHeight: 100 },
       { height: 600, rowHeight: 120 },
       { height: 550, rowHeight: 140 },
       { height: 500, rowHeight: 180 },

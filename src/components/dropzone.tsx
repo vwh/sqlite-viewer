@@ -3,6 +3,8 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { useDropzone, type FileError } from "react-dropzone";
 import { FileStats, FileData } from "./dropzone-helpers";
+import Settings from "./settings";
+import DarkModeToggle from "./dark-mode";
 
 export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
@@ -46,39 +48,47 @@ export default function UploadFile() {
   });
 
   const renderDropzoneContent = (hasDatabase: boolean) => (
-    <div
-      {...getRootProps()}
-      className={`border p-6 rounded cursor-pointer text-center ${
-        hasDatabase ? "" : "py-24"
-      }`}
-    >
-      <input id="file-upload" {...getInputProps()} />
-      <label htmlFor="file-upload" className="sr-only">
-        Upload SQLite File
-      </label>
-      <p className="hidden sm:block">
-        Drag and drop a SQLite file here, or click to select one
-      </p>
-      <p className="block sm:hidden">Click to select a SQLite file</p>
-      {!hasDatabase && (
-        <a
-          href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
-          className="text-sm text-link hover:underline"
-          title="Download sample file"
-        >
-          Or download & try this sample file
-        </a>
-      )}
-    </div>
-  );
-
-  return (
-    <section>
-      {renderDropzoneContent(Boolean(db))}
-      <div className="mt-2">
-        {file && <FileData file={file} />}
-        <FileStats errors={errors} />
+    <section className="flex gap-2">
+      <div
+        {...getRootProps()}
+        className={`grow border p-4 rounded cursor-pointer text-center ${
+          hasDatabase ? "" : "py-24"
+        }`}
+      >
+        <input id="file-upload" {...getInputProps()} />
+        <label htmlFor="file-upload" className="sr-only">
+          Upload SQLite File
+        </label>
+        <p className="hidden sm:block">
+          Drag and drop a SQLite file here, or click to select one
+        </p>
+        {!hasDatabase ? (
+          <>
+            <p className="block sm:hidden">Click to select a SQLite file</p>
+            <a
+              href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
+              className="text-sm text-link hover:underline"
+              title="Download sample file"
+            >
+              Or download & try this sample file
+            </a>
+          </>
+        ) : (
+          <p className="block sm:hidden">Click to select a file</p>
+        )}
+        <div className="mt-1">
+          {file && <FileData file={file} />}
+          <FileStats errors={errors} />
+        </div>
       </div>
+      {hasDatabase && (
+        <div className="flex flex-col gap-1">
+          <Settings />
+          <DarkModeToggle />
+        </div>
+      )}
     </section>
   );
+
+  return <section>{renderDropzoneContent(Boolean(db))}</section>;
 }

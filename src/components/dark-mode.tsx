@@ -42,7 +42,7 @@ export default function DarkModeToggle() {
       onClick={() => {
         applyDarkMode(!darkMode);
       }}
-      className="relative"
+      className="relative grow"
       variant="outline"
     >
       {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
