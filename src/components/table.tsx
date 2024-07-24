@@ -109,18 +109,18 @@ export function DBTable() {
   if (rowPerPageOrAuto === "auto") {
     const screenHeight = window.innerHeight;
     const thresholds = [
-      { height: 1600, rowHeight: 70 },
-      { height: 1400, rowHeight: 75 },
-      { height: 1100, rowHeight: 80 },
-      { height: 1000, rowHeight: 90 },
-      { height: 900, rowHeight: 110 },
-      { height: 850, rowHeight: 110 },
-      { height: 750, rowHeight: 120 },
-      { height: 700, rowHeight: 130 },
-      { height: 600, rowHeight: 140 },
-      { height: 550, rowHeight: 160 },
-      { height: 500, rowHeight: 200 },
-      { height: 0, rowHeight: 300 },
+      { height: 1600, rowHeight: 60 },
+      { height: 1400, rowHeight: 65 },
+      { height: 1100, rowHeight: 75 },
+      { height: 1000, rowHeight: 80 },
+      { height: 900, rowHeight: 90 },
+      { height: 850, rowHeight: 90 },
+      { height: 750, rowHeight: 100 },
+      { height: 700, rowHeight: 110 },
+      { height: 600, rowHeight: 120 },
+      { height: 550, rowHeight: 140 },
+      { height: 500, rowHeight: 180 },
+      { height: 0, rowHeight: 280 },
     ];
     const defaultRowHeight = 120;
     let rowHeight = defaultRowHeight;
@@ -137,9 +137,9 @@ export function DBTable() {
 
   return (
     <div className="flex flex-col gap-3 mb-2">
-      <section className="flex flex-col gap-2 p-3 pb-1 border rounded">
+      <section className="flex flex-col gap-2 p-3 border rounded pb-2">
         <TableSelect />
-        <div className="flex gap-1 mb-1">
+        <div className="flex gap-1">
           <Input
             type="text"
             value={customQuery}

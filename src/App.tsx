@@ -7,6 +7,7 @@ import Loading from "./components/loading";
 import Logo from "./components/logo";
 import ErrorMessage from "./components/error";
 import Dialog from "./components/dialog";
+import Footer from "./components/footer.tsx";
 
 function App() {
   const { db, tables, isLoading, loadDatabase } = useSQLiteStore();
@@ -65,28 +66,31 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {!db && <Logo />}
-      <UploadFile />
-      {isLoading ? (
-        <Loading>Loading SQLite file</Loading>
-      ) : isFetching ? (
-        <Loading>Fetching SQLite file</Loading>
-      ) : null}
-      {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
-      {!isLoading &&
-        db &&
-        (tables.length > 0 ? (
-          <DBTable />
-        ) : (
-          <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
-        ))}
-      <Dialog
-        showDialog={showDialog}
-        setShowDialog={setShowDialog}
-        fn={handleRetryWithProxy}
-      />
-    </div>
+    <>
+      <div className="flex flex-col gap-3">
+        {!db && <Logo />}
+        <UploadFile />
+        {isLoading ? (
+          <Loading>Loading SQLite file</Loading>
+        ) : isFetching ? (
+          <Loading>Fetching SQLite file</Loading>
+        ) : null}
+        {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
+        {!isLoading &&
+          db &&
+          (tables.length > 0 ? (
+            <DBTable />
+          ) : (
+            <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
+          ))}
+        <Dialog
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
+          fn={handleRetryWithProxy}
+        />
+      </div>
+      {!db && <Footer />}
+    </>
   );
 }
 
