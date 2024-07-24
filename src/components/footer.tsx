@@ -1,4 +1,4 @@
-import DarkModeToggle from "./dark-mode";
+import ThemeToggle from "./theme-toggle";
 
 import { Github } from "lucide-react";
 
@@ -21,7 +21,7 @@ export default function Footer() {
         </a>
       </div>
       <div className="flex gap-1">
-        <DarkModeToggle />
+        <ThemeToggle />
       </div>
     </footer>
   );

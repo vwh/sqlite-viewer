@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Button } from "./ui/button";
 import { Moon, Sun } from "lucide-react";
 
-export default function DarkModeToggle() {
+export default function ThemeToggle() {
   const [darkMode, setDarkMode] = useState<boolean>(false);
 
   const applyDarkMode = useCallback((isDarkMode: boolean) => {
@@ -43,7 +43,6 @@ export default function DarkModeToggle() {
         applyDarkMode(!darkMode);
       }}
       className="relative grow"
-      variant="outline"
     >
       {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
     </Button>

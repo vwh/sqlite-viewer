@@ -1,14 +1,12 @@
 import { useState, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-
 import { useDropzone, type FileError } from "react-dropzone";
 import { FileStats } from "./dropzone-helpers";
 import Settings from "./settings";
-import DarkModeToggle from "./dark-mode";
+import ThemeToggle from "./theme-toggle";
 
 export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
-  // const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
@@ -22,7 +20,6 @@ export default function UploadFile() {
 
       if (acceptedFiles.length > 0) {
         const selectedFile = acceptedFiles[0];
-        // setFile(selectedFile);
         await loadDatabase(selectedFile);
       }
 
@@ -62,11 +59,11 @@ export default function UploadFile() {
         <p className="hidden sm:block">
           Drag and drop a SQLite file here, or click to select one
         </p>
-        {hasDatabase ? (
-          <p className="block sm:hidden">Click to select a file</p>
-        ) : (
-          <p className="block sm:hidden">Click to select a SQLite file</p>
-        )}
+        <p className="block sm:hidden">
+          {hasDatabase
+            ? "Click to select a file"
+            : "Click to select a SQLite file"}
+        </p>
         {!hasDatabase && (
           <a
             href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
@@ -80,17 +77,16 @@ export default function UploadFile() {
       {hasDatabase && (
         <div className="flex flex-col gap-1">
           <Settings />
-          <DarkModeToggle />
+          <ThemeToggle />
         </div>
       )}
     </div>
   );
 
   return (
-    <section className={db ? "" : "h-full md:h-[300px]"}>
+    <section className={db ? "" : "grow md:h-[300px] md:grow-0"}>
       {renderDropzoneContent(Boolean(db))}
       <div>
-        {/* {file && <FileData file={file} />} */}
         <FileStats errors={errors} />
       </div>
     </section>

@@ -33,6 +33,7 @@ export default function TableSelect() {
       <Badge
         title="Rows"
         className="text-sm grow min-w-[100px] md:min-w-[200px] py-2"
+        variant="outline"
       >
         <span className="text-center w-full">
           {tables[parseInt(selectedTable)].count}
