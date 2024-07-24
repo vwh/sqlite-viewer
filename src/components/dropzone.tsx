@@ -87,7 +87,7 @@ export default function UploadFile() {
   );
 
   return (
-    <section className={db ? "" : "h-full"}>
+    <section className={db ? "" : "h-full md:h-[300px]"}>
       {renderDropzoneContent(Boolean(db))}
       <div>
         {/* {file && <FileData file={file} />} */}
