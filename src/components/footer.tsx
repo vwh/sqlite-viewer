@@ -4,7 +4,7 @@ import { Github } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-between my-1 p-4 border rounded mt-3">
+    <footer className="flex items-center justify-between p-4 border rounded">
       <div>
         <p className="hidden sm:block text-xs">
           No file will be uploaded to server. using JavaScript, sql.js

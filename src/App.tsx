@@ -67,28 +67,26 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col gap-3">
-        {!db && <Logo />}
-        <UploadFile />
-        {isLoading ? (
-          <Loading>Loading SQLite file</Loading>
-        ) : isFetching ? (
-          <Loading>Fetching SQLite file</Loading>
-        ) : null}
-        {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
-        {!isLoading &&
-          db &&
-          (tables.length > 0 ? (
-            <DBTable />
-          ) : (
-            <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
-          ))}
-        <Dialog
-          showDialog={showDialog}
-          setShowDialog={setShowDialog}
-          fn={handleRetryWithProxy}
-        />
-      </div>
+      {!db && <Logo />}
+      <UploadFile />
+      {isLoading ? (
+        <Loading>Loading SQLite file</Loading>
+      ) : isFetching ? (
+        <Loading>Fetching SQLite file</Loading>
+      ) : null}
+      {fetchError && !db && <ErrorMessage>{fetchError}</ErrorMessage>}
+      {!isLoading &&
+        db &&
+        (tables.length > 0 ? (
+          <DBTable />
+        ) : (
+          <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
+        ))}
+      <Dialog
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        fn={handleRetryWithProxy}
+      />
       {!db && <Footer />}
     </>
   );

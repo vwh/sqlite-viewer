@@ -48,10 +48,10 @@ export default function UploadFile() {
   });
 
   const renderDropzoneContent = (hasDatabase: boolean) => (
-    <div className="flex items-center gap-2 justify-center">
+    <div className="flex items-center gap-2 justify-center h-full">
       <div
         {...getRootProps()}
-        className={`grow h-[85px] border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
+        className={`grow h-full border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
           hasDatabase ? "" : "py-32"
         }`}
       >
@@ -87,7 +87,7 @@ export default function UploadFile() {
   );
 
   return (
-    <section>
+    <section className={db ? "" : "h-full"}>
       {renderDropzoneContent(Boolean(db))}
       <div>
         {/* {file && <FileData file={file} />} */}
