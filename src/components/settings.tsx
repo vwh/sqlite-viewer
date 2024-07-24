@@ -1,12 +1,13 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { toast } from "sonner";
 
 import {
   exportTableAsCSV,
   exportAllTablesAsCSV,
   downloadDatabase,
 } from "@/lib/sqlite";
-
 import {
   Drawer,
   DrawerClose,
@@ -25,8 +26,26 @@ export default function Settings() {
   const { setRowPerPageOrAuto, selectedTable, setIsCustomQuery, db } =
     useSQLiteStore();
 
-  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number>(30);
+  const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
+    null,
+  );
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
+
+  useEffect(() => {
+    const rowsPerPageLocalStorage = localStorage.getItem("rowsPerPage");
+    if (rowsPerPageLocalStorage) {
+      if (rowsPerPageLocalStorage === "auto") {
+        setIsAutoRowsPerPage(true);
+      } else {
+        setSelectedRowsPerPage(Number(rowsPerPageLocalStorage));
+        setRowPerPageOrAuto(Number(rowsPerPageLocalStorage));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(selectedRowsPerPage);
+  }, [selectedRowsPerPage]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -42,6 +61,18 @@ export default function Settings() {
 
   const handleSave = () => {
     setIsCustomQuery(false);
+    if (selectedRowsPerPage === null) {
+      return toast.error(
+        "Please provide a number of rows per page or set it to auto.",
+      );
+    }
+    if (selectedRowsPerPage < 1) {
+      return toast.error("Please provide a positive number of rows per page.");
+    }
+    localStorage.setItem(
+      "rowsPerPage",
+      isAutoRowsPerPage ? "auto" : selectedRowsPerPage.toString(),
+    );
     setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : selectedRowsPerPage);
   };
 
@@ -77,12 +108,10 @@ export default function Settings() {
               </p>
               <div className="border rounded p-2 flex gap-1 justify-center items-center">
                 <Input
-                  min="3"
-                  max="500"
-                  value={selectedRowsPerPage}
+                  value={selectedRowsPerPage || ""}
                   onChange={handleInputChange}
                   disabled={isAutoRowsPerPage}
-                  placeholder="30"
+                  placeholder="Number of rows"
                   type="number"
                   name="rowsPerPage"
                 />

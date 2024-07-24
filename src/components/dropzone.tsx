@@ -84,7 +84,7 @@ export default function UploadFile() {
   );
 
   return (
-    <section className={db ? "" : "grow md:h-[300px] md:grow-0"}>
+    <section>
       {renderDropzoneContent(Boolean(db))}
       <div>
         <FileStats errors={errors} />
