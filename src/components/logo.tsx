@@ -36,11 +36,11 @@ export default function Logo() {
           title="SQLite Logo"
           src="./sqlite-light.webp"
           alt="SQLite Logo"
-          width="160"
+          width="170"
           height="80"
           draggable="false"
         />
-        <p className="text-sm">View SQLite file online</p>
+        <p className="text-sm">View SQLite files in the browser</p>
       </div>
     </section>
   );

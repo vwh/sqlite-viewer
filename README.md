@@ -8,7 +8,8 @@
 View and query SQLite databases directly in your browser. Built with `sql.js` and ReactJS.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/820dc71c-b0e8-4c08-bcb7-44906d70e2b8" alt="Preview">
+  <img src="https://github.com/user-attachments/assets/5aaceb40-8b06-4c8b-9132-a09d8d017ae7" alt="Preview">
+
 </p>
 
 > [!NOTE]
