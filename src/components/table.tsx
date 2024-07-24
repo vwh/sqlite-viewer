@@ -120,7 +120,7 @@ export function DBTable() {
       { height: 800, rowHeight: 90 },
       { height: 750, rowHeight: 95 },
       { height: 700, rowHeight: 100 },
-      { height: 600, rowHeight: 120 },
+      { height: 600, rowHeight: 110 },
       { height: 550, rowHeight: 140 },
       { height: 500, rowHeight: 180 },
       { height: 0, rowHeight: 280 },

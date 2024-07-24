@@ -2,13 +2,13 @@ import { useState, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { useDropzone, type FileError } from "react-dropzone";
-import { FileStats, FileData } from "./dropzone-helpers";
+import { FileStats } from "./dropzone-helpers";
 import Settings from "./settings";
 import DarkModeToggle from "./dark-mode";
 
 export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
@@ -22,7 +22,7 @@ export default function UploadFile() {
 
       if (acceptedFiles.length > 0) {
         const selectedFile = acceptedFiles[0];
-        setFile(selectedFile);
+        // setFile(selectedFile);
         await loadDatabase(selectedFile);
       }
 
@@ -48,11 +48,11 @@ export default function UploadFile() {
   });
 
   const renderDropzoneContent = (hasDatabase: boolean) => (
-    <section className="flex gap-2">
+    <div className="flex items-center gap-2 justify-center">
       <div
         {...getRootProps()}
-        className={`grow border p-4 rounded cursor-pointer text-center ${
-          hasDatabase ? "" : "py-24"
+        className={`grow h-[85px] border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
+          hasDatabase ? "" : "py-32"
         }`}
       >
         <input id="file-upload" {...getInputProps()} />
@@ -62,24 +62,20 @@ export default function UploadFile() {
         <p className="hidden sm:block">
           Drag and drop a SQLite file here, or click to select one
         </p>
-        {!hasDatabase ? (
-          <>
-            <p className="block sm:hidden">Click to select a SQLite file</p>
-            <a
-              href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
-              className="text-sm text-link hover:underline"
-              title="Download sample file"
-            >
-              Or download & try this sample file
-            </a>
-          </>
-        ) : (
+        {hasDatabase ? (
           <p className="block sm:hidden">Click to select a file</p>
+        ) : (
+          <p className="block sm:hidden">Click to select a SQLite file</p>
         )}
-        <div className="mt-1">
-          {file && <FileData file={file} />}
-          <FileStats errors={errors} />
-        </div>
+        {!hasDatabase && (
+          <a
+            href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
+            className="text-sm text-link hover:underline"
+            title="Download sample file"
+          >
+            Or download & try this sample file
+          </a>
+        )}
       </div>
       {hasDatabase && (
         <div className="flex flex-col gap-1">
@@ -87,8 +83,16 @@ export default function UploadFile() {
           <DarkModeToggle />
         </div>
       )}
-    </section>
+    </div>
   );
 
-  return <section>{renderDropzoneContent(Boolean(db))}</section>;
+  return (
+    <section>
+      {renderDropzoneContent(Boolean(db))}
+      <div>
+        {/* {file && <FileData file={file} />} */}
+        <FileStats errors={errors} />
+      </div>
+    </section>
+  );
 }
