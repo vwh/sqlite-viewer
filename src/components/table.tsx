@@ -1,10 +1,7 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-
-import type { QueryExecResult } from "sql.js";
-import type { TableRow } from "@/types";
-
-import { mapQueryResults } from "@/lib/sqlite";
+import { useQueryData } from "@/hooks/useQueryData";
+import { usePagination } from "@/hooks/usePagination";
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -17,8 +14,6 @@ import { Trash, Play, ListRestart } from "lucide-react";
 
 export function DBTable() {
   const {
-    query,
-    db,
     tables,
     selectedTable,
     tableSchemas,
@@ -29,11 +24,7 @@ export function DBTable() {
     setIsCustomQuery
   } = useSQLiteStore();
 
-  const [data, setData] = useState<TableRow[]>([]);
-  const [columns, setColumns] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
-  const [customQuery, setCustomQuery] = useState<string>("");
-  const [isQueryLoading, setIsQueryLoading] = useState(true);
+  const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
@@ -44,99 +35,25 @@ export function DBTable() {
     [tables, selectedTable]
   );
 
-  // Reset query and page when table changes
-  useEffect(() => {
-    setPage(0);
-    setIsCustomQuery(false);
-  }, [tableName]);
-
-  useEffect(() => {
-    if (db && tableName && !isCustomQuery) {
-      setIsQueryLoading(true);
-      const queryString = `SELECT * FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
-      (async () => {
-        try {
-          const tableResult: QueryExecResult[] = query(queryString);
-          const { data, columns } = mapQueryResults(tableResult);
-          setColumns(columns);
-          setData(data);
-          setQueryError(null);
-          setCustomQuery(queryString);
-        } catch (error) {
-          if (error instanceof Error) setQueryError(error.message);
-        } finally {
-          setIsQueryLoading(false);
-        }
-      })();
-    }
-  }, [db, tableName, page, rowPerPageOrAuto]);
+  const {
+    data,
+    columns,
+    customQuery,
+    setCustomQuery,
+    isQueryLoading,
+    handleCustomQuery
+  } = useQueryData(tableName, rowsPerPage, page, isCustomQuery);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
     setCustomQuery("");
     setIsCustomQuery(false);
-  }, [setIsCustomQuery, setQueryError]);
+  }, [setIsCustomQuery, setQueryError, setCustomQuery]);
 
   const handleResetPage = useCallback(() => {
     setPage(0);
     handleResetQuery();
-  }, [handleResetQuery]);
-
-  const handleCustomQuery = useCallback(() => {
-    if (customQuery.trim() === "") {
-      setQueryError(null);
-      return;
-    }
-
-    setIsQueryLoading(true);
-    (async () => {
-      try {
-        const customResult: QueryExecResult[] = query(customQuery);
-        const { data, columns } = mapQueryResults(customResult);
-        setColumns(columns);
-        setData(data);
-        setIsCustomQuery(true);
-        setQueryError(null);
-      } catch (error) {
-        if (error instanceof Error) setQueryError(error.message);
-      } finally {
-        setIsQueryLoading(false);
-      }
-    })();
-  }, [customQuery, db, query, setQueryError, setIsCustomQuery]);
-
-  let rowsPerPage = 30;
-  if (rowPerPageOrAuto === "auto") {
-    const screenHeight = window.innerHeight;
-    const thresholds = [
-      { height: 1700, rowHeight: 65 },
-      { height: 1300, rowHeight: 70 },
-      { height: 1200, rowHeight: 75 },
-      { height: 1100, rowHeight: 75 },
-      { height: 1000, rowHeight: 80 },
-      { height: 950, rowHeight: 85 },
-      { height: 900, rowHeight: 90 },
-      { height: 850, rowHeight: 95 },
-      { height: 800, rowHeight: 100 },
-      { height: 750, rowHeight: 105 },
-      { height: 700, rowHeight: 110 },
-      { height: 600, rowHeight: 120 },
-      { height: 550, rowHeight: 150 },
-      { height: 500, rowHeight: 190 },
-      { height: 0, rowHeight: 280 }
-    ];
-    const defaultRowHeight = 120;
-    let rowHeight = defaultRowHeight;
-    for (const threshold of thresholds) {
-      if (screenHeight > threshold.height) {
-        rowHeight = threshold.rowHeight;
-        break;
-      }
-    }
-    rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
-  } else {
-    rowsPerPage = rowPerPageOrAuto;
-  }
+  }, [handleResetQuery, setPage]);
 
   return (
     <div className="flex flex-col gap-3 pb-8">

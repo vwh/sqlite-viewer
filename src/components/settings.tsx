@@ -1,8 +1,6 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useState, useEffect } from "react";
-
 import { toast } from "sonner";
-
 import {
   exportTableAsCSV,
   exportAllTablesAsCSV,
@@ -41,11 +39,7 @@ export default function Settings() {
         setRowPerPageOrAuto(Number(rowsPerPageLocalStorage));
       }
     }
-  }, []);
-
-  useEffect(() => {
-    console.log(selectedRowsPerPage);
-  }, [selectedRowsPerPage]);
+  }, [setRowPerPageOrAuto]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -121,9 +115,7 @@ export default function Settings() {
                 <Button
                   onClick={toggleAutoRowsPerPage}
                   variant="outline"
-                  className={
-                    isAutoRowsPerPage ? "border border-primary" : undefined
-                  }
+                  className={isAutoRowsPerPage ? "border border-primary" : ""}
                 >
                   Auto calculate
                 </Button>

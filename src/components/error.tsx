@@ -6,8 +6,8 @@ export default function ErrorMessage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-center gap-4 font-semibold md:text-2xl p-10 border rounded">
-      <AlertTriangle className="w-10 h-10" />
+    <div className="flex items-center justify-center gap-5 font-semibold p-4 border rounded">
+      <AlertTriangle className="w-6 h-6" />
       {children}
     </div>
   );
