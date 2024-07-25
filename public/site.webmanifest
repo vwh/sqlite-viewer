@@ -1,6 +1,6 @@
 {
-  "theme_color": "#e6e6e6",
-  "background_color": "#e6e6e6",
+  "theme_color": "#18181B",
+  "background_color": "#DEDEDE",
   "icons": [
     {
       "purpose": "maskable",
@@ -38,5 +38,8 @@
       "url": "https://apps.apple.com/us/app/sqlite-mobile-client/id1465080890",
       "id": "id1465080890"
     }
-  ]
+  ],
+  "launch_handler": {
+    "client_mode": "auto"
+  }
 }
