@@ -1,11 +1,13 @@
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+
 import {
   exportTableAsCSV,
   exportAllTablesAsCSV,
   downloadDatabase
 } from "@/lib/sqlite";
+
+import { toast } from "sonner";
 import {
   Drawer,
   DrawerClose,
@@ -20,64 +22,91 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Settings2 } from "lucide-react";
 
+const ROWS_PER_PAGE_KEY = "rowsPerPage";
+
 export default function Settings() {
   const { setRowPerPageOrAuto, selectedTable, setIsCustomQuery, db } =
     useSQLiteStore();
-
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
     null
   );
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
 
   useEffect(() => {
-    const rowsPerPageLocalStorage = localStorage.getItem("rowsPerPage");
+    const rowsPerPageLocalStorage = localStorage.getItem(ROWS_PER_PAGE_KEY);
     if (rowsPerPageLocalStorage) {
       if (rowsPerPageLocalStorage === "auto") {
         setIsAutoRowsPerPage(true);
       } else {
-        setSelectedRowsPerPage(Number(rowsPerPageLocalStorage));
-        setRowPerPageOrAuto(Number(rowsPerPageLocalStorage));
+        const parsedValue = Number(rowsPerPageLocalStorage);
+        setSelectedRowsPerPage(parsedValue);
+        setRowPerPageOrAuto(parsedValue);
       }
     }
   }, [setRowPerPageOrAuto]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    if (!isNaN(value)) {
-      setSelectedRowsPerPage(value);
-      setIsAutoRowsPerPage(false);
-    }
-  };
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = Number(e.target.value);
+      if (!isNaN(value)) {
+        setSelectedRowsPerPage(value);
+        setIsAutoRowsPerPage(false);
+      }
+    },
+    []
+  );
 
-  const toggleAutoRowsPerPage = () => {
+  const toggleAutoRowsPerPage = useCallback(() => {
     setIsAutoRowsPerPage((prev) => !prev);
-  };
+  }, []);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     setIsCustomQuery(false);
     if (selectedRowsPerPage === null) {
-      return toast.error(
+      toast.error(
         "Please provide a number of rows per page or set it to auto."
       );
+      return;
     }
     if (selectedRowsPerPage < 1) {
-      return toast.error("Please provide a positive number of rows per page.");
+      toast.error("Please provide a positive number of rows per page.");
+      return;
     }
-    localStorage.setItem(
-      "rowsPerPage",
-      isAutoRowsPerPage ? "auto" : selectedRowsPerPage.toString()
-    );
+    const value = isAutoRowsPerPage ? "auto" : selectedRowsPerPage.toString();
+    localStorage.setItem(ROWS_PER_PAGE_KEY, value);
     setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : selectedRowsPerPage);
-  };
+  }, [
+    selectedRowsPerPage,
+    isAutoRowsPerPage,
+    setIsCustomQuery,
+    setRowPerPageOrAuto
+  ]);
 
-  const renderExportButton = (
-    onClick: () => void,
-    label: string,
-    className?: string
-  ) => (
-    <Button variant="outline" onClick={onClick} className={className}>
-      <span className="ml-2">{label}</span>
-    </Button>
+  const renderExportButton = useCallback(
+    (onClick: () => void, label: string, className?: string) => (
+      <Button variant="outline" onClick={onClick} className={className}>
+        <span className="ml-2">{label}</span>
+      </Button>
+    ),
+    []
+  );
+
+  const exportButtons = useMemo(
+    () =>
+      db && (
+        <div className="border rounded p-2 flex flex-col gap-1">
+          {renderExportButton(() => downloadDatabase(db), "Export as SQLite")}
+          {renderExportButton(
+            () => exportTableAsCSV(db, parseInt(selectedTable)),
+            "Export selected table as CSV"
+          )}
+          {renderExportButton(
+            () => exportAllTablesAsCSV(db),
+            "Export all tables as CSV"
+          )}
+        </div>
+      ),
+    [db, renderExportButton, selectedTable]
   );
 
   return (
@@ -117,7 +146,7 @@ export default function Settings() {
                   variant="outline"
                   className={isAutoRowsPerPage ? "border border-primary" : ""}
                 >
-                  Auto calculate
+                  Auto Calculate
                 </Button>
               </div>
               <Button
@@ -128,27 +157,11 @@ export default function Settings() {
                 <span>Save</span>
               </Button>
             </div>
-
             <div>
               <p className="text-sm text-muted-foreground mb-1">
                 Exports Settings
               </p>
-              {db && (
-                <div className="border rounded p-2 flex flex-col gap-1">
-                  {renderExportButton(
-                    () => downloadDatabase(db),
-                    "Export as SQLite"
-                  )}
-                  {renderExportButton(
-                    () => exportTableAsCSV(db, parseInt(selectedTable)),
-                    "Export selected table as CSV"
-                  )}
-                  {renderExportButton(
-                    () => exportAllTablesAsCSV(db),
-                    "Export all tables as CSV"
-                  )}
-                </div>
-              )}
+              {exportButtons}
             </div>
           </div>
           <DrawerFooter>

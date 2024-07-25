@@ -1,26 +1,39 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useDropzone, type FileError } from "react-dropzone";
-import { FileStats } from "./dropzone-helpers";
+import {
+  useDropzone,
+  type FileError,
+  type FileRejection
+} from "react-dropzone";
+
+import { toast } from "sonner";
 import Settings from "./settings";
 import ThemeToggle from "./theme-toggle";
+
+const ACCEPTED_TYPES = {
+  "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
+  "application/x-sqlite3": [".sqlite", ".sqlite3"],
+  "application/octet-stream": [".db"],
+  "application/sql": [".sql"]
+};
+
+const EXAMPLES = {
+  CHINOOK:
+    "https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
+};
 
 export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
-    async (
-      acceptedFiles: File[],
-      fileRejections: { file: File; errors: FileError[] }[]
-    ) => {
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       setErrors([]);
       setTables([]);
       setSelectedTable("0");
 
       if (acceptedFiles.length > 0) {
-        const selectedFile = acceptedFiles[0];
-        await loadDatabase(selectedFile);
+        await loadDatabase(acceptedFiles[0]);
       }
 
       if (fileRejections.length > 0) {
@@ -36,59 +49,72 @@ export default function UploadFile() {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    accept: {
-      "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
-      "application/x-sqlite3": [".sqlite", ".sqlite3"],
-      "application/octet-stream": [".db"],
-      "application/sql": [".sql"]
-    }
+    accept: ACCEPTED_TYPES
   });
 
-  const renderDropzoneContent = (hasDatabase: boolean) => (
-    <div className="flex items-center gap-2 justify-center h-full">
-      <div
-        {...getRootProps()}
-        className={`grow h-full border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
-          hasDatabase ? "" : "py-32"
-        }`}
-      >
-        <input id="file-upload" {...getInputProps()} />
-        <label htmlFor="file-upload" className="sr-only">
-          Upload SQLite File
-        </label>
-        <p className="hidden sm:block">
-          Drag and drop a SQLite file here, or click to select one
-        </p>
-        <p className="block sm:hidden">
-          {hasDatabase
-            ? "Click to select a file"
-            : "Click to select a SQLite file"}
-        </p>
-        {!hasDatabase && (
-          <a
-            href="https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
-            className="text-sm text-link hover:underline"
-            title="Download sample file"
-          >
-            Or download & try this sample file
-          </a>
+  const renderDropzoneContent = useCallback(
+    (hasDatabase: boolean) => (
+      <div className="flex items-center gap-2 justify-center h-full">
+        <div
+          {...getRootProps()}
+          className={`grow h-full border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
+            hasDatabase ? "py-0" : "py-32"
+          }`}
+        >
+          <input id="file-upload" {...getInputProps()} />
+          <label htmlFor="file-upload" className="sr-only">
+            Upload SQLite File
+          </label>
+          <p className="hidden sm:block">
+            Drag and drop a SQLite file here, or click to select one
+          </p>
+          <p className="block sm:hidden">
+            {hasDatabase
+              ? "Click to select a file"
+              : "Click to select a SQLite file"}
+          </p>
+          {!hasDatabase && (
+            <a
+              href={EXAMPLES.CHINOOK}
+              className="text-sm text-link hover:underline"
+              title="Download sample file"
+            >
+              Or download & try this sample file
+            </a>
+          )}
+        </div>
+        {hasDatabase && (
+          <div className="flex flex-col gap-1">
+            <ThemeToggle />
+            <Settings />
+          </div>
         )}
       </div>
-      {hasDatabase && (
-        <div className="flex flex-col gap-1">
-          <ThemeToggle />
-          <Settings />
-        </div>
-      )}
-    </div>
+    ),
+    [getRootProps, getInputProps]
+  );
+
+  const memoizedContent = useMemo(
+    () => renderDropzoneContent(Boolean(db)),
+    [renderDropzoneContent, db]
   );
 
   return (
     <section>
-      {renderDropzoneContent(Boolean(db))}
-      <div>
-        <FileStats errors={errors} />
-      </div>
+      {memoizedContent}
+      <FileStats errors={errors} />
     </section>
   );
 }
+
+const FileStats: React.FC<{ errors?: FileError[] }> = React.memo(
+  ({ errors }) => {
+    React.useEffect(() => {
+      errors?.forEach((error) =>
+        toast(error.message, { position: "bottom-right" })
+      );
+    }, [errors]);
+
+    return null;
+  }
+);

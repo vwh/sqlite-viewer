@@ -1,15 +1,15 @@
 import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
 import { saveAs } from "file-saver";
-
 import type { TableRow } from "@/types";
 
-// Load the SQLite database from a file.
+const SQL_WASM_PATH = "https://sql.js.org/dist/sql-wasm.wasm";
+
 export const loadDatabase = async (file: File): Promise<Database> => {
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const SQL = await initSqlJs({
-      locateFile: (fileName) => `https://sql.js.org/dist/${fileName}`
-    });
+    const [arrayBuffer, SQL] = await Promise.all([
+      file.arrayBuffer(),
+      initSqlJs({ locateFile: () => SQL_WASM_PATH })
+    ]);
     return new SQL.Database(new Uint8Array(arrayBuffer));
   } catch (error) {
     console.error("Failed to load database:", error);
@@ -17,24 +17,26 @@ export const loadDatabase = async (file: File): Promise<Database> => {
   }
 };
 
-// Get the names of all tables in the database.
 export const getTableNames = (database: Database): string[] => {
   try {
     const result = database.exec(
       "SELECT name FROM sqlite_master WHERE type='table';"
     );
-    return result[0]?.values.map((row) => row[0] as string) || [];
+    return (result[0]?.values.flat() as string[]) || [];
   } catch (error) {
     console.error("Failed to get table names:", error);
     return [];
   }
 };
 
-// Get the schema of a specific table.
 export const getTableSchema = async (database: Database, tableName: string) => {
   try {
-    const tableInfoResult = database.exec(`PRAGMA table_info("${tableName}")`);
-    const tableSchema = tableInfoResult[0].values.reduce(
+    const [tableInfoResult, foreignKeyInfoResult] = database.exec(`
+      PRAGMA table_info("${tableName}");
+      PRAGMA foreign_key_list("${tableName}");
+    `);
+
+    const tableSchema = tableInfoResult.values.reduce(
       (acc, row) => {
         acc[row[1] as string] = {
           type: row[2] as string,
@@ -43,26 +45,18 @@ export const getTableSchema = async (database: Database, tableName: string) => {
         };
         return acc;
       },
-      {} as {
-        [columnName: string]: {
-          type: string;
-          isPrimaryKey: boolean;
-          isForeignKey: boolean;
-        };
-      }
+      {} as Record<
+        string,
+        { type: string; isPrimaryKey: boolean; isForeignKey: boolean }
+      >
     );
 
-    const foreignKeyInfoResult = database.exec(
-      `PRAGMA foreign_key_list("${tableName}")`
-    );
-    if (foreignKeyInfoResult.length > 0) {
-      foreignKeyInfoResult[0].values.forEach((row) => {
-        const columnName = row[3] as string;
-        if (tableSchema[columnName]) {
-          tableSchema[columnName].isForeignKey = true;
-        }
-      });
-    }
+    foreignKeyInfoResult?.values.forEach((row) => {
+      const columnName = row[3] as string;
+      if (tableSchema[columnName]) {
+        tableSchema[columnName].isForeignKey = true;
+      }
+    });
 
     return tableSchema;
   } catch (error) {
@@ -71,55 +65,41 @@ export const getTableSchema = async (database: Database, tableName: string) => {
   }
 };
 
-// Map query results to a structured format.
-export function mapQueryResults(result: QueryExecResult[]): {
+// Map query results to data and columns
+export const mapQueryResults = (
+  result: QueryExecResult[]
+): {
   data: TableRow[];
   columns: string[];
-} {
-  if (result.length > 0) {
-    const columns = result[0].columns;
-    const data = result[0].values.map((row) =>
-      columns.reduce((acc, col, index) => {
-        acc[col] = row[index];
-        return acc;
-      }, {} as TableRow)
-    );
-    return { data, columns };
-  }
-  return { data: [], columns: [] };
-}
+} => {
+  if (result.length === 0) return { data: [], columns: [] };
 
-const exportDatabase = (database: Database): Uint8Array => {
+  const { columns, values } = result[0];
+  const data = values.map((row) =>
+    Object.fromEntries(columns.map((col, i) => [col, row[i]]))
+  );
+  return { data, columns };
+};
+
+export const downloadDatabase = (database: Database): void => {
   try {
-    return database.export();
+    const binaryArray = database.export();
+    const blob = new Blob([binaryArray], { type: "application/x-sqlite3" });
+    saveAs(blob, "database.sqlite");
   } catch (error) {
     console.error("Failed to export database:", error);
     throw error;
   }
 };
 
-// Download the entire database as sqlite file
-export const downloadDatabase = (database: Database): void => {
-  const binaryArray = exportDatabase(database);
-  const blob = new Blob([binaryArray], { type: "application/octet-stream" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "database.sqlite";
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-// Function to convert array of rows to CSV format
 const arrayToCSV = (columns: string[], rows: any[]): string => {
-  const header = columns.join(",");
+  const header = columns.map((col) => `"${col}"`).join(",");
   const csvRows = rows.map((row) =>
-    columns.map((col) => `"${row[col]}"`).join(",")
+    columns.map((col) => `"${row[col] ?? ""}"`).join(",")
   );
   return [header, ...csvRows].join("\n");
 };
 
-// Export a single table as CSV and initiate download
 export const exportTableAsCSV = (
   database: Database,
   tableIndex: number
@@ -127,7 +107,7 @@ export const exportTableAsCSV = (
   const tableNames = getTableNames(database);
   const tableName = tableNames[tableIndex];
   try {
-    const result = database.exec(`SELECT * FROM ${tableName}`);
+    const result = database.exec(`SELECT * FROM "${tableName}"`);
     if (result.length === 0) {
       throw new Error(`Table ${tableName} is empty or does not exist.`);
     }
@@ -141,15 +121,13 @@ export const exportTableAsCSV = (
   }
 };
 
-// Export all tables as CSV and initiate download
 export const exportAllTablesAsCSV = (database: Database): void => {
-  const tableNames = getTableNames(database);
-
-  tableNames.forEach((tableName) => {
+  getTableNames(database).forEach((tableName) => {
     try {
-      const result = database.exec(`SELECT * FROM ${tableName}`);
+      const result = database.exec(`SELECT * FROM "${tableName}"`);
       if (result.length === 0) {
-        throw new Error(`Table ${tableName} is empty or does not exist.`);
+        console.warn(`Table ${tableName} is empty or does not exist.`);
+        return;
       }
       const { data, columns } = mapQueryResults(result);
       const csvContent = arrayToCSV(columns, data);

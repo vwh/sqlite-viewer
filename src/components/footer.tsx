@@ -1,6 +1,7 @@
 import ThemeToggle from "./theme-toggle";
-
 import { Github } from "lucide-react";
+
+export const REPO = "https://github.com/vwh/sqlite-viewer";
 
 export default function Footer() {
   return (
@@ -11,7 +12,7 @@ export default function Footer() {
         </p>
         <p className="block sm:hidden text-xs">No file uploads to server.</p>
         <a
-          href="https://github.com/vwh/sqlite-viewer"
+          href={REPO}
           target="_blank"
           className="text-sm text-link hover:underline flex gap-1 items-center"
           title="Star on GitHub"
