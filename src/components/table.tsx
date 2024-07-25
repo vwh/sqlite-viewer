@@ -139,7 +139,7 @@ export function DBTable() {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-3 pb-8">
       <section className="flex flex-col gap-2 p-3 border rounded pb-2">
         <TableSelect />
         <div className="flex gap-1">
@@ -192,6 +192,6 @@ export function DBTable() {
           rowCount={rowCount}
         />
       )}
-    </>
+    </div>
   );
 }

@@ -76,8 +76,8 @@ export default function UploadFile() {
       </div>
       {hasDatabase && (
         <div className="flex flex-col gap-1">
-          <Settings />
           <ThemeToggle />
+          <Settings />
         </div>
       )}
     </div>
