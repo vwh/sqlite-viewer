@@ -1,5 +1,5 @@
 export default function ErrorMessage({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {

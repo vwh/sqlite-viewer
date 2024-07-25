@@ -21,7 +21,7 @@ export default function Logo() {
     const observer = new MutationObserver(updateLogoSrc);
     observer.observe(document.body, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["class"]
     });
 
     return () => observer.disconnect();

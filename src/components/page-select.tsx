@@ -12,7 +12,7 @@ export default function PageSelect({
   page,
   setPage,
   rowsPerPage,
-  rowCount,
+  rowCount
 }: PageSelectProps) {
   const totalPages = Math.ceil(rowCount / rowsPerPage);
   const currentPage = Math.floor(page / rowsPerPage) + 1;

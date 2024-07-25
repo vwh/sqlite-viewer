@@ -12,5 +12,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <App />
     </main>
     <Toaster />
-  </React.StrictMode>,
+  </React.StrictMode>
 );

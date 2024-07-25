@@ -8,7 +8,7 @@ export const loadDatabase = async (file: File): Promise<Database> => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const SQL = await initSqlJs({
-      locateFile: (fileName) => `https://sql.js.org/dist/${fileName}`,
+      locateFile: (fileName) => `https://sql.js.org/dist/${fileName}`
     });
     return new SQL.Database(new Uint8Array(arrayBuffer));
   } catch (error) {
@@ -21,7 +21,7 @@ export const loadDatabase = async (file: File): Promise<Database> => {
 export const getTableNames = (database: Database): string[] => {
   try {
     const result = database.exec(
-      "SELECT name FROM sqlite_master WHERE type='table';",
+      "SELECT name FROM sqlite_master WHERE type='table';"
     );
     return result[0]?.values.map((row) => row[0] as string) || [];
   } catch (error) {
@@ -39,7 +39,7 @@ export const getTableSchema = async (database: Database, tableName: string) => {
         acc[row[1] as string] = {
           type: row[2] as string,
           isPrimaryKey: (row[5] as number) === 1,
-          isForeignKey: false,
+          isForeignKey: false
         };
         return acc;
       },
@@ -49,11 +49,11 @@ export const getTableSchema = async (database: Database, tableName: string) => {
           isPrimaryKey: boolean;
           isForeignKey: boolean;
         };
-      },
+      }
     );
 
     const foreignKeyInfoResult = database.exec(
-      `PRAGMA foreign_key_list("${tableName}")`,
+      `PRAGMA foreign_key_list("${tableName}")`
     );
     if (foreignKeyInfoResult.length > 0) {
       foreignKeyInfoResult[0].values.forEach((row) => {
@@ -82,7 +82,7 @@ export function mapQueryResults(result: QueryExecResult[]): {
       columns.reduce((acc, col, index) => {
         acc[col] = row[index];
         return acc;
-      }, {} as TableRow),
+      }, {} as TableRow)
     );
     return { data, columns };
   }
@@ -114,7 +114,7 @@ export const downloadDatabase = (database: Database): void => {
 const arrayToCSV = (columns: string[], rows: any[]): string => {
   const header = columns.join(",");
   const csvRows = rows.map((row) =>
-    columns.map((col) => `"${row[col]}"`).join(","),
+    columns.map((col) => `"${row[col]}"`).join(",")
   );
   return [header, ...csvRows].join("\n");
 };
@@ -122,7 +122,7 @@ const arrayToCSV = (columns: string[], rows: any[]): string => {
 // Export a single table as CSV and initiate download
 export const exportTableAsCSV = (
   database: Database,
-  tableIndex: number,
+  tableIndex: number
 ): void => {
   const tableNames = getTableNames(database);
   const tableName = tableNames[tableIndex];

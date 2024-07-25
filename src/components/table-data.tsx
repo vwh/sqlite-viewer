@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow as TTableRow,
+  TableRow as TTableRow
 } from "./ui/table";
 import { KeyRound, KeySquare, Cuboid, Clock9 } from "lucide-react";
 
@@ -29,7 +29,7 @@ const getIcon = (columnSchema: any) => {
 const renderTableHead = (
   columns: string[],
   tableSchemas: TableInfo,
-  tableName: string,
+  tableName: string
 ) => (
   <TableHeader>
     <TTableRow>
@@ -58,7 +58,7 @@ const renderTableBody = (
   data: TableRow[],
   columns: string[],
   tableSchemas: TableInfo,
-  tableName: string,
+  tableName: string
 ) => (
   <TableBody>
     {data.map((row, rowIndex) => (
@@ -84,7 +84,7 @@ export default function DBTableComponent({
   data,
   columns,
   tableName,
-  tableSchemas,
+  tableSchemas
 }: DBTableComponentProps) {
   return (
     <Table>

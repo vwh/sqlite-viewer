@@ -37,7 +37,7 @@ function App() {
           setShowDialog(true);
         } else {
           setFetchError(
-            `Error fetching database from URL (with proxy): ${url} - ${error.message}`,
+            `Error fetching database from URL (with proxy): ${url} - ${error.message}`
           );
         }
       }

@@ -12,7 +12,7 @@ export default function UploadFile() {
   const onDrop = useCallback(
     async (
       acceptedFiles: File[],
-      fileRejections: { file: File; errors: FileError[] }[],
+      fileRejections: { file: File; errors: FileError[] }[]
     ) => {
       setErrors([]);
       setTables([]);
@@ -25,12 +25,12 @@ export default function UploadFile() {
 
       if (fileRejections.length > 0) {
         const rejectionErrors = fileRejections.flatMap(
-          (rejection) => rejection.errors,
+          (rejection) => rejection.errors
         );
         setErrors(rejectionErrors);
       }
     },
-    [loadDatabase, setTables, setSelectedTable],
+    [loadDatabase, setTables, setSelectedTable]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -40,8 +40,8 @@ export default function UploadFile() {
       "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
       "application/x-sqlite3": [".sqlite", ".sqlite3"],
       "application/octet-stream": [".db"],
-      "application/sql": [".sql"],
-    },
+      "application/sql": [".sql"]
+    }
   });
 
   const renderDropzoneContent = (hasDatabase: boolean) => (

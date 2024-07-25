@@ -26,7 +26,7 @@ export function DBTable() {
     setQueryError,
     rowPerPageOrAuto,
     isCustomQuery,
-    setIsCustomQuery,
+    setIsCustomQuery
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
@@ -123,7 +123,7 @@ export function DBTable() {
       { height: 600, rowHeight: 120 },
       { height: 550, rowHeight: 150 },
       { height: 500, rowHeight: 190 },
-      { height: 0, rowHeight: 280 },
+      { height: 0, rowHeight: 280 }
     ];
     const defaultRowHeight = 120;
     let rowHeight = defaultRowHeight;

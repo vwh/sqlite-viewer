@@ -19,7 +19,7 @@ export function FileStats({ errors }: { errors?: FileError[] }) {
   errors && (
     <>
       {errors.map((error) =>
-        toast(error.message, { position: "bottom-right" }),
+        toast(error.message, { position: "bottom-right" })
       )}
     </>
   );

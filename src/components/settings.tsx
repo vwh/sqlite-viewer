@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import {
   exportTableAsCSV,
   exportAllTablesAsCSV,
-  downloadDatabase,
+  downloadDatabase
 } from "@/lib/sqlite";
 import {
   Drawer,
@@ -16,7 +16,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
+  DrawerTrigger
 } from "./ui/drawer";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -27,7 +27,7 @@ export default function Settings() {
     useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
-    null,
+    null
   );
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
 
@@ -63,7 +63,7 @@ export default function Settings() {
     setIsCustomQuery(false);
     if (selectedRowsPerPage === null) {
       return toast.error(
-        "Please provide a number of rows per page or set it to auto.",
+        "Please provide a number of rows per page or set it to auto."
       );
     }
     if (selectedRowsPerPage < 1) {
@@ -71,7 +71,7 @@ export default function Settings() {
     }
     localStorage.setItem(
       "rowsPerPage",
-      isAutoRowsPerPage ? "auto" : selectedRowsPerPage.toString(),
+      isAutoRowsPerPage ? "auto" : selectedRowsPerPage.toString()
     );
     setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : selectedRowsPerPage);
   };
@@ -79,7 +79,7 @@ export default function Settings() {
   const renderExportButton = (
     onClick: () => void,
     label: string,
-    className?: string,
+    className?: string
   ) => (
     <Button variant="outline" onClick={onClick} className={className}>
       <span className="ml-2">{label}</span>
@@ -145,15 +145,15 @@ export default function Settings() {
                 <div className="border rounded p-2 flex flex-col gap-1">
                   {renderExportButton(
                     () => downloadDatabase(db),
-                    "Export as SQLite",
+                    "Export as SQLite"
                   )}
                   {renderExportButton(
                     () => exportTableAsCSV(db, parseInt(selectedTable)),
-                    "Export selected table as CSV",
+                    "Export selected table as CSV"
                   )}
                   {renderExportButton(
                     () => exportAllTablesAsCSV(db),
-                    "Export all tables as CSV",
+                    "Export all tables as CSV"
                   )}
                 </div>
               )}

@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "./ui/select";
 import { Badge } from "./ui/badge";
 
