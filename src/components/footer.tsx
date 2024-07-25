@@ -5,16 +5,16 @@ export const REPO = "https://github.com/vwh/sqlite-viewer";
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-between p-4 border rounded">
+    <footer className="flex items-center justify-between rounded border p-4">
       <div>
-        <p className="hidden sm:block text-xs">
+        <p className="hidden text-xs sm:block">
           No file will be uploaded to server. using JavaScript, sql.js
         </p>
-        <p className="block sm:hidden text-xs">No file uploads to server.</p>
+        <p className="block text-xs sm:hidden">No file uploads to server.</p>
         <a
           href={REPO}
           target="_blank"
-          className="text-sm text-link hover:underline flex gap-1 items-center"
+          className="flex items-center gap-1 text-sm text-link hover:underline"
           title="Star on GitHub"
         >
           <Github className="h-4 w-4" />

@@ -31,7 +31,7 @@ export default function TableSelect() {
   );
 
   return (
-    <section className="flex justify-center items-center gap-2">
+    <section className="flex items-center justify-center gap-2">
       <Select value={selectedTable} onValueChange={setSelectedTable}>
         <SelectTrigger className="grow">
           <SelectValue placeholder="Select a table" />
@@ -45,10 +45,10 @@ export default function TableSelect() {
       </Select>
       <Badge
         title="Rows"
-        className="text-sm grow min-w-[100px] md:min-w-[200px] py-2"
+        className="min-w-[100px] grow py-2 text-sm md:min-w-[200px]"
         variant="outline"
       >
-        <span className="text-center w-full">{selectedTableCount}</span>
+        <span className="w-full text-center">{selectedTableCount}</span>
       </Badge>
     </section>
   );

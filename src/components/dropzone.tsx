@@ -54,10 +54,10 @@ export default function UploadFile() {
 
   const renderDropzoneContent = useCallback(
     (hasDatabase: boolean) => (
-      <div className="flex items-center gap-2 justify-center h-full">
+      <div className="flex h-full items-center justify-center gap-2">
         <div
           {...getRootProps()}
-          className={`grow h-full border p-6 rounded cursor-pointer text-center flex flex-col items-center justify-center ${
+          className={`flex h-full grow cursor-pointer flex-col items-center justify-center rounded border p-6 text-center ${
             hasDatabase ? "py-0" : "py-32"
           }`}
         >

@@ -40,7 +40,7 @@ const TableHeadCell: React.FC<{ col: string; columnSchema: ColumnSchema }> =
     <TableHead>
       <HoverCard>
         <HoverCardTrigger asChild>
-          <span className="hover:underline cursor-pointer">
+          <span className="cursor-pointer hover:underline">
             <div className="flex gap-1">
               {col}
               <ColumnIcon columnSchema={columnSchema} />

@@ -93,19 +93,19 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        "p-4 align-middle [&:has([role=checkbox])]:pr-0 truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap",
+        "max-w-[200px] overflow-hidden truncate text-ellipsis whitespace-nowrap p-4 align-middle [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}
     >
       <HoverCard>
         <HoverCardTrigger asChild>
-          <span className="hover:underline cursor-pointer">{children}</span>
+          <span className="cursor-pointer hover:underline">{children}</span>
         </HoverCardTrigger>
         <HoverCardContent side="bottom" align="start">
           <div className="flex flex-col gap-1">
             {dataType === "BLOB" ? (
-              <span className="truncate max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+              <span className="max-w-[200px] overflow-hidden truncate text-ellipsis whitespace-nowrap">
                 {children}
               </span>
             ) : (

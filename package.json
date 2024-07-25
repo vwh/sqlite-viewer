@@ -39,6 +39,7 @@
     "file-saver": "^2.0.5",
     "lucide-react": "^0.414.0",
     "next-themes": "^0.3.0",
+    "prettier-plugin-tailwindcss": "^0.6.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.3",
@@ -69,5 +70,6 @@
     "typescript": "^5.5.4",
     "vite": "^5.3.4",
     "vite-plugin-pwa": "^0.20.0"
-  }
+  },
+  "packageManager": "npm@10.5.0"
 }

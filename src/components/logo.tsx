@@ -5,7 +5,7 @@ export default function Logo() {
   const logoSrc = isDark ? "/sqlite-dark.webp" : "/sqlite-light.webp";
 
   return (
-    <section className="flex justify-center border rounded py-3">
+    <section className="flex justify-center rounded border py-3">
       <div className="flex flex-col items-center gap-3">
         <img
           id="logo"

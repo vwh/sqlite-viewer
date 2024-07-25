@@ -94,7 +94,7 @@ export default function Settings() {
   const exportButtons = useMemo(
     () =>
       db && (
-        <div className="border rounded p-2 flex flex-col gap-1">
+        <div className="flex flex-col gap-1 rounded border p-2">
           {renderExportButton(() => downloadDatabase(db), "Export as SQLite")}
           {renderExportButton(
             () => exportTableAsCSV(db, parseInt(selectedTable)),
@@ -124,12 +124,12 @@ export default function Settings() {
               Personalize your site experience here.
             </DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 pb-0 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 p-4 pb-0">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">
+              <p className="mb-1 text-sm text-muted-foreground">
                 Rows Per Page
               </p>
-              <div className="border rounded p-2 flex gap-1 justify-center items-center">
+              <div className="flex items-center justify-center gap-1 rounded border p-2">
                 <Input
                   value={selectedRowsPerPage || ""}
                   onChange={handleInputChange}
@@ -138,7 +138,7 @@ export default function Settings() {
                   type="number"
                   name="rowsPerPage"
                 />
-                <span className="text-sm text-muted-foreground h-full text-center">
+                <span className="h-full text-center text-sm text-muted-foreground">
                   OR
                 </span>
                 <Button
@@ -150,7 +150,7 @@ export default function Settings() {
                 </Button>
               </div>
               <Button
-                className="w-full mt-2"
+                className="mt-2 w-full"
                 onClick={handleSave}
                 variant="outline"
               >
@@ -158,7 +158,7 @@ export default function Settings() {
               </Button>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">
+              <p className="mb-1 text-sm text-muted-foreground">
                 Exports Settings
               </p>
               {exportButtons}

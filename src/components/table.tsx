@@ -63,7 +63,7 @@ export default function DBTable() {
 
   const renderQueryInput = useMemo(
     () => (
-      <div className="flex flex-col md:flex-row gap-2">
+      <div className="flex flex-col gap-2 md:flex-row">
         <Input
           type="text"
           value={customQuery}
@@ -106,7 +106,7 @@ export default function DBTable() {
     if (isQueryLoading) return <Loading>Loading {tableName}</Loading>;
     if (data.length > 0) {
       return (
-        <div className="border rounded">
+        <div className="rounded border">
           <DBTableComponent
             data={data}
             columns={columns}
@@ -121,11 +121,11 @@ export default function DBTable() {
 
   return (
     <div className="flex flex-col gap-3 pb-8">
-      <section className="flex flex-col gap-2 p-3 border rounded pb-2">
+      <section className="flex flex-col gap-2 rounded border p-3 pb-2">
         <TableSelect />
         {renderQueryInput}
         {queryError && (
-          <p className="text-xs text-red-500 capitalize text-center">
+          <p className="text-center text-xs capitalize text-red-500">
             {queryError}
           </p>
         )}
