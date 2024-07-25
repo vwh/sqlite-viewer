@@ -79,7 +79,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "circular-reveal": "circular-reveal 0.5s ease-in-out",
+        "circular-reveal": "circular-reveal 0.3s ease-in-out",
       },
     },
   },

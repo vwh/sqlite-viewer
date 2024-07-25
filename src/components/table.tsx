@@ -37,11 +37,11 @@ export function DBTable() {
 
   const tableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
   const rowCount = useMemo(
     () => tables[parseInt(selectedTable)]?.count || 0,
-    [tables, selectedTable],
+    [tables, selectedTable]
   );
 
   // Reset query and page when table changes
@@ -114,15 +114,15 @@ export function DBTable() {
       { height: 1200, rowHeight: 75 },
       { height: 1100, rowHeight: 75 },
       { height: 1000, rowHeight: 80 },
-      { height: 950, rowHeight: 80 },
-      { height: 900, rowHeight: 85 },
-      { height: 850, rowHeight: 85 },
-      { height: 800, rowHeight: 90 },
-      { height: 750, rowHeight: 95 },
-      { height: 700, rowHeight: 100 },
-      { height: 600, rowHeight: 110 },
-      { height: 550, rowHeight: 140 },
-      { height: 500, rowHeight: 180 },
+      { height: 950, rowHeight: 85 },
+      { height: 900, rowHeight: 90 },
+      { height: 850, rowHeight: 95 },
+      { height: 800, rowHeight: 100 },
+      { height: 750, rowHeight: 105 },
+      { height: 700, rowHeight: 110 },
+      { height: 600, rowHeight: 120 },
+      { height: 550, rowHeight: 150 },
+      { height: 500, rowHeight: 190 },
       { height: 0, rowHeight: 280 },
     ];
     const defaultRowHeight = 120;
@@ -142,7 +142,7 @@ export function DBTable() {
     <div className="flex flex-col gap-3 pb-8">
       <section className="flex flex-col gap-2 p-3 border rounded pb-2">
         <TableSelect />
-        <div className="flex gap-1">
+        <div className="flex flex-col md:flex-row gap-2">
           <Input
             type="text"
             value={customQuery}
@@ -150,19 +150,30 @@ export function DBTable() {
             placeholder="Enter your custom query"
             className="w-full"
           />
-          <Button onClick={handleCustomQuery} title="Run custom query">
-            <Play className="h-5 w-5" />
-          </Button>
-          <Button onClick={handleResetQuery} title="Reset query">
-            <Trash className="h-5 w-5" />
-          </Button>
-          <Button
-            onClick={handleResetPage}
-            title="Reset to first page"
-            disabled={page === 0}
-          >
-            <ListRestart className="h-5 w-5" />
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              className="w-full"
+              onClick={handleCustomQuery}
+              title="Run custom query"
+            >
+              <Play className="h-5 w-5" />
+            </Button>
+            <Button
+              className="w-full"
+              onClick={handleResetQuery}
+              title="Reset query"
+            >
+              <Trash className="h-5 w-5" />
+            </Button>
+            <Button
+              className="w-full"
+              onClick={handleResetPage}
+              title="Reset to first page"
+              disabled={page === 0}
+            >
+              <ListRestart className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
         {queryError && (
           <p className="text-xs text-red-500 capitalize text-center">

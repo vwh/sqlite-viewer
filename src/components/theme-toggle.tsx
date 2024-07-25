@@ -10,11 +10,16 @@ export default function ThemeToggle() {
     setDarkMode(isDarkMode);
     document.body.classList.toggle("dark", isDarkMode);
     localStorage.setItem("darkMode", isDarkMode.toString());
+
+    document.body.classList.add("animate-circular-reveal");
+    setTimeout(() => {
+      document.body.classList.remove("animate-circular-reveal");
+    }, 500);
   }, []);
 
   useEffect(() => {
     const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
+      "(prefers-color-scheme: dark)"
     ).matches;
 
     const savedMode = localStorage.getItem("darkMode");
