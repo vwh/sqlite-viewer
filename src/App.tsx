@@ -23,7 +23,7 @@ function App() {
       const fetchUrl = useProxy ? `https://corsproxy.io/?${url}` : url;
       const response = await fetch(fetchUrl);
       if (!response.ok) {
-        setFetchError(`URL not found or invalid: ( ${response.status} )`);
+        setFetchError(`URL not found or invalid`);
       } else {
         const blob = await response.blob();
         const file = new File([blob], "database.sqlite");
