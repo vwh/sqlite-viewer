@@ -76,16 +76,20 @@
       body {
         font-family: "Fira Mono", monospace;
       }
-
-      .no-js-message {
+      .no-js {
         text-align: center;
         margin-top: 20%;
       }
-
-      .no-js-h1 {
+      .no-js h1 {
         font-size: 2rem;
       }
     </style>
+    <link
+      rel="preload"
+      href="/sqlite-light.webp"
+      as="image"
+      type="image/webp"
+    />
     <script type="module" crossorigin src="/assets/index-D0SBxsgt.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/attr-accept-BWI1aNlo.js">
     <link rel="modulepreload" crossorigin href="/assets/react-DmpIMwDM.js">
@@ -117,12 +121,11 @@
     <link rel="modulepreload" crossorigin href="/assets/next-themes-D3kinvIj.js">
     <link rel="stylesheet" crossorigin href="/assets/index-D6dvM9RD.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
-
   <body>
     <div id="root"></div>
     <noscript>
-      <div class="no-js-message">
-        <h1 class="no-js-h1">JavaScript Required</h1>
+      <div class="no-js">
+        <h1>JavaScript Required</h1>
         <p>
           We're sorry, but this application requires JavaScript to function
           correctly. Please enable JavaScript in your browser and reload the
