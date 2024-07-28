@@ -11,7 +11,7 @@ import DBTableComponent from "./table-data";
 import ErrorMessage from "./error";
 import Loading from "./loading";
 
-import { Trash, Play, ListRestart } from "lucide-react";
+import { TrashIcon, PlayIcon, ListRestartIcon } from "lucide-react";
 
 export default function DBTable() {
   const {
@@ -79,14 +79,14 @@ export default function DBTable() {
             onClick={handleCustomQuery}
             title="Run custom query"
           >
-            <Play className="h-5 w-5" />
+            <PlayIcon className="h-5 w-5" />
           </Button>
           <Button
             className="w-full"
             onClick={handleResetQuery}
             title="Reset query"
           >
-            <Trash className="h-5 w-5" />
+            <TrashIcon className="h-5 w-5" />
           </Button>
           <Button
             className="w-full"
@@ -94,7 +94,7 @@ export default function DBTable() {
             title="Reset to first page"
             disabled={page === 0}
           >
-            <ListRestart className="h-5 w-5" />
+            <ListRestartIcon className="h-5 w-5" />
           </Button>
         </div>
       </div>

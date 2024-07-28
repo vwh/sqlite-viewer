@@ -9,7 +9,13 @@ import {
   TableHeader,
   TableRow as TTableRow
 } from "./ui/table";
-import { KeyRound, KeySquare, Cuboid, Clock9 } from "lucide-react";
+
+import {
+  KeyRoundIcon,
+  KeySquareIcon,
+  CuboidIcon,
+  Clock9Icon
+} from "lucide-react";
 
 interface DBTableComponentProps {
   data: TableRow[];
@@ -26,11 +32,13 @@ interface ColumnSchema {
 
 const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   ({ columnSchema }) => {
-    if (columnSchema?.isPrimaryKey) return <KeyRound className="h-4 w-4" />;
-    if (columnSchema?.isForeignKey) return <KeySquare className="h-4 w-4" />;
-    if (columnSchema?.type === "BLOB") return <Cuboid className="h-4 w-4" />;
+    if (columnSchema?.isPrimaryKey) return <KeyRoundIcon className="h-4 w-4" />;
+    if (columnSchema?.isForeignKey)
+      return <KeySquareIcon className="h-4 w-4" />;
+    if (columnSchema?.type === "BLOB")
+      return <CuboidIcon className="h-4 w-4" />;
     if (columnSchema?.type === "DATETIME")
-      return <Clock9 className="h-4 w-4" />;
+      return <Clock9Icon className="h-4 w-4" />;
     return null;
   }
 );

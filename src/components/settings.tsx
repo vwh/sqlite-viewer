@@ -14,7 +14,8 @@ import {
 } from "./ui/drawer";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Settings2 } from "lucide-react";
+
+import { Settings2Icon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
 
@@ -79,7 +80,7 @@ export default function Settings() {
     <Drawer>
       <DrawerTrigger asChild>
         <Button className="grow">
-          <Settings2 className="h-5 w-5" />
+          <Settings2Icon className="h-5 w-5" />
         </Button>
       </DrawerTrigger>
       <DrawerContent>

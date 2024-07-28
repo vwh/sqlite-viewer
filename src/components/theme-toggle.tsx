@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 
 import { Button } from "./ui/button";
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 
 const DARK_MODE_KEY = "darkMode";
 const ANIMATION_CLASS = "animate-circular-reveal";
@@ -51,7 +51,11 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className="relative grow"
     >
-      {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {darkMode ? (
+        <SunIcon className="h-5 w-5" />
+      ) : (
+        <MoonIcon className="h-5 w-5" />
+      )}
     </Button>
   );
 }

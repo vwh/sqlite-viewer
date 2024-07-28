@@ -1,5 +1,5 @@
 import ThemeToggle from "./theme-toggle";
-import { Github } from "lucide-react";
+import { GithubIcon } from "lucide-react";
 
 export const REPO = "https://github.com/vwh/sqlite-viewer";
 
@@ -17,7 +17,7 @@ export default function Footer() {
           className="flex items-center gap-1 text-sm text-link hover:underline"
           title="Star on GitHub"
         >
-          <Github className="h-4 w-4" />
+          <GithubIcon className="h-4 w-4" />
           <span>Star us on GitHub</span>
         </a>
       </div>
