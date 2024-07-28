@@ -76,24 +76,27 @@
       body {
         font-family: "Fira Mono", monospace;
       }
-
-      .no-js-message {
+      .no-js {
         text-align: center;
         margin-top: 20%;
       }
-
-      .no-js-h1 {
+      .no-js h1 {
         font-size: 2rem;
       }
     </style>
+    <link
+      rel="preload"
+      href="/sqlite-light.webp"
+      as="image"
+      type="image/webp"
+    />
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <noscript>
-      <div class="no-js-message">
-        <h1 class="no-js-h1">JavaScript Required</h1>
+      <div class="no-js">
+        <h1>JavaScript Required</h1>
         <p>
           We're sorry, but this application requires JavaScript to function
           correctly. Please enable JavaScript in your browser and reload the
