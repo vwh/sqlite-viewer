@@ -11,6 +11,7 @@ import {
   SelectValue
 } from "./ui/select";
 import { Badge } from "./ui/badge";
+import ExportButtons from "./export-buttons";
 
 export default function TableSelect() {
   const { tables, selectedTable, setSelectedTable } = useSQLiteStore();
@@ -50,6 +51,7 @@ export default function TableSelect() {
       >
         <span className="w-full text-center">{selectedTableCount}</span>
       </Badge>
+      <ExportButtons />
     </section>
   );
 }

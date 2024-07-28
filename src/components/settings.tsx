@@ -1,11 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-
-import {
-  exportTableAsCSV,
-  exportAllTablesAsCSV,
-  downloadDatabase
-} from "@/lib/sqlite";
 
 import { toast } from "sonner";
 import {
@@ -25,8 +19,7 @@ import { Settings2 } from "lucide-react";
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
 
 export default function Settings() {
-  const { setRowPerPageOrAuto, selectedTable, setIsCustomQuery, db } =
-    useSQLiteStore();
+  const { setRowPerPageOrAuto, setIsCustomQuery } = useSQLiteStore();
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
     null
   );
@@ -82,33 +75,6 @@ export default function Settings() {
     setRowPerPageOrAuto
   ]);
 
-  const renderExportButton = useCallback(
-    (onClick: () => void, label: string, className?: string) => (
-      <Button variant="outline" onClick={onClick} className={className}>
-        <span className="ml-2">{label}</span>
-      </Button>
-    ),
-    []
-  );
-
-  const exportButtons = useMemo(
-    () =>
-      db && (
-        <div className="flex flex-col gap-1 rounded border p-2">
-          {renderExportButton(() => downloadDatabase(db), "Export as SQLite")}
-          {renderExportButton(
-            () => exportTableAsCSV(db, parseInt(selectedTable)),
-            "Export selected table as CSV"
-          )}
-          {renderExportButton(
-            () => exportAllTablesAsCSV(db),
-            "Export all tables as CSV"
-          )}
-        </div>
-      ),
-    [db, renderExportButton, selectedTable]
-  );
-
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -157,12 +123,11 @@ export default function Settings() {
                 <span>Save</span>
               </Button>
             </div>
-            <div>
+            {/* <div>
               <p className="mb-1 text-sm text-muted-foreground">
-                Exports Settings
+                Soon
               </p>
-              {exportButtons}
-            </div>
+            </div> */}
           </div>
           <DrawerFooter>
             <DrawerClose asChild>
