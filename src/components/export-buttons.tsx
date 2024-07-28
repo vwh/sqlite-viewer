@@ -4,6 +4,7 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 import {
   exportTableAsCSV,
   exportAllTablesAsCSV,
+  exportCustomQueryAsCSV,
   downloadDatabase
 } from "@/lib/sqlite";
 
@@ -18,7 +19,7 @@ import {
 import { FileDownIcon } from "lucide-react";
 
 export default function ExportButtons() {
-  const { selectedTable, tables, db } = useSQLiteStore();
+  const { selectedTable, tables, customQuery, db } = useSQLiteStore();
 
   const renderExportButton = useCallback(
     (onClick: () => void, label: string, className?: string) => (
@@ -42,9 +43,13 @@ export default function ExportButtons() {
             () => exportAllTablesAsCSV(db),
             "Export all tables as CSV"
           )}
+          {renderExportButton(
+            () => exportCustomQueryAsCSV(db, customQuery),
+            "Export custom query"
+          )}
         </div>
       ),
-    [db, renderExportButton, selectedTable]
+    [db, renderExportButton, selectedTable, tables, customQuery]
   );
 
   return (

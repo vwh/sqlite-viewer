@@ -11,12 +11,18 @@ export function useQueryData(
   page: number,
   isCustomQuery: boolean
 ) {
-  const { db, setQueryError, setIsCustomQuery, query, appendToQueryHestory } =
-    useSQLiteStore();
+  const {
+    db,
+    setQueryError,
+    setIsCustomQuery,
+    query,
+    appendToQueryHestory,
+    customQuery,
+    setCustomQuery
+  } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
-  const [customQuery, setCustomQuery] = useState<string>("");
   const [isQueryLoading, setIsQueryLoading] = useState(true);
 
   useEffect(() => {

@@ -22,7 +22,9 @@ export default function DBTable() {
     setQueryError,
     rowPerPageOrAuto,
     isCustomQuery,
-    setIsCustomQuery
+    setIsCustomQuery,
+    customQuery,
+    setCustomQuery
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -37,14 +39,12 @@ export default function DBTable() {
     [tables, selectedTable]
   );
 
-  const {
-    data,
-    columns,
-    customQuery,
-    setCustomQuery,
-    isQueryLoading,
-    handleCustomQuery
-  } = useQueryData(tableName, rowsPerPage, page, isCustomQuery);
+  const { data, columns, isQueryLoading, handleCustomQuery } = useQueryData(
+    tableName,
+    rowsPerPage,
+    page,
+    isCustomQuery
+  );
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);

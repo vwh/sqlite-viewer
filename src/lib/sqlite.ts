@@ -100,41 +100,46 @@ const arrayToCSV = (columns: string[], rows: any[]): string => {
   return [header, ...csvRows].join("\n");
 };
 
-export const exportTableAsCSV = (
+const exportFromQuery = (
+  query: string,
   database: Database,
-  tableIndex: number
+  tableName: string
 ): void => {
-  const tableNames = getTableNames(database);
-  const tableName = tableNames[tableIndex];
   try {
-    const result = database.exec(`SELECT * FROM "${tableName}"`);
+    const result = database.exec(query);
     if (result.length === 0) {
-      throw new Error(`Table ${tableName} is empty or does not exist.`);
+      throw new Error(`Query "${query}" returned no results.`);
     }
     const { data, columns } = mapQueryResults(result);
     const csvContent = arrayToCSV(columns, data);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${tableName}.csv`);
   } catch (error) {
-    console.error(`Failed to export table "${tableName}" as CSV:`, error);
+    console.error(`Failed to get CSV for query "${query}":`, error);
     throw error;
   }
 };
 
+export const exportTableAsCSV = (
+  database: Database,
+  tableIndex: number
+): void => {
+  const tableNames = getTableNames(database);
+  const tableName = tableNames[tableIndex];
+  const query = `SELECT * FROM "${tableName}"`;
+  exportFromQuery(query, database, tableName);
+};
+
 export const exportAllTablesAsCSV = (database: Database): void => {
   getTableNames(database).forEach((tableName) => {
-    try {
-      const result = database.exec(`SELECT * FROM "${tableName}"`);
-      if (result.length === 0) {
-        console.warn(`Table ${tableName} is empty or does not exist.`);
-        return;
-      }
-      const { data, columns } = mapQueryResults(result);
-      const csvContent = arrayToCSV(columns, data);
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      saveAs(blob, `${tableName}.csv`);
-    } catch (error) {
-      console.error(`Failed to export table "${tableName}" as CSV:`, error);
-    }
+    const query = `SELECT * FROM "${tableName}"`;
+    exportFromQuery(query, database, tableName);
   });
+};
+
+export const exportCustomQueryAsCSV = (
+  database: Database,
+  query: string
+): void => {
+  exportFromQuery(query, database, "custom_query");
 };
