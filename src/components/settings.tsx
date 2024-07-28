@@ -136,12 +136,10 @@ export default function Settings() {
               <ScrollArea className="h-48 rounded-md border">
                 <div className="p-4">
                   {queryHestory.map((query, index) => (
-                    <>
-                      <div key={index} className="text-sm">
-                        {query}
-                      </div>
+                    <div key={index}>
+                      <div className="text-sm">{query}</div>
                       <Separator className="my-2" />
-                    </>
+                    </div>
                   ))}
                 </div>
               </ScrollArea>
