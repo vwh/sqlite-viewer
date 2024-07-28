@@ -54,7 +54,9 @@ export default function UploadFile() {
 
   const renderDropzoneContent = useCallback(
     (hasDatabase: boolean) => (
-      <div className="flex h-full items-center justify-center gap-2">
+      <div
+        className={`flex h-full items-center justify-center gap-2 ${hasDatabase ? "px-[10px]" : "px-0"}`}
+      >
         <div
           {...getRootProps()}
           className={`flex h-full grow cursor-pointer flex-col items-center justify-center rounded border p-6 text-center ${
