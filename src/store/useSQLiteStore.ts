@@ -26,6 +26,8 @@ interface SQLiteState {
   queryHestory: string[];
   setQueryHestory: (value: string[]) => void;
   appendToQueryHestory: (value: string) => void;
+  expandPage: boolean;
+  setExpandPage: (value: boolean) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -96,7 +98,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   queryHestory: [],
   setQueryHestory: (value: string[]) => set({ queryHestory: value }),
   appendToQueryHestory: (value: string) =>
-    set((state) => ({ queryHestory: [...state.queryHestory, value] }))
+    set((state) => ({ queryHestory: [...state.queryHestory, value] })),
+
+  expandPage: false,
+  setExpandPage: (value: boolean) => set({ expandPage: value })
 }));
 
 export default initializeStore;

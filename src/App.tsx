@@ -10,7 +10,7 @@ import Dialog from "./components/dialog";
 import Footer from "./components/footer";
 
 function App() {
-  const { db, tables, isLoading, loadDatabase } = useSQLiteStore();
+  const { db, tables, isLoading, loadDatabase, expandPage } = useSQLiteStore();
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [urlToFetch, setUrlToFetch] = useState<string | null>(null);
@@ -87,7 +87,9 @@ function App() {
   };
 
   return (
-    <>
+    <main
+      className={`mx-auto flex h-screen flex-col gap-3 p-4 ${expandPage ? "w-full" : "container"}`}
+    >
       {!db && <Logo />}
       <UploadFile />
       {renderContent()}
@@ -97,7 +99,7 @@ function App() {
         fn={handleRetryWithProxy}
       />
       {!db && <Footer />}
-    </>
+    </main>
   );
 }
 

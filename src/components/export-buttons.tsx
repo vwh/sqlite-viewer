@@ -45,7 +45,7 @@ export default function ExportButtons() {
           )}
           {renderExportButton(
             () => exportCustomQueryAsCSV(db, customQuery),
-            "Export custom query"
+            "Export custom query as CSV"
           )}
         </div>
       ),

@@ -129,7 +129,7 @@ export default function Settings() {
             </div>
             <div>
               <p className="mb-1 text-sm text-muted-foreground">
-                Query History
+                Query History ({queryHestory.length})
               </p>
               <ScrollArea className="h-48 rounded-md border">
                 <div className="p-4">
