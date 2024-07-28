@@ -82,7 +82,7 @@ export default function Settings() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button className="grow">
+        <Button className="grow" title="Open settings drawer">
           <Settings2Icon className="h-5 w-5" />
         </Button>
       </DrawerTrigger>
@@ -112,9 +112,10 @@ export default function Settings() {
                   OR
                 </span>
                 <Button
-                  onClick={toggleAutoRowsPerPage}
-                  variant="outline"
                   className={isAutoRowsPerPage ? "border border-primary" : ""}
+                  onClick={toggleAutoRowsPerPage}
+                  title="Toggle auto rows per page"
+                  variant="outline"
                 >
                   Auto Calculate
                 </Button>
@@ -122,6 +123,7 @@ export default function Settings() {
               <Button
                 className="mt-2 w-full"
                 onClick={handleSave}
+                title="Save rows per page settings"
                 variant="outline"
               >
                 <span>Save</span>
@@ -147,7 +149,9 @@ export default function Settings() {
           </div>
           <DrawerFooter>
             <DrawerClose asChild>
-              <Button variant="outline">Close</Button>
+              <Button title="Close settings drawer" variant="outline">
+                Close
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </div>

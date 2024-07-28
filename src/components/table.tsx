@@ -10,8 +10,15 @@ import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
 import ErrorMessage from "./error";
 import Loading from "./loading";
+import ExportButtons from "./export-buttons";
 
-import { TrashIcon, PlayIcon, ListRestartIcon } from "lucide-react";
+import {
+  TrashIcon,
+  PlayIcon,
+  ListRestartIcon,
+  Maximize2Icon,
+  Minimize2Icon
+} from "lucide-react";
 
 export default function DBTable() {
   const {
@@ -24,7 +31,9 @@ export default function DBTable() {
     isCustomQuery,
     setIsCustomQuery,
     customQuery,
-    setCustomQuery
+    setCustomQuery,
+    expandPage,
+    setExpandPage
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -122,7 +131,21 @@ export default function DBTable() {
   return (
     <div className="flex flex-col gap-3 pb-8">
       <section className="flex flex-col gap-2 rounded border p-3 pb-2">
-        <TableSelect />
+        <div className="flex h-full gap-1">
+          <TableSelect />
+          <Button
+            className="ml-1 hidden md:block"
+            onClick={() => setExpandPage(!expandPage)}
+            title="Toggle page size"
+          >
+            {expandPage ? (
+              <Minimize2Icon className="h-5 w-5" />
+            ) : (
+              <Maximize2Icon className="h-5 w-5" />
+            )}
+          </Button>
+          <ExportButtons />
+        </div>
         {renderQueryInput}
         {queryError && (
           <p className="text-center text-xs capitalize text-red-500">

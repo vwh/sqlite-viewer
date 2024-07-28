@@ -11,14 +11,9 @@ import {
   SelectValue
 } from "./ui/select";
 import { Badge } from "./ui/badge";
-import ExportButtons from "./export-buttons";
-import { Button } from "./ui/button";
-
-import { ExpandIcon } from "lucide-react";
 
 export default function TableSelect() {
-  const { tables, selectedTable, setSelectedTable, expandPage, setExpandPage } =
-    useSQLiteStore();
+  const { tables, selectedTable, setSelectedTable } = useSQLiteStore();
 
   const selectedTableCount = useMemo(() => {
     const index = parseInt(selectedTable);
@@ -36,7 +31,7 @@ export default function TableSelect() {
   );
 
   return (
-    <section className="flex items-center justify-center gap-1">
+    <section className="flex grow items-center justify-center gap-1">
       <Select value={selectedTable} onValueChange={setSelectedTable}>
         <SelectTrigger className="grow">
           <SelectValue placeholder="Select a table" />
@@ -55,13 +50,6 @@ export default function TableSelect() {
       >
         <span className="w-full text-center">{selectedTableCount}</span>
       </Badge>
-      <Button
-        className="hidden md:block"
-        onClick={() => setExpandPage(!expandPage)}
-      >
-        <ExpandIcon className="h-5 w-5" />
-      </Button>
-      <ExportButtons />
     </section>
   );
 }

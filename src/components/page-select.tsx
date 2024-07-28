@@ -32,13 +32,21 @@ export default function PageSelect({
   return (
     <section className="fixed bottom-[8px] left-0 right-0 z-10 mx-auto w-[270px]">
       <div className="flex justify-between gap-2 rounded border bg-secondary p-[6px]">
-        <Button onClick={prevPage} disabled={currentPage === 1}>
+        <Button
+          onClick={prevPage}
+          title="Previous page"
+          disabled={currentPage === 1}
+        >
           <ChevronLeftIcon className="h-4 w-4" />
         </Button>
         <span className="flex items-center justify-center text-sm">
           Page {currentPage} of {totalPages}
         </span>
-        <Button onClick={nextPage} disabled={currentPage >= totalPages}>
+        <Button
+          onClick={nextPage}
+          title="Next page"
+          disabled={currentPage >= totalPages}
+        >
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
       </div>

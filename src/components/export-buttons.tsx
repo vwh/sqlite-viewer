@@ -16,14 +16,14 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover";
 
-import { FileDownIcon } from "lucide-react";
+import { DownloadIcon } from "lucide-react";
 
 export default function ExportButtons() {
   const { selectedTable, tables, customQuery, db } = useSQLiteStore();
 
   const renderExportButton = useCallback(
-    (onClick: () => void, label: string, className?: string) => (
-      <Button onClick={onClick} className={className}>
+    (onClick: () => void, label: string, title: string, className?: string) => (
+      <Button className={className} onClick={onClick} title={title}>
         <span className="ml-2">{label}</span>
       </Button>
     ),
@@ -34,18 +34,25 @@ export default function ExportButtons() {
     () =>
       db && (
         <div className="flex flex-col gap-1">
-          {renderExportButton(() => downloadDatabase(db), "Export as SQLite")}
+          {renderExportButton(
+            () => downloadDatabase(db),
+            "Export as SQLite",
+            "Download database as SQLite"
+          )}
           {renderExportButton(
             () => exportTableAsCSV(db, parseInt(selectedTable)),
-            `Export ${tables[parseInt(selectedTable)]?.name || "selected"} table as CSV`
+            `Export ${tables[parseInt(selectedTable)]?.name || "selected"} table as CSV`,
+            "Export selected table as CSV"
           )}
           {renderExportButton(
             () => exportAllTablesAsCSV(db),
+            "Export all tables as CSV",
             "Export all tables as CSV"
           )}
           {renderExportButton(
             () => exportCustomQueryAsCSV(db, customQuery),
-            "Export custom query as CSV"
+            "Export custom query as CSV",
+            "Export the result of the custom query as CSV"
           )}
         </div>
       ),
@@ -55,8 +62,8 @@ export default function ExportButtons() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button>
-          <FileDownIcon className="h-5 w-5" />
+        <Button title="Open export options">
+          <DownloadIcon className="h-5 w-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">

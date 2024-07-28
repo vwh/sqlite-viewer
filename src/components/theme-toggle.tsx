@@ -47,9 +47,9 @@ export default function ThemeToggle() {
 
   return (
     <Button
-      title={darkMode ? "Enable light mode" : "Enable dark mode"}
-      onClick={toggleTheme}
       className="relative grow"
+      onClick={toggleTheme}
+      title={darkMode ? "Enable light mode" : "Enable dark mode"}
     >
       {darkMode ? (
         <SunIcon className="h-5 w-5" />
