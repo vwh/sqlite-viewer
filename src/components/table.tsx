@@ -134,7 +134,7 @@ export default function DBTable() {
         <div className="flex h-full gap-1">
           <TableSelect />
           <Button
-            className="ml-1 hidden md:block"
+            className="expand:block ml-1 hidden"
             onClick={() => setExpandPage(!expandPage)}
             title="Toggle page size"
           >
