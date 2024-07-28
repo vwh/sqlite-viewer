@@ -14,13 +14,16 @@ import {
 } from "./ui/drawer";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 import { Settings2Icon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
 
 export default function Settings() {
-  const { setRowPerPageOrAuto, setIsCustomQuery } = useSQLiteStore();
+  const { setRowPerPageOrAuto, setIsCustomQuery, queryHestory } =
+    useSQLiteStore();
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
     null
   );
@@ -124,11 +127,23 @@ export default function Settings() {
                 <span>Save</span>
               </Button>
             </div>
-            {/* <div>
+            <div>
               <p className="mb-1 text-sm text-muted-foreground">
-                Soon
+                Query History
               </p>
-            </div> */}
+              <ScrollArea className="h-72 rounded-md border">
+                <div className="p-4">
+                  {queryHestory.map((query, index) => (
+                    <>
+                      <div key={index} className="text-sm">
+                        {query}
+                      </div>
+                      <Separator className="my-2" />
+                    </>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
           </div>
           <DrawerFooter>
             <DrawerClose asChild>

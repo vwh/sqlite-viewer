@@ -21,6 +21,9 @@ interface SQLiteState {
   setRowPerPageOrAuto: (value: number | "auto") => void;
   isCustomQuery: boolean;
   setIsCustomQuery: (value: boolean) => void;
+  queryHestory: string[];
+  setQueryHestory: (value: string[]) => void;
+  appendToQueryHestory: (value: string) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -84,7 +87,12 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setRowPerPageOrAuto: (value: number | "auto") =>
     set({ rowPerPageOrAuto: value }),
 
-  setIsCustomQuery: (value: boolean) => set({ isCustomQuery: value })
+  setIsCustomQuery: (value: boolean) => set({ isCustomQuery: value }),
+
+  queryHestory: [],
+  setQueryHestory: (value: string[]) => set({ queryHestory: value }),
+  appendToQueryHestory: (value: string) =>
+    set((state) => ({ queryHestory: [...state.queryHestory, value] }))
 }));
 
 export default initializeStore;

@@ -11,7 +11,8 @@ export function useQueryData(
   page: number,
   isCustomQuery: boolean
 ) {
-  const { db, setQueryError, setIsCustomQuery, query } = useSQLiteStore();
+  const { db, setQueryError, setIsCustomQuery, query, appendToQueryHestory } =
+    useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
@@ -34,6 +35,7 @@ export function useQueryData(
           if (error instanceof Error) setQueryError(error.message);
         } finally {
           setIsQueryLoading(false);
+          appendToQueryHestory(queryString);
         }
       })();
     }
