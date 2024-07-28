@@ -16,7 +16,7 @@ export function useQueryData(
     setQueryError,
     setIsCustomQuery,
     query,
-    appendToQueryHestory,
+    unShiftToQueryHestory,
     customQuery,
     setCustomQuery
   } = useSQLiteStore();
@@ -41,7 +41,7 @@ export function useQueryData(
           if (error instanceof Error) setQueryError(error.message);
         } finally {
           setIsQueryLoading(false);
-          appendToQueryHestory(queryString);
+          unShiftToQueryHestory(queryString);
         }
       })();
     }
