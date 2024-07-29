@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
+import React, { useState, useEffect, useCallback } from "react";
+
+import { dateFormats } from "@/lib/date-format";
 
 import { toast } from "sonner";
 import {
@@ -16,14 +18,23 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Settings2Icon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
+const DATE_FORMAT_KEY = "dateFormat";
 
 export default function Settings() {
-  const { setRowPerPageOrAuto, setIsCustomQuery, queryHestory } =
-    useSQLiteStore();
+  const {
+    setRowPerPageOrAuto,
+    setIsCustomQuery,
+    queryHestory,
+    dateFormatValue,
+    setDateFormatValue
+  } = useSQLiteStore();
+
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
     null
   );
@@ -31,6 +42,8 @@ export default function Settings() {
 
   useEffect(() => {
     const rowsPerPageLocalStorage = localStorage.getItem(ROWS_PER_PAGE_KEY);
+    const dateFormatLocalStorage = localStorage.getItem(DATE_FORMAT_KEY);
+
     if (rowsPerPageLocalStorage) {
       if (rowsPerPageLocalStorage === "auto") {
         setIsAutoRowsPerPage(true);
@@ -40,7 +53,11 @@ export default function Settings() {
         setRowPerPageOrAuto(parsedValue);
       }
     }
-  }, [setRowPerPageOrAuto]);
+
+    if (dateFormatLocalStorage) {
+      setDateFormatValue(dateFormatLocalStorage);
+    }
+  }, [setRowPerPageOrAuto, setDateFormatValue]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +74,7 @@ export default function Settings() {
     setIsAutoRowsPerPage((prev) => !prev);
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleRowsPerPageSave = useCallback(() => {
     setIsCustomQuery(false);
     if (selectedRowsPerPage === null) {
       toast.error(
@@ -79,6 +96,11 @@ export default function Settings() {
     setRowPerPageOrAuto
   ]);
 
+  const handleDateFormatChange = (value: string) => {
+    setDateFormatValue(value);
+    localStorage.setItem(DATE_FORMAT_KEY, value);
+  };
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -95,55 +117,18 @@ export default function Settings() {
             </DrawerDescription>
           </DrawerHeader>
           <div className="flex flex-col gap-4 p-4 pb-0">
-            <div>
-              <p className="mb-1 text-sm text-muted-foreground">
-                Rows Per Page
-              </p>
-              <div className="flex items-center justify-center gap-1 rounded border p-2">
-                <Input
-                  value={selectedRowsPerPage || ""}
-                  onChange={handleInputChange}
-                  disabled={isAutoRowsPerPage}
-                  placeholder="Number of rows"
-                  type="number"
-                  name="rowsPerPage"
-                />
-                <span className="h-full text-center text-sm text-muted-foreground">
-                  OR
-                </span>
-                <Button
-                  className={isAutoRowsPerPage ? "border border-primary" : ""}
-                  onClick={toggleAutoRowsPerPage}
-                  title="Toggle auto rows per page"
-                  variant="outline"
-                >
-                  Auto Calculate
-                </Button>
-              </div>
-              <Button
-                className="mt-2 w-full"
-                onClick={handleSave}
-                title="Save rows per page settings"
-                variant="outline"
-              >
-                <span>Save</span>
-              </Button>
-            </div>
-            <div>
-              <p className="mb-1 text-sm text-muted-foreground">
-                Query History ({queryHestory.length})
-              </p>
-              <ScrollArea className="h-48 rounded-md border">
-                <div className="p-4">
-                  {queryHestory.map((query, index) => (
-                    <div key={index}>
-                      <div className="text-sm">{query}</div>
-                      <Separator className="my-2" />
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
+            <RowsPerPageSection
+              selectedRowsPerPage={selectedRowsPerPage}
+              isAutoRowsPerPage={isAutoRowsPerPage}
+              handleInputChange={handleInputChange}
+              toggleAutoRowsPerPage={toggleAutoRowsPerPage}
+              handleRowsPerPageSave={handleRowsPerPageSave}
+            />
+            <DateFormatSection
+              dateFormatValue={dateFormatValue}
+              handleDateFormatChange={handleDateFormatChange}
+            />
+            <QueryHistorySection queryHestory={queryHestory} />
           </div>
           <DrawerFooter>
             <DrawerClose asChild>
@@ -155,5 +140,125 @@ export default function Settings() {
         </div>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+interface RowsPerPageSectionProps {
+  selectedRowsPerPage: number | null;
+  isAutoRowsPerPage: boolean;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  toggleAutoRowsPerPage: () => void;
+  handleRowsPerPageSave: () => void;
+}
+
+function RowsPerPageSection({
+  selectedRowsPerPage,
+  isAutoRowsPerPage,
+  handleInputChange,
+  toggleAutoRowsPerPage,
+  handleRowsPerPageSave
+}: RowsPerPageSectionProps) {
+  return (
+    <div>
+      <p className="mb-1 text-sm text-muted-foreground">Rows Per Page</p>
+      <div className="flex items-center justify-center gap-1 rounded border p-2">
+        <Input
+          value={selectedRowsPerPage || ""}
+          onChange={handleInputChange}
+          disabled={isAutoRowsPerPage}
+          placeholder="Number of rows"
+          type="number"
+          name="rowsPerPage"
+        />
+        <span className="h-full text-center text-sm text-muted-foreground">
+          OR
+        </span>
+        <Button
+          className={isAutoRowsPerPage ? "border border-primary" : ""}
+          onClick={toggleAutoRowsPerPage}
+          title="Toggle auto rows per page"
+          variant="outline"
+        >
+          Auto Calculate
+        </Button>
+      </div>
+      <Button
+        className="mt-2 w-full"
+        onClick={handleRowsPerPageSave}
+        title="Save rows per page settings"
+        variant="outline"
+      >
+        <span>Save</span>
+      </Button>
+    </div>
+  );
+}
+
+interface DateFormatSectionProps {
+  dateFormatValue: string;
+  handleDateFormatChange: (value: string) => void;
+}
+
+function DateFormatSection({
+  dateFormatValue,
+  handleDateFormatChange
+}: DateFormatSectionProps) {
+  return (
+    <div>
+      <p className="mb-1 text-sm text-muted-foreground">Date type format</p>
+      <RadioGroup
+        className="flex flex-col gap-2"
+        name="dateType"
+        value={dateFormatValue}
+        onValueChange={handleDateFormatChange}
+      >
+        <DateFormatOption value="default" label="Default" />
+        {Object.keys(dateFormats).map((key) => (
+          <DateFormatOption
+            key={key}
+            value={key}
+            label={dateFormats[key].label}
+          />
+        ))}
+      </RadioGroup>
+    </div>
+  );
+}
+
+interface DateFormatOptionProps {
+  value: string;
+  label: string;
+}
+
+function DateFormatOption({ value, label }: DateFormatOptionProps) {
+  return (
+    <div className="flex items-center space-x-2">
+      <RadioGroupItem value={value} id={`r-${value}`} />
+      <Label htmlFor={`r-${value}`}>{label}</Label>
+    </div>
+  );
+}
+
+interface QueryHistorySectionProps {
+  queryHestory: string[];
+}
+
+function QueryHistorySection({ queryHestory }: QueryHistorySectionProps) {
+  return (
+    <div>
+      <p className="mb-1 text-sm text-muted-foreground">
+        Query History ({queryHestory.length})
+      </p>
+      <ScrollArea className="h-48 rounded-md border">
+        <div className="p-4">
+          {queryHestory.map((query, index) => (
+            <div key={index}>
+              <div className="text-sm">{query}</div>
+              <Separator className="my-2" />
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   );
 }

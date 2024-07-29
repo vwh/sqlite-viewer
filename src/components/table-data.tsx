@@ -1,5 +1,9 @@
+import useSQLiteStore from "@/store/useSQLiteStore";
 import React, { useMemo } from "react";
+
 import type { TableInfo, TableRow } from "@/types";
+import { dateFormats } from "@/lib/date-format";
+
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import {
   Table,
@@ -37,7 +41,7 @@ const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
       return <KeySquareIcon className="h-4 w-4" />;
     if (columnSchema?.type === "BLOB")
       return <CuboidIcon className="h-4 w-4" />;
-    if (columnSchema?.type === "DATETIME")
+    if (columnSchema?.type?.includes("DATE"))
       return <Clock9Icon className="h-4 w-4" />;
     return null;
   }
@@ -63,11 +67,25 @@ const TableHeadCell: React.FC<{ col: string; columnSchema: ColumnSchema }> =
   ));
 
 const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
-  ({ value, dataType }) => (
-    <TableCell dataType={dataType}>
-      {value ? value : <span className="italic opacity-40">NULL</span>}
-    </TableCell>
-  )
+  ({ value, dataType }) => {
+    const { dateFormatValue } = useSQLiteStore();
+    const isDate = dataType === "DATE" || dataType === "DATETIME";
+    const renderCellContent = () => {
+      if (!value) {
+        return <span className="italic opacity-40">NULL</span>;
+      }
+
+      if (isDate) {
+        if (dateFormats[dateFormatValue]) {
+          return dateFormats[dateFormatValue].func(value);
+        }
+      }
+
+      return value;
+    };
+
+    return <TableCell dataType={dataType}>{renderCellContent()}</TableCell>;
+  }
 );
 
 export default function DBTableComponent({

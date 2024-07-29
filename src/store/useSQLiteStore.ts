@@ -28,6 +28,8 @@ interface SQLiteState {
   unShiftToQueryHestory: (value: string) => void;
   expandPage: boolean;
   setExpandPage: (value: boolean) => void;
+  dateFormatValue: string;
+  setDateFormatValue: (value: string) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -101,7 +103,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     set((state) => ({ queryHestory: [value, ...state.queryHestory] })),
 
   expandPage: false,
-  setExpandPage: (value: boolean) => set({ expandPage: value })
+  setExpandPage: (value: boolean) => set({ expandPage: value }),
+
+  dateFormatValue: "formatDateFormatted",
+  setDateFormatValue: (value: string) => set({ dateFormatValue: value })
 }));
 
 export default initializeStore;
