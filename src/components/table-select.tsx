@@ -13,7 +13,8 @@ import {
 import { Badge } from "./ui/badge";
 
 export default function TableSelect() {
-  const { tables, selectedTable, setSelectedTable } = useSQLiteStore();
+  const { tables, selectedTable, setSelectedTable, setIsCustomQuery } =
+    useSQLiteStore();
 
   const selectedTableCount = useMemo(() => {
     const index = parseInt(selectedTable);
@@ -30,9 +31,14 @@ export default function TableSelect() {
     [tables]
   );
 
+  function onSelectedTable(value: string) {
+    setIsCustomQuery(false);
+    setSelectedTable(value);
+  }
+
   return (
     <section className="flex grow items-center justify-center gap-1">
-      <Select value={selectedTable} onValueChange={setSelectedTable}>
+      <Select value={selectedTable} onValueChange={onSelectedTable}>
         <SelectTrigger className="grow">
           <SelectValue placeholder="Select a table" />
         </SelectTrigger>
