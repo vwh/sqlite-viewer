@@ -253,7 +253,7 @@ function QueryHistorySection({ queryHestory }: QueryHistorySectionProps) {
         <div className="p-4">
           {queryHestory.map((query, index) => (
             <div key={index}>
-              <div className="text-sm">{query}</div>
+              <div className="text-xs">{query}</div>
               <Separator className="my-2" />
             </div>
           ))}
