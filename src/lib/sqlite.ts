@@ -2,7 +2,7 @@ import initSqlJs, { type Database, type QueryExecResult } from "sql.js";
 import { saveAs } from "file-saver";
 import type { TableRow } from "@/types";
 
-const SQL_WASM_PATH = "https://sql.js.org/dist/sql-wasm.wasm";
+const SQL_WASM_PATH = "/sql.wasm";
 
 export const loadDatabase = async (file: File): Promise<Database> => {
   try {
