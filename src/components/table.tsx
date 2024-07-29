@@ -133,18 +133,20 @@ export default function DBTable() {
       <section className="flex flex-col gap-2 rounded border p-3 pb-2">
         <div className="flex h-full gap-1">
           <TableSelect />
-          <Button
-            className="ml-1 hidden expand:block"
-            onClick={() => setExpandPage(!expandPage)}
-            title="Toggle page size"
-          >
-            {expandPage ? (
-              <Minimize2Icon className="h-5 w-5" />
-            ) : (
-              <Maximize2Icon className="h-5 w-5" />
-            )}
-          </Button>
-          <ExportButtons />
+          <div className="ml-1 flex gap-1">
+            <ExportButtons />
+            <Button
+              className="hidden expand:block"
+              onClick={() => setExpandPage(!expandPage)}
+              title="Toggle page size"
+            >
+              {expandPage ? (
+                <Minimize2Icon className="h-5 w-5" />
+              ) : (
+                <Maximize2Icon className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
         {renderQueryInput}
         {queryError && (
