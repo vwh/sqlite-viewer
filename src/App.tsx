@@ -19,6 +19,14 @@ function App() {
 
   const fetchDatabase = useCallback(
     async (url: string, useProxy: boolean = false) => {
+      const isGoodURL =
+        /^(https?:\/\/(?:www\.)?[a-zA-Z0-9-]{1,256}\.[a-zA-Z]{2,6}(?:\/[^\s]*)?)$/i.test(
+          url
+        );
+      if (!isGoodURL) {
+        setFetchError("Invalid URL");
+        return;
+      }
       try {
         setIsFetching(true);
         const fetchUrl = useProxy
