@@ -2,6 +2,10 @@
     <h1>SQLite Viewer</h1>
 </div>
 
+<p align="center">
+  <b>View and query SQLite databases directly in your browser. Built with <code>sql.js</code> and ReactJS.</b>
+</p>
+
 <div align="center">
   <a href="https://app.codacy.com/gh/vwh/sqlite-viewer/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
     <img src="https://app.codacy.com/project/badge/Grade/1a8379b2399b45278a710145f92eab5d" alt="Codacy Badge"/>
@@ -17,13 +21,13 @@
   </a>
 </div>
 
-<p align="center">
-  <b>View and query SQLite databases directly in your browser. Built with <code>sql.js</code> and ReactJS.</b>
-</p>
+<br>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/79a5dcb2-b258-4179-9a7d-d4dbbce88485" alt="Preview">
-</p>
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/db72aba1-72f0-4c15-99ca-08f88f7fe4ea" alt="Preview">
+</div>
+
+<br>
 
 > [!NOTE]
 > You can load a database directly from a URL by passing a `url` parameter.<br> Example: [`https://sqlite3.online/?url=...db_examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db)
