@@ -16,7 +16,6 @@ interface SQLiteState {
   setQueryError: (value: string | null) => void;
   setTables: (tables: { name: string; count: number }[]) => void;
   setSelectedTable: (value: string) => void;
-  setTableSchemas: (schemas: TableInfo) => void;
   rowPerPageOrAuto: number | "auto";
   setRowPerPageOrAuto: (value: number | "auto") => void;
   customQuery: string;
@@ -24,7 +23,6 @@ interface SQLiteState {
   isCustomQuery: boolean;
   setIsCustomQuery: (value: boolean) => void;
   queryHestory: string[];
-  setQueryHestory: (value: string[]) => void;
   unShiftToQueryHestory: (value: string) => void;
   expandPage: boolean;
   setExpandPage: (value: boolean) => void;
@@ -97,7 +95,6 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setQueryError: (value: string | null) => set({ queryError: value }),
   setTables: (tables: { name: string; count: number }[]) => set({ tables }),
   setSelectedTable: (value: string) => set({ selectedTable: value }),
-  setTableSchemas: (schemas: TableInfo) => set({ tableSchemas: schemas }),
   setRowPerPageOrAuto: (value: number | "auto") =>
     set({ rowPerPageOrAuto: value }),
 
@@ -106,7 +103,6 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setCustomQuery: (value: string) => set({ customQuery: value }),
 
   queryHestory: [],
-  setQueryHestory: (value: string[]) => set({ queryHestory: value }),
   unShiftToQueryHestory: (value: string) =>
     set((state) => ({ queryHestory: [value, ...state.queryHestory] })),
 

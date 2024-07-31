@@ -122,7 +122,6 @@ export default function DBTableComponent({
   tableName,
   tableSchemas
 }: DBTableComponentProps) {
-  console.log("DEBUG: columns", columns, typeof columns);
   const tableHead = useMemo(
     () => (
       <TableHeader>
