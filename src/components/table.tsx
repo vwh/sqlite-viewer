@@ -8,7 +8,6 @@ import { Button } from "./ui/button";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
-import ErrorMessage from "./error";
 import Loading from "./loading";
 import ExportButtons from "./export-buttons";
 
@@ -135,8 +134,6 @@ export default function DBTable() {
         />
       </div>
     );
-
-    return <ErrorMessage>Table {tableName} is empty</ErrorMessage>;
   }, [
     isQueryLoading,
     data,

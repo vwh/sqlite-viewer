@@ -65,6 +65,7 @@ const TableHeadCell: React.FC<{
           {children}
         </span>
       </HoverCardTrigger>
+      <TableHeadFilter col={col} />
       <HoverCardContent side="bottom" align="start">
         {columnSchema?.type || "Unknown"}
       </HoverCardContent>
@@ -131,9 +132,7 @@ export default function DBTableComponent({
               key={index}
               col={col}
               columnSchema={tableSchemas[tableName][col]}
-            >
-              <TableHeadFilter col={col} />
-            </TableHeadCell>
+            ></TableHeadCell>
           ))}
         </TTableRow>
       </TableHeader>
