@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
+
 import { mapQueryResults } from "@/lib/sqlite";
 import type { QueryExecResult } from "sql.js";
 import type { TableRow } from "@/types";
@@ -17,7 +18,10 @@ export function useQueryData(
     query,
     unShiftToQueryHestory,
     customQuery,
-    setCustomQuery
+    setCustomQuery,
+    filters,
+    totalRows,
+    setTotalRows
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
@@ -45,7 +49,32 @@ export function useQueryData(
             )
             .join(", ");
 
-          const queryString = `SELECT ${columnSelects} FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
+          // Construct the count query string
+          let countQueryString = `SELECT COUNT(*) as count FROM "${tableName}"`;
+          if (Object.keys(filters).length > 0) {
+            const filterQuery = Object.entries(filters)
+              .map(([key, value]) => {
+                return `LOWER(${key}) LIKE LOWER('%${value}%')`;
+              })
+              .join(" AND ");
+            countQueryString = `SELECT COUNT(*) as count FROM "${tableName}" WHERE ${filterQuery}`;
+          }
+
+          // Execute the count query
+          const countResult: QueryExecResult[] = query(countQueryString);
+          const totalRows = countResult[0].values[0][0] as number;
+          setTotalRows(totalRows);
+
+          // Construct the data query string
+          let queryString = `SELECT ${columnSelects} FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
+          if (Object.keys(filters).length > 0) {
+            const filterQuery = Object.entries(filters)
+              .map(([key, value]) => {
+                return `LOWER(${key}) LIKE LOWER('%${value}%')`;
+              })
+              .join(" AND ");
+            queryString = `SELECT ${columnSelects} FROM "${tableName}" WHERE ${filterQuery} LIMIT ${rowsPerPage} OFFSET ${page};`;
+          }
 
           const tableResult: QueryExecResult[] = query(queryString);
           const { data, columns } = mapQueryResults(tableResult);
@@ -70,7 +99,9 @@ export function useQueryData(
     setQueryError,
     query,
     setCustomQuery,
-    unShiftToQueryHestory
+    unShiftToQueryHestory,
+    filters,
+    setTotalRows
   ]);
 
   const handleCustomQuery = useCallback(() => {
@@ -101,6 +132,7 @@ export function useQueryData(
     customQuery,
     setCustomQuery,
     isQueryLoading,
-    handleCustomQuery
+    handleCustomQuery,
+    totalRows
   };
 }

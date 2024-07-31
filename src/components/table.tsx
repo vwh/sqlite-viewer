@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
@@ -33,7 +33,9 @@ export default function DBTable() {
     customQuery,
     setCustomQuery,
     expandPage,
-    setExpandPage
+    setExpandPage,
+    filters,
+    setFilters
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -43,17 +45,21 @@ export default function DBTable() {
     [tables, selectedTable]
   );
 
-  const rowCount = useMemo(
-    () => tables[parseInt(selectedTable)]?.count || 0,
-    [tables, selectedTable]
-  );
-
   const { data, columns, isQueryLoading, handleCustomQuery } = useQueryData(
     tableName,
     rowsPerPage,
     page,
     isCustomQuery
   );
+
+  // State to keep a persistent copy of columns
+  const [savedColumns, setSavedColumns] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (columns.length > 0) {
+      setSavedColumns(columns);
+    }
+  }, [tableName, columns]);
 
   const handleResetQuery = useCallback(() => {
     setQueryError(null);
@@ -68,6 +74,7 @@ export default function DBTable() {
 
   useEffect(() => {
     setPage(0);
+    setFilters({});
   }, [selectedTable]);
 
   const renderQueryInput = useMemo(
@@ -113,20 +120,28 @@ export default function DBTable() {
 
   const renderTableContent = useMemo(() => {
     if (isQueryLoading) return <Loading>Loading {tableName}</Loading>;
-    if (data.length > 0) {
-      return (
-        <div className="rounded border">
-          <DBTableComponent
-            data={data}
-            columns={columns}
-            tableName={tableName}
-            tableSchemas={tableSchemas}
-          />
-        </div>
-      );
-    }
-    return <ErrorMessage>{`Table ${tableName} is empty`}</ErrorMessage>;
-  }, [isQueryLoading, data, columns, tableName, tableSchemas]);
+
+    return (
+      <div className="rounded border">
+        <DBTableComponent
+          data={data}
+          columns={savedColumns.length > 0 ? savedColumns : columns}
+          tableName={tableName}
+          tableSchemas={tableSchemas}
+        />
+      </div>
+    );
+
+    return <ErrorMessage>Table {tableName} is empty</ErrorMessage>;
+  }, [
+    isQueryLoading,
+    data,
+    columns,
+    tableName,
+    tableSchemas,
+    filters,
+    savedColumns
+  ]);
 
   return (
     <div className="flex flex-col gap-3 pb-8">
@@ -157,12 +172,7 @@ export default function DBTable() {
       </section>
       {renderTableContent}
       {!isCustomQuery && (
-        <PageSelect
-          page={page}
-          setPage={setPage}
-          rowsPerPage={rowsPerPage}
-          rowCount={rowCount}
-        />
+        <PageSelect page={page} setPage={setPage} rowsPerPage={rowsPerPage} />
       )}
     </div>
   );

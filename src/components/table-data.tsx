@@ -1,9 +1,10 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 
 import type { TableInfo, TableRow } from "@/types";
 import { dateFormats } from "@/lib/date-format";
 
+import { Input } from "./ui/input";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 import {
   Table,
@@ -13,6 +14,7 @@ import {
   TableHeader,
   TableRow as TTableRow
 } from "./ui/table";
+import ErrorMessage from "./error";
 
 import {
   KeyRoundIcon,
@@ -47,24 +49,28 @@ const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   }
 );
 
-const TableHeadCell: React.FC<{ col: string; columnSchema: ColumnSchema }> =
-  React.memo(({ col, columnSchema }) => (
-    <TableHead>
-      <HoverCard>
-        <HoverCardTrigger asChild>
-          <span className="cursor-pointer hover:underline">
-            <div className="flex gap-1">
-              {col}
-              <ColumnIcon columnSchema={columnSchema} />
-            </div>
-          </span>
-        </HoverCardTrigger>
-        <HoverCardContent side="bottom" align="start">
-          {columnSchema?.type || "Unknown"}
-        </HoverCardContent>
-      </HoverCard>
-    </TableHead>
-  ));
+const TableHeadCell: React.FC<{
+  col: string;
+  columnSchema: ColumnSchema;
+  children?: React.ReactNode;
+}> = React.memo(({ col, columnSchema, children }) => (
+  <TableHead className="py-2">
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <span className="cursor-pointer hover:underline">
+          <div className="flex gap-1">
+            {col}
+            <ColumnIcon columnSchema={columnSchema} />
+          </div>
+          {children}
+        </span>
+      </HoverCardTrigger>
+      <HoverCardContent side="bottom" align="start">
+        {columnSchema?.type || "Unknown"}
+      </HoverCardContent>
+    </HoverCard>
+  </TableHead>
+));
 
 const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
   ({ value, dataType }) => {
@@ -87,6 +93,28 @@ const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
     return <TableCell dataType={dataType}>{renderCellContent()}</TableCell>;
   }
 );
+function TableHeadFilter({ col }: { col: string }) {
+  const { appendToFilters, selectedTable } = useSQLiteStore();
+  const [inputValue, setInputValue] = useState("");
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    appendToFilters(col, e.target.value);
+  };
+
+  useEffect(() => {
+    setInputValue("");
+  }, [selectedTable]);
+
+  return (
+    <Input
+      value={inputValue}
+      onChange={onInputChange}
+      className="w-full"
+      placeholder="Filter"
+    />
+  );
+}
 
 export default function DBTableComponent({
   data,
@@ -94,6 +122,7 @@ export default function DBTableComponent({
   tableName,
   tableSchemas
 }: DBTableComponentProps) {
+  console.log("DEBUG: columns", columns, typeof columns);
   const tableHead = useMemo(
     () => (
       <TableHeader>
@@ -103,7 +132,9 @@ export default function DBTableComponent({
               key={index}
               col={col}
               columnSchema={tableSchemas[tableName][col]}
-            />
+            >
+              <TableHeadFilter col={col} />
+            </TableHeadCell>
           ))}
         </TTableRow>
       </TableHeader>
@@ -131,9 +162,14 @@ export default function DBTableComponent({
   );
 
   return (
-    <Table>
-      {tableHead}
-      {tableBody}
-    </Table>
+    <>
+      <Table>
+        {tableHead}
+        {data.length > 0 && tableBody}
+      </Table>
+      {data.length === 0 && (
+        <ErrorMessage>{tableName} return no data</ErrorMessage>
+      )}
+    </>
   );
 }

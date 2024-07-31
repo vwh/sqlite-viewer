@@ -1,3 +1,4 @@
+import useSQLiteStore from "@/store/useSQLiteStore";
 import { Button } from "./ui/button";
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
 
@@ -5,16 +6,15 @@ interface PageSelectProps {
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   rowsPerPage: number;
-  rowCount: number;
 }
 
 export default function PageSelect({
   page,
   setPage,
-  rowsPerPage,
-  rowCount
+  rowsPerPage
 }: PageSelectProps) {
-  const totalPages = Math.ceil(rowCount / rowsPerPage);
+  const { totalRows } = useSQLiteStore();
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
   const currentPage = Math.floor(page / rowsPerPage) + 1;
 
   const nextPage = () => {

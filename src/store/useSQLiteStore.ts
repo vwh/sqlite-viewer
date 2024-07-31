@@ -30,6 +30,14 @@ interface SQLiteState {
   setExpandPage: (value: boolean) => void;
   dateFormatValue: string;
   setDateFormatValue: (value: string) => void;
+  filters: {
+    [columnName: string]: string;
+  };
+  setFilters: (value: { [columnName: string]: string }) => void;
+  appendToFilters: (columnName: string, value: string) => void;
+
+  totalRows: number;
+  setTotalRows: (value: number) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -106,7 +114,18 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setExpandPage: (value: boolean) => set({ expandPage: value }),
 
   dateFormatValue: "formatDateFormatted",
-  setDateFormatValue: (value: string) => set({ dateFormatValue: value })
+  setDateFormatValue: (value: string) => set({ dateFormatValue: value }),
+
+  filters: {},
+  setFilters: (value: { [columnName: string]: string }) =>
+    set({ filters: value }),
+  appendToFilters: (columnName: string, value: string) =>
+    set((state) => ({
+      filters: { ...state.filters, [columnName]: value }
+    })),
+
+  totalRows: 0,
+  setTotalRows: (value: number) => set({ totalRows: value })
 }));
 
 export default initializeStore;
