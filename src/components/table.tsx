@@ -77,6 +77,10 @@ export default function DBTable() {
     setFilters({});
   }, [selectedTable]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [filters]);
+
   const renderQueryInput = useMemo(
     () => (
       <div className="flex flex-col gap-2 md:flex-row">

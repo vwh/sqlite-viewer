@@ -49,10 +49,13 @@ export function useQueryData(
             )
             .join(", ");
 
+          const cleanFilters = Object.fromEntries(
+            Object.entries(filters).filter(([, value]) => value !== "")
+          );
           // Construct the count query string
           let countQueryString = `SELECT COUNT(*) as count FROM "${tableName}"`;
-          if (Object.keys(filters).length > 0) {
-            const filterQuery = Object.entries(filters)
+          if (Object.keys(cleanFilters).length > 0) {
+            const filterQuery = Object.entries(cleanFilters)
               .map(([key, value]) => {
                 return `LOWER(${key}) LIKE LOWER('%${value}%')`;
               })
@@ -67,8 +70,8 @@ export function useQueryData(
 
           // Construct the data query string
           let queryString = `SELECT ${columnSelects} FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
-          if (Object.keys(filters).length > 0) {
-            const filterQuery = Object.entries(filters)
+          if (Object.keys(cleanFilters).length > 0) {
+            const filterQuery = Object.entries(cleanFilters)
               .map(([key, value]) => {
                 return `LOWER(${key}) LIKE LOWER('%${value}%')`;
               })
