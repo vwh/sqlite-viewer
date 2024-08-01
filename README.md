@@ -3,7 +3,7 @@
 </div>
 
 <p align="center">
-  <b>View and query SQLite databases directly in your browser. Built with <code>sql.js</code> and ReactJS.</b>
+  <b>View and query SQLite databases directly in your browser. Built with <code><a href="https://github.com/sql-js/sql.js" target="_blank">sql.js</a></code> and ReactJS.</b>
 </p>
 
 <div align="center">
@@ -24,33 +24,13 @@
 <br>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/db72aba1-72f0-4c15-99ca-08f88f7fe4ea" alt="Preview">
+  <img src="https://github.com/user-attachments/assets/70bbef62-b219-4951-bb92-12731b8ba5b3" alt="Preview">
 </div>
 
 <br>
 
 > [!NOTE]
 > You can load a database directly from a URL by passing a `url` parameter.<br> Example: [`https://sqlite3.online/?url=...db_examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db)
-
-## Getting Started
-
-### Installation
-
-Clone the repository and install dependencies:
-
-```bash
-git clone https://github.com/vwh/sqlite-viewer
-cd sqlite-viewer
-npm install
-```
-
-### Development Server
-
-Start the development server:
-
-```bash
-npm run dev
-```
 
 ## Contributing
 
