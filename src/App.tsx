@@ -3,9 +3,8 @@ import useSQLiteStore from "./store/useSQLiteStore";
 
 import DBTable from "./components/table";
 import UploadFile from "./components/dropzone";
-import Loading from "./components/loading";
+import StatusMessage from "./components/stats-message";
 import Logo from "./components/logo";
-import ErrorMessage from "./components/error";
 import Dialog from "./components/dialog";
 import Footer from "./components/footer";
 
@@ -78,17 +77,21 @@ function App() {
   const renderContent = () => {
     if (isLoading || isFetching) {
       return (
-        <Loading>{isFetching ? "Fetching" : "Loading"} SQLite file</Loading>
+        <StatusMessage type="loading">
+          {isFetching ? "Fetching" : "Loading"} SQLite file
+        </StatusMessage>
       );
     }
     if (fetchError && !db) {
-      return <ErrorMessage>{fetchError}</ErrorMessage>;
+      return <StatusMessage type="error">{fetchError}</StatusMessage>;
     }
     if (db) {
       return tables.length > 0 ? (
         <DBTable />
       ) : (
-        <ErrorMessage>Your database is empty, no tables found</ErrorMessage>
+        <StatusMessage type="info">
+          Your database is empty, no tables found
+        </StatusMessage>
       );
     }
     return null;

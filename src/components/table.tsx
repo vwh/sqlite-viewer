@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
-import Loading from "./loading";
+import StatusMessage from "./stats-message";
 import ExportButtons from "./export-buttons";
 
 import {
@@ -122,7 +122,8 @@ export default function DBTable() {
   );
 
   const renderTableContent = useMemo(() => {
-    if (isQueryLoading) return <Loading>Loading {tableName}</Loading>;
+    if (isQueryLoading)
+      return <StatusMessage type="loading">Loading {tableName}</StatusMessage>;
 
     return (
       <div className="rounded border">

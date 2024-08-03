@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow as TTableRow
 } from "./ui/table";
-import ErrorMessage from "./error";
+import StatusMessage from "./stats-message";
 
 import {
   KeyRoundIcon,
@@ -58,7 +58,7 @@ const TableHeadCell: React.FC<{
     <HoverCard>
       <HoverCardTrigger asChild>
         <span className="cursor-pointer hover:underline">
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             {col}
             <ColumnIcon columnSchema={columnSchema} />
           </div>
@@ -111,7 +111,7 @@ function TableHeadFilter({ col }: { col: string }) {
     <Input
       value={inputValue}
       onChange={onInputChange}
-      className="w-full"
+      className="max-h-7 w-full text-sm"
       placeholder="Filter"
     />
   );
@@ -166,7 +166,11 @@ export default function DBTableComponent({
         {data.length > 0 && tableBody}
       </Table>
       {data.length === 0 && (
-        <ErrorMessage>{tableName} return no data</ErrorMessage>
+        <div className="w-full">
+          <StatusMessage type="info" className="rounded-none">
+            {tableName} return no data
+          </StatusMessage>
+        </div>
       )}
     </>
   );
