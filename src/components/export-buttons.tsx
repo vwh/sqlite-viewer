@@ -16,7 +16,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover";
 
-import { DownloadIcon } from "lucide-react";
+import { FileDownIcon } from "lucide-react";
 
 export default function ExportButtons() {
   const { selectedTable, tables, customQuery, db } = useSQLiteStore();
@@ -63,7 +63,7 @@ export default function ExportButtons() {
     <Popover>
       <PopoverTrigger asChild>
         <Button title="Open export options">
-          <DownloadIcon className="h-5 w-5" />
+          <FileDownIcon className="h-5 w-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">

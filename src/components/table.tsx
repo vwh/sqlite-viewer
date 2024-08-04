@@ -12,7 +12,7 @@ import StatusMessage from "./stats-message";
 import ExportButtons from "./export-buttons";
 
 import {
-  TrashIcon,
+  Trash2Icon,
   PlayIcon,
   ListRestartIcon,
   Maximize2Icon,
@@ -103,9 +103,9 @@ export default function DBTable() {
           <Button
             className="w-full"
             onClick={handleResetQuery}
-            title="Reset query"
+            title="Remove query"
           >
-            <TrashIcon className="h-5 w-5" />
+            <Trash2Icon className="h-5 w-5" />
           </Button>
           <Button
             className="w-full"

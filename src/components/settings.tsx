@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { Settings2Icon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
 const DATE_FORMAT_KEY = "dateFormat";
@@ -105,7 +105,7 @@ export default function Settings() {
     <Drawer>
       <DrawerTrigger asChild>
         <Button className="grow" title="Open settings drawer">
-          <Settings2Icon className="h-5 w-5" />
+          <SettingsIcon className="h-5 w-5" />
         </Button>
       </DrawerTrigger>
       <DrawerContent>

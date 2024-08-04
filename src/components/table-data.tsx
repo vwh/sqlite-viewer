@@ -20,7 +20,7 @@ import {
   KeyRoundIcon,
   KeySquareIcon,
   CuboidIcon,
-  Clock9Icon
+  CalendarIcon
 } from "lucide-react";
 
 interface DBTableComponentProps {
@@ -44,7 +44,7 @@ const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
     if (columnSchema?.type === "BLOB")
       return <CuboidIcon className="h-4 w-4" />;
     if (columnSchema?.type?.includes("DATE"))
-      return <Clock9Icon className="h-4 w-4" />;
+      return <CalendarIcon className="h-4 w-4" />;
     return null;
   }
 );
@@ -122,7 +122,7 @@ function TableHeadFilter({ col }: { col: string }) {
     <Input
       value={inputValue}
       onChange={onInputChange}
-      className="mt-1 max-h-7 w-full text-sm"
+      className="mt-[2px] max-h-7 w-full text-xs"
       placeholder="Filter"
     />
   );
