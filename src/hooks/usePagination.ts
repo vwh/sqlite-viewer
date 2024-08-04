@@ -14,16 +14,16 @@ export function usePagination(rowPerPageOrAuto: "auto" | number) {
   if (rowPerPageOrAuto === "auto") {
     const screenHeight = window.innerHeight;
     const thresholds = [
-      { height: 1700, rowHeight: 70 },
-      { height: 1300, rowHeight: 75 },
-      { height: 1200, rowHeight: 75 },
-      { height: 1100, rowHeight: 80 },
-      { height: 1000, rowHeight: 85 },
-      { height: 900, rowHeight: 95 },
-      { height: 850, rowHeight: 100 },
-      { height: 799, rowHeight: 110 },
-      { height: 750, rowHeight: 120 },
-      { height: 700, rowHeight: 130 },
+      { height: 1700, rowHeight: 65 },
+      { height: 1200, rowHeight: 70 },
+      { height: 1100, rowHeight: 75 },
+      { height: 1000, rowHeight: 80 },
+      { height: 910, rowHeight: 90 },
+      { height: 850, rowHeight: 95 },
+      { height: 799, rowHeight: 100 },
+      { height: 750, rowHeight: 110 },
+      { height: 730, rowHeight: 120 },
+      { height: 700, rowHeight: 135 },
       { height: 599, rowHeight: 140 },
       { height: 500, rowHeight: 200 },
       { height: 0, rowHeight: 280 }
