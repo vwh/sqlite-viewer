@@ -7,6 +7,12 @@
 </p>
 
 <div align="center">
+  <a href="https://github.com/vwh/sqlite-viewer/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/vwh/sqlite-viewer?label=License" alt="License"/>
+  </a>
+  <a href="https://snyk.io/test/github/vwh/sqlite-viewer">
+    <img src="https://img.shields.io/badge/Security%20Score-A%20%7C%20Good-brightgreen" alt="Security Score"/>
+  </a>
   <a href="https://app.codacy.com/gh/vwh/sqlite-viewer/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade">
     <img src="https://app.codacy.com/project/badge/Grade/1a8379b2399b45278a710145f92eab5d" alt="Codacy Badge"/>
   </a>
@@ -24,7 +30,7 @@
 <br>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/70bbef62-b219-4951-bb92-12731b8ba5b3" alt="Preview">
+  <img src="https://github.com/user-attachments/assets/4908cfb0-108c-44fb-b461-6b71e5e071ec" alt="Preview">
 </div>
 
 <br>
