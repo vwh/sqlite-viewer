@@ -49,6 +49,16 @@ const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   }
 );
 
+const ColumnTitle: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
+  ({ columnSchema }) => {
+    if (columnSchema?.isPrimaryKey)
+      return <span className="font-bold">(Primary Key)</span>;
+    if (columnSchema?.isForeignKey)
+      return <span className="font-bold">(Foreign Key)</span>;
+    return null;
+  }
+);
+
 const TableHeadCell: React.FC<{
   col: string;
   columnSchema: ColumnSchema;
@@ -67,7 +77,8 @@ const TableHeadCell: React.FC<{
       </HoverCardTrigger>
       <TableHeadFilter col={col} />
       <HoverCardContent side="bottom" align="start">
-        {columnSchema?.type || "Unknown"}
+        {columnSchema?.type || "Unknown"}{" "}
+        <ColumnTitle columnSchema={columnSchema} />
       </HoverCardContent>
     </HoverCard>
   </TableHead>
