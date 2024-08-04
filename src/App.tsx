@@ -29,7 +29,7 @@ function App() {
       try {
         setIsFetching(true);
         const fetchUrl = useProxy
-          ? `https://corsproxy.io/?${encodeURIComponent(url)}`
+          ? `https://cors.eu.org/${encodeURIComponent(url)}`
           : url;
         const response = await fetch(fetchUrl);
         if (!response.ok) {
