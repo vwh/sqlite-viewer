@@ -36,7 +36,7 @@ export default function Settings() {
   } = useSQLiteStore();
 
   const [selectedRowsPerPage, setSelectedRowsPerPage] = useState<number | null>(
-    null
+    30
   );
   const [isAutoRowsPerPage, setIsAutoRowsPerPage] = useState(false);
 
@@ -249,7 +249,7 @@ function QueryHistorySection({ queryHestory }: QueryHistorySectionProps) {
       <p className="mb-1 text-sm text-muted-foreground">
         Query History ({queryHestory.length})
       </p>
-      <ScrollArea className="h-48 rounded-md border">
+      <ScrollArea className="h-[155px] rounded-md border">
         <div className="p-4">
           {queryHestory.map((query, index) => (
             <div key={index}>

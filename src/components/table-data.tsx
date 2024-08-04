@@ -111,7 +111,7 @@ function TableHeadFilter({ col }: { col: string }) {
     <Input
       value={inputValue}
       onChange={onInputChange}
-      className="max-h-7 w-full text-sm"
+      className="mt-1 max-h-7 w-full text-sm"
       placeholder="Filter"
     />
   );

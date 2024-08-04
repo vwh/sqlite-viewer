@@ -126,7 +126,9 @@ export default function DBTable() {
       return <StatusMessage type="loading">Loading {tableName}</StatusMessage>;
 
     return (
-      <div className="rounded border">
+      <div
+        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} rounded border`}
+      >
         <DBTableComponent
           data={data}
           columns={savedColumns.length > 0 ? savedColumns : columns}
