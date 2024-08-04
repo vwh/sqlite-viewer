@@ -13,7 +13,14 @@ export default defineConfig({
   plugins: [
     compression(),
     react(),
-    VitePWA(),
+    VitePWA({
+      registerType: "autoUpdate",
+      workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true
+      }
+    }),
     tsconfigPaths(),
     dynamicImport(),
     Inspect(),
