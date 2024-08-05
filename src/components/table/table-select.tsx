@@ -25,7 +25,7 @@ export default function TableSelect() {
     () =>
       tables.map((table, index) => (
         <SelectItem key={table.name} value={`${index}`}>
-          {table.name}
+          {table.name[0].toUpperCase() + table.name.slice(1)}
         </SelectItem>
       )),
     [tables]

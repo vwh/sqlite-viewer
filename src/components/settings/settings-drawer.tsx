@@ -114,7 +114,7 @@ export default function Settings() {
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleRowsPerPageChange}
             />
-            <section className="flex justify-between">
+            <section className="flex justify-between gap-2">
               <DateFormatSection
                 dateFormatValue={dateFormatValue}
                 onDateFormatChange={handleDateFormatChange}

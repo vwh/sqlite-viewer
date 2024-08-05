@@ -25,11 +25,11 @@ const formatDateShort = (dateValue: string) => {
   return format(date, "MM/dd/yyyy");
 };
 
-const formatDateLong = (dateValue: string) => {
+const formatDateShort2 = (dateValue: string) => {
   const date = new Date(dateValue);
   if (!isValidDate(date)) return dateValue;
 
-  return format(date, "EEEE, MMMM do, yyyy");
+  return format(date, "yyyy/dd/MM");
 };
 
 export const dateFormats: Record<
@@ -41,6 +41,6 @@ export const dateFormats: Record<
     label: "January 9th, 1968",
     func: formatDateFormatted
   },
-  formatDateLong: { label: "Monday, January 9th, 1968", func: formatDateLong },
+  formatDateLong: { label: "1968/09/01", func: formatDateShort2 },
   formatDateShort: { label: "01/09/1968", func: formatDateShort }
 };

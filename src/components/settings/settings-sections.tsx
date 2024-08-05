@@ -70,19 +70,21 @@ export function DateFormatSection({
   onDateFormatChange
 }: DateFormatSectionProps) {
   return (
-    <div>
-      <p className="mb-1 text-sm text-muted-foreground">Date type format</p>
-      <RadioGroup
-        className="flex flex-col gap-2"
-        name="dateType"
-        value={dateFormatValue}
-        onValueChange={onDateFormatChange}
-      >
-        <Option value="default" label="Default" />
-        {Object.entries(dateFormats).map(([key, { label }]) => (
-          <Option key={key} value={key} label={label} />
-        ))}
-      </RadioGroup>
+    <div className="flex grow flex-col gap-1">
+      <p className="text-sm text-muted-foreground">Date Type Format</p>
+      <div className="rounded border p-2">
+        <RadioGroup
+          className="flex flex-col gap-2"
+          name="dateType"
+          value={dateFormatValue}
+          onValueChange={onDateFormatChange}
+        >
+          <Option value="default" label="Default" />
+          {Object.entries(dateFormats).map(([key, { label }]) => (
+            <Option key={key} value={key} label={label} />
+          ))}
+        </RadioGroup>
+      </div>
     </div>
   );
 }
@@ -93,10 +95,10 @@ export function ThemeChangeSection({
   themeColors
 }: ThemeChangeSectionProps) {
   return (
-    <div>
-      <p className="mb-1 text-sm text-muted-foreground">Theme Color</p>
+    <div className="flex grow flex-col gap-1">
+      <p className="text-sm text-muted-foreground">Theme Color</p>
       <RadioGroup
-        className="flex flex-col gap-2"
+        className="flex flex-col gap-2 rounded border p-2"
         name="themeColor"
         value={themeColor}
         onValueChange={onThemeChange}
