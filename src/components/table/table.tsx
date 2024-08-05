@@ -3,13 +3,13 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
 
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
 import StatusMessage from "./stats-message";
-import ExportButtons from "./export-buttons";
+import ExportButtons from "@/components/settings/export-buttons";
 
 import {
   Trash2Icon,

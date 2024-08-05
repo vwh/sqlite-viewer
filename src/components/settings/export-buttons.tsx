@@ -8,7 +8,7 @@ import {
   downloadDatabase
 } from "@/lib/sqlite";
 
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 import {
   Popover,

@@ -4,8 +4,12 @@ import React, { useMemo, useEffect, useState } from "react";
 import type { TableInfo, TableRow } from "@/types";
 import { dateFormats } from "@/lib/date-format";
 
-import { Input } from "./ui/input";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { Input } from "@/components/ui/input";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from "@/components/ui/hover-card";
 import {
   Table,
   TableBody,
@@ -13,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow as TTableRow
-} from "./ui/table";
+} from "@/components/ui/table";
 import StatusMessage from "./stats-message";
 
 import {

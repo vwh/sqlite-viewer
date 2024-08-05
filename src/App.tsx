@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useSQLiteStore from "./store/useSQLiteStore";
 
-import DBTable from "./components/table";
-import UploadFile from "./components/dropzone";
-import StatusMessage from "./components/stats-message";
-import Logo from "./components/logo";
-import Dialog from "./components/dialog";
-import Footer from "./components/footer";
+import DBTable from "./components/table/table";
+import UploadFile from "./components/landing/dropzone";
+import StatusMessage from "./components/table/stats-message";
+import Logo from "./components/landing/logo";
+import Dialog from "./components/landing/dialog";
+import Footer from "./components/landing/footer";
 
 function App() {
   const { db, tables, isLoading, loadDatabase, expandPage } = useSQLiteStore();

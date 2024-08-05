@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
 
 const THEME_KEY = "theme-mode";

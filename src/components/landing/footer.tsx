@@ -1,4 +1,4 @@
-import ThemeModeToggle from "./theme-mode-toggle";
+import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 import { GithubIcon } from "lucide-react";
 
 export const REPO = "https://github.com/vwh/sqlite-viewer";

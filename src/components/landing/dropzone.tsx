@@ -7,8 +7,8 @@ import {
 } from "react-dropzone";
 
 import { toast } from "sonner";
-import Settings from "./settings";
-import ThemeModeToggle from "./theme-mode-toggle";
+import Settings from "@/components/settings/settings-drawer";
+import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 
 const ACCEPTED_TYPES = {
   "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
