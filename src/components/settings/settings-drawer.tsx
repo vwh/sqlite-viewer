@@ -42,7 +42,7 @@ export default function Settings() {
 
   const [rowsPerPage, setRowsPerPage] = useLocalStorageState(
     ROWS_PER_PAGE_KEY,
-    "30"
+    "auto"
   );
   const [themeColor, setThemeColor] = useLocalStorageState(
     THEME_COLOR_KEY,
