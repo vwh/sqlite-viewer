@@ -29,7 +29,7 @@ import { SettingsIcon } from "lucide-react";
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
 const DATE_FORMAT_KEY = "dateFormat";
 const THEME_COLOR_KEY = "theme-color";
-const THEME_COLORS = ["old", "slate", "blue", "nord"];
+const THEME_COLORS = ["slate", "blue", "nord", "old"];
 
 export default function Settings() {
   const {

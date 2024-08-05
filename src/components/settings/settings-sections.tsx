@@ -103,7 +103,11 @@ export function ThemeChangeSection({
       >
         <Option value="default" label="Default" />
         {themeColors.map((theme) => (
-          <Option key={theme} value={theme} label={theme} />
+          <Option
+            key={theme}
+            value={theme}
+            label={theme[0].toUpperCase() + theme.slice(1)}
+          />
         ))}
       </RadioGroup>
     </div>
