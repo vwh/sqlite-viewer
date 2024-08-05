@@ -8,7 +8,7 @@ import {
 
 import { toast } from "sonner";
 import Settings from "./settings";
-import ThemeToggle from "./theme-toggle";
+import ThemeModeToggle from "./theme-mode-toggle";
 
 const ACCEPTED_TYPES = {
   "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
@@ -87,7 +87,7 @@ export default function UploadFile() {
         </div>
         {hasDatabase && (
           <div className="flex flex-col gap-1">
-            <ThemeToggle />
+            <ThemeModeToggle />
             <Settings />
           </div>
         )}

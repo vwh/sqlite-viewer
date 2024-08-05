@@ -99,6 +99,7 @@ function App() {
 
   return (
     <main
+      id="main"
       className={`mx-auto flex h-screen flex-col gap-3 p-4 ${expandPage ? "w-full" : "container"}`}
     >
       {!db && <Logo />}
