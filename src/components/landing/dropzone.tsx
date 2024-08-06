@@ -32,15 +32,27 @@ export default function UploadFile() {
       setTables([]);
       setSelectedTable("0");
 
-      if (acceptedFiles.length > 0) {
-        await loadDatabase(acceptedFiles[0]);
-      }
-
       if (fileRejections.length > 0) {
         const rejectionErrors = fileRejections.flatMap(
           (rejection) => rejection.errors
         );
         setErrors(rejectionErrors);
+        return;
+      }
+
+      if (acceptedFiles.length > 0) {
+        try {
+          await loadDatabase(acceptedFiles[0]);
+        } catch (error) {
+          console.error("Failed to load database:", error);
+          if (error instanceof Error) {
+            return toast(error.message, { position: "bottom-right" });
+          } else {
+            return toast("Failed to load database", {
+              position: "bottom-right"
+            });
+          }
+        }
       }
     },
     [loadDatabase, setTables, setSelectedTable]
