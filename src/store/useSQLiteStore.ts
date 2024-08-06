@@ -80,6 +80,7 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     } catch (error) {
       console.error("Failed to load database:", error);
       set({ isLoading: false, queryError: "Failed to load database" });
+      throw error;
     }
   },
 
