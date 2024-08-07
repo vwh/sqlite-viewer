@@ -30,7 +30,7 @@
 <br>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/4908cfb0-108c-44fb-b461-6b71e5e071ec" alt="Preview">
+  <img src="https://github.com/user-attachments/assets/730de33d-1f8d-48c5-9cd3-c3f855ff895e" alt="Preview">
 </div>
 
 <br>
