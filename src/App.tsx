@@ -7,6 +7,7 @@ import StatusMessage from "./components/table/stats-message";
 import Logo from "./components/landing/logo";
 import Dialog from "./components/landing/dialog";
 import Footer from "./components/landing/footer";
+import Features from "./components/landing/features";
 
 function App() {
   const { db, tables, isLoading, loadDatabase, expandPage } = useSQLiteStore();
@@ -100,7 +101,7 @@ function App() {
   return (
     <main
       id="main"
-      className={`mx-auto flex h-screen flex-col gap-3 p-4 ${expandPage ? "w-full" : "container"}`}
+      className={`mx-auto flex h-screen flex-col ${db ? "gap-3" : "gap-4"} p-4 ${expandPage ? "w-full" : "container"}`}
     >
       {!db && <Logo />}
       <UploadFile />
@@ -110,7 +111,11 @@ function App() {
         setShowDialog={setShowDialog}
         fn={handleRetryWithProxy}
       />
-      {!db && <Footer />}
+      {!db && (
+        <>
+          <Features /> <Footer />
+        </>
+      )}
     </main>
   );
 }

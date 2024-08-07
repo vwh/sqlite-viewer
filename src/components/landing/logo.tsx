@@ -1,23 +1,14 @@
-import useTheme from "@/hooks/useTheme";
-
 export default function Logo() {
-  const isDark = useTheme();
-  const logoSrc = isDark ? "/sqlite-dark.webp" : "/sqlite-light.webp";
-
   return (
-    <section className="flex justify-center rounded border py-3">
-      <div className="flex flex-col items-center gap-3">
-        <img
-          id="logo"
-          title="SQLite Logo"
-          src={logoSrc}
-          alt="SQLite Logo"
-          width="170"
-          height="80"
-          draggable="false"
-        />
-        <p className="text-sm">View SQLite files in the browser</p>
+    <header className="rounded bg-gradient-to-r shadow-md dark:from-gray-800 dark:to-indigo-900">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="mb-2 text-2xl font-bold sm:text-3xl">SQLite Viewer</h1>
+          <p className="max-w-md text-sm sm:text-base">
+            Explore and analyze your SQLite databases directly in your browser
+          </p>
+        </div>
       </div>
-    </section>
+    </header>
   );
 }

@@ -17,11 +17,6 @@ const ACCEPTED_TYPES = {
   "application/sql": [".sql"]
 };
 
-const EXAMPLES = {
-  CHINOOK:
-    "https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db"
-};
-
 export default function UploadFile() {
   const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
   const [errors, setErrors] = useState<FileError[]>([]);
@@ -58,7 +53,7 @@ export default function UploadFile() {
     [loadDatabase, setTables, setSelectedTable]
   );
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
     accept: ACCEPTED_TYPES
@@ -66,36 +61,33 @@ export default function UploadFile() {
 
   const renderDropzoneContent = useCallback(
     (hasDatabase: boolean) => (
-      <div
-        className={`flex h-full items-center justify-center gap-2 ${hasDatabase ? "px-[10px]" : "px-0"}`}
-      >
+      <div className="flex w-full items-center justify-between gap-2">
         <div
           {...getRootProps()}
-          className={`flex h-full grow cursor-pointer flex-col items-center justify-center rounded border p-6 text-center ${
-            hasDatabase ? "py-0" : "py-32"
-          }`}
+          className={`flex w-full grow transform cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors duration-300 ease-in-out hover:bg-secondary ${
+            isDragActive
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+              : "border-primary dark:border-gray-700"
+          } ${hasDatabase ? "py-7" : "py-12"}`}
         >
           <input id="file-upload" {...getInputProps()} />
           <label htmlFor="file-upload" className="sr-only">
             Upload SQLite File
           </label>
-          <p className="hidden sm:block">
-            Drag and drop a SQLite file here, or click to select one
-          </p>
-          <p className="block sm:hidden">
-            {hasDatabase
-              ? "Click to select a file"
-              : "Click to select a SQLite file"}
-          </p>
-          {!hasDatabase && (
-            <a
-              href={EXAMPLES.CHINOOK}
-              className="text-sm text-link hover:underline"
-              title="Download sample file"
-            >
-              Or download & try this sample file
-            </a>
-          )}
+          <div className="text-center text-sm md:text-base">
+            <span className="hidden font-semibold sm:block">
+              Drag and drop a SQLite file here, or click to select one
+            </span>
+            <div className="block sm:hidden">
+              {hasDatabase ? (
+                <span className="font-semibold">Click to select a file</span>
+              ) : (
+                <span className="font-semibold">
+                  Click to select a SQLite file
+                </span>
+              )}
+            </div>
+          </div>
         </div>
         {hasDatabase && (
           <div className="flex flex-col gap-1">
@@ -105,7 +97,7 @@ export default function UploadFile() {
         )}
       </div>
     ),
-    [getRootProps, getInputProps]
+    [getRootProps, getInputProps, isDragActive, db]
   );
 
   const memoizedContent = useMemo(
@@ -114,7 +106,7 @@ export default function UploadFile() {
   );
 
   return (
-    <section>
+    <section className="mx-auto w-full">
       {memoizedContent}
       <FileStats errors={errors} />
     </section>
