@@ -1,7 +1,6 @@
+import React, { useMemo, useState, useEffect } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-import React, { useMemo, useEffect, useState } from "react";
-
-import type { TableInfo, TableRow } from "@/types";
+import { TableInfo, TableRow } from "@/types";
 import { dateFormats } from "@/lib/date-format";
 import {
   isDate,
@@ -10,13 +9,7 @@ import {
   isBlob,
   isBoolean
 } from "@/lib/sqlite-type-check";
-
 import { Input } from "@/components/ui/input";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger
-} from "@/components/ui/hover-card";
 import {
   Table,
   TableBody,
@@ -25,8 +18,11 @@ import {
   TableHeader,
   TableRow as TTableRow
 } from "@/components/ui/table";
-import StatusMessage from "./stats-message";
-
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from "@/components/ui/hover-card";
 import {
   KeyRoundIcon,
   KeySquareIcon,
@@ -35,7 +31,7 @@ import {
   TypeIcon,
   HashIcon,
   ToggleLeftIcon,
-  CircleHelpIcon
+  HelpCircleIcon
 } from "lucide-react";
 
 interface DBTableComponentProps {
@@ -55,77 +51,26 @@ const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   ({ columnSchema }) => {
     const { type, isPrimaryKey, isForeignKey } = columnSchema;
 
-    if (isPrimaryKey) return <KeyRoundIcon className="h-4 w-4" />;
-    if (isForeignKey) return <KeySquareIcon className="h-4 w-4" />;
+    if (isPrimaryKey)
+      return <KeyRoundIcon className="h-4 w-4 text-yellow-500" />;
+    if (isForeignKey)
+      return <KeySquareIcon className="h-4 w-4 text-purple-500" />;
 
     if (type) {
-      if (isBlob(type)) return <CuboidIcon className="h-4 w-4" />;
-      if (isDate(type)) return <CalendarIcon className="h-4 w-4" />;
-      if (isText(type)) return <TypeIcon className="h-4 w-4" />;
-      if (IsNumber(type)) return <HashIcon className="h-4 w-4" />;
-      if (isBoolean(type)) return <ToggleLeftIcon className="h-4 w-4" />;
+      if (isBlob(type))
+        return <CuboidIcon className="h-4 w-4 text-green-500" />;
+      if (isDate(type))
+        return <CalendarIcon className="h-4 w-4 text-blue-500" />;
+      if (isText(type)) return <TypeIcon className="h-4 w-4 text-indigo-500" />;
+      if (IsNumber(type)) return <HashIcon className="h-4 w-4 text-red-500" />;
+      if (isBoolean(type))
+        return <ToggleLeftIcon className="h-4 w-4 text-pink-500" />;
     }
 
-    return <CircleHelpIcon className="h-4 w-4" />;
+    return <HelpCircleIcon className="h-4 w-4 text-gray-500" />;
   }
 );
 
-const ColumnTitle: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
-  ({ columnSchema }) => {
-    if (columnSchema?.isPrimaryKey)
-      return <span className="font-bold">(Primary Key)</span>;
-    if (columnSchema?.isForeignKey)
-      return <span className="font-bold">(Foreign Key)</span>;
-    return null;
-  }
-);
-
-const TableHeadCell: React.FC<{
-  col: string;
-  columnSchema: ColumnSchema;
-  children?: React.ReactNode;
-}> = React.memo(({ col, columnSchema, children }) => (
-  <TableHead className="py-2">
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <span className="cursor-pointer hover:underline">
-          <div className="flex items-center gap-1">
-            {col}
-            {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
-          </div>
-          {children}
-        </span>
-      </HoverCardTrigger>
-      <TableHeadFilter col={col} />
-      <HoverCardContent side="bottom" align="start">
-        {columnSchema?.type || "Unknown"}{" "}
-        <ColumnTitle columnSchema={columnSchema} />
-      </HoverCardContent>
-    </HoverCard>
-  </TableHead>
-));
-
-const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
-  ({ value, dataType }) => {
-    const { dateFormatValue } = useSQLiteStore();
-
-    const renderCellContent = () => {
-      if (!value) {
-        return <span className="italic opacity-40">NULL</span>;
-      }
-
-      if (dataType && isDate(dataType)) {
-        if (dateFormats[dateFormatValue]) {
-          return dateFormats[dateFormatValue].func(value);
-        }
-      }
-
-      return value;
-    };
-
-    return <TableCell dataType={dataType}>{renderCellContent()}</TableCell>;
-  }
-);
 function TableHeadFilter({ col }: { col: string }) {
   const { appendToFilters, selectedTable } = useSQLiteStore();
   const [inputValue, setInputValue] = useState("");
@@ -149,6 +94,61 @@ function TableHeadFilter({ col }: { col: string }) {
   );
 }
 
+const TableHeadCell: React.FC<{
+  col: string;
+  columnSchema: ColumnSchema;
+}> = React.memo(({ col, columnSchema }) => (
+  <TableHead className="bg-gray-100 py-2 dark:bg-gray-700">
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <div className="flex cursor-pointer items-center space-x-1">
+          <span>{col}</span>
+          {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent className="w-64">
+        <div className="space-y-1">
+          <p className="text-sm font-medium">{col}</p>
+          <p className="text-sm">{columnSchema?.type || "Unknown"}</p>
+          {columnSchema?.isPrimaryKey && (
+            <p className="text-sm font-semibold text-yellow-600">Primary Key</p>
+          )}
+          {columnSchema?.isForeignKey && (
+            <p className="text-sm font-semibold text-purple-600">Foreign Key</p>
+          )}
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+    <TableHeadFilter col={col} />
+  </TableHead>
+));
+
+const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
+  ({ value, dataType }) => {
+    const { dateFormatValue } = useSQLiteStore();
+
+    const renderCellContent = () => {
+      if (!value) {
+        return <span className="italic text-gray-400">NULL</span>;
+      }
+
+      if (dataType && isDate(dataType)) {
+        if (dateFormats[dateFormatValue]) {
+          return dateFormats[dateFormatValue].func(value);
+        }
+      }
+
+      return value;
+    };
+
+    return (
+      <TableCell dataType={dataType} className="px-3 py-3 text-sm">
+        {renderCellContent()}
+      </TableCell>
+    );
+  }
+);
+
 export default function DBTableComponent({
   data,
   columns,
@@ -164,7 +164,7 @@ export default function DBTableComponent({
               key={index}
               col={col}
               columnSchema={tableSchemas[tableName][col]}
-            ></TableHeadCell>
+            />
           ))}
         </TTableRow>
       </TableHeader>
@@ -192,18 +192,16 @@ export default function DBTableComponent({
   );
 
   return (
-    <>
+    <div className="overflow-x-auto">
       <Table>
         {tableHead}
         {data.length > 0 && tableBody}
       </Table>
       {data.length === 0 && (
-        <div className="w-full">
-          <StatusMessage type="info" className="rounded-none">
-            {tableName} return no data
-          </StatusMessage>
+        <div className="w-full p-4 text-center font-medium">
+          No data available for {tableName}
         </div>
       )}
-    </>
+    </div>
   );
 }

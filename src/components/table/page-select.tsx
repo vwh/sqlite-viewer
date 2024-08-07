@@ -30,7 +30,7 @@ export default function PageSelect({
   };
 
   return (
-    <section className="fixed bottom-[6px] left-0 right-0 z-10 mx-auto w-[270px]">
+    <section className="fixed bottom-2 left-1/2 z-10 w-[270px] -translate-x-1/2 transform">
       <div className="flex justify-between gap-2 rounded border bg-secondary p-[6px]">
         <Button
           onClick={prevPage}

@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
@@ -16,7 +16,8 @@ import {
   PlayIcon,
   ListRestartIcon,
   Maximize2Icon,
-  Minimize2Icon
+  Minimize2Icon,
+  DatabaseIcon
 } from "lucide-react";
 
 export default function DBTable() {
@@ -51,7 +52,6 @@ export default function DBTable() {
     isCustomQuery
   );
 
-  // State to keep a persistent copy of columns
   const [savedColumns, setSavedColumns] = useState<string[]>([]);
 
   useEffect(() => {
@@ -83,32 +83,35 @@ export default function DBTable() {
   const renderQueryInput = useMemo(
     () => (
       <div className="flex flex-col gap-2 md:flex-row">
-        <Input
-          type="text"
-          value={customQuery}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setCustomQuery(e.target.value)
-          }
-          placeholder="Enter your custom query"
-          className="w-full"
-        />
+        <div className="relative flex-grow">
+          <Input
+            type="text"
+            value={customQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCustomQuery(e.target.value)
+            }
+            placeholder="Enter your custom query"
+            className="w-full rounded-lg pr-10 shadow-sm"
+          />
+          <DatabaseIcon className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+        </div>
         <div className="flex gap-1">
           <Button
-            className="w-full"
+            className="grow"
             onClick={handleCustomQuery}
             title="Run custom query"
           >
             <PlayIcon className="h-5 w-5" />
           </Button>
           <Button
-            className="w-full"
+            className="grow"
             onClick={handleResetQuery}
             title="Remove query"
           >
             <Trash2Icon className="h-5 w-5" />
           </Button>
           <Button
-            className="w-full"
+            className="grow"
             onClick={handleResetPage}
             title="Reset to first page"
             disabled={page === 0}
@@ -127,7 +130,7 @@ export default function DBTable() {
 
     return (
       <div
-        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} rounded border`}
+        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700`}
       >
         <DBTableComponent
           data={data}
@@ -148,11 +151,11 @@ export default function DBTable() {
   ]);
 
   return (
-    <div className="flex flex-col gap-3 pb-8">
-      <section className="flex flex-col gap-2 rounded border p-3 pb-2">
-        <div className="flex h-full gap-1">
+    <div className="flex flex-col gap-4 pb-8">
+      <section className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
+        <div className="mb-[7px] flex items-center justify-between gap-2">
           <TableSelect />
-          <div className="ml-1 flex gap-1">
+          <div className="flex items-center justify-center gap-1">
             <ExportButtons />
             <Button
               className="hidden expand:block"
@@ -169,7 +172,7 @@ export default function DBTable() {
         </div>
         {renderQueryInput}
         {queryError && (
-          <p className="text-center text-xs capitalize text-red-500">
+          <p className="mt-2 text-center text-sm text-red-500 dark:text-red-400">
             {queryError}
           </p>
         )}
