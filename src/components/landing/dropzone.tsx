@@ -75,14 +75,14 @@ export default function UploadFile() {
             Upload SQLite File
           </label>
           <div className="text-center text-sm md:text-base">
-            <span className="hidden font-semibold sm:block">
-              Drag and drop a SQLite file here, or click to select one
+            <span className="hidden sm:block lg:text-lg">
+              Drag and drop file here, or click to select one
             </span>
             <div className="block sm:hidden">
               {hasDatabase ? (
-                <span className="font-semibold">Click to select a file</span>
+                <span className="font-medium">Click to select a file</span>
               ) : (
-                <span className="font-semibold">
+                <span className="font-medium">
                   Click to select a SQLite file
                 </span>
               )}

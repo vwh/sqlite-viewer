@@ -4,18 +4,8 @@ import useLocalStorageState, {
   getLocalStorageItem,
   setLocalStorageItem
 } from "@/hooks/useLocalStorageState";
-
 import { toast } from "sonner";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
-} from "@/components/ui/drawer";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   DateFormatSection,
@@ -23,7 +13,6 @@ import {
   ThemeChangeSection,
   QueryHistorySection
 } from "./settings-sections";
-
 import { SettingsIcon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
@@ -95,47 +84,30 @@ export default function Settings() {
   );
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button className="grow" title="Open settings drawer">
           <SettingsIcon className="h-5 w-5" />
         </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="mx-auto w-full max-w-md">
-          <DrawerHeader>
-            <DrawerTitle>Settings</DrawerTitle>
-            <DrawerDescription>
-              Personalize your site experience here.
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="flex flex-col gap-4 p-4 pb-0">
-            <RowsPerPageSection
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleRowsPerPageChange}
-            />
-            <section className="flex justify-between gap-2">
-              <DateFormatSection
-                dateFormatValue={dateFormatValue}
-                onDateFormatChange={handleDateFormatChange}
-              />
-              <ThemeChangeSection
-                themeColor={themeColor}
-                onThemeChange={handleThemeChange}
-                themeColors={THEME_COLORS}
-              />
-            </section>
-            <QueryHistorySection queryHistory={queryHestory} />
-          </div>
-          <DrawerFooter>
-            <DrawerClose asChild>
-              <Button title="Close settings drawer" variant="outline">
-                Close
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
+      </SheetTrigger>
+      <SheetContent className="sm:max-w-[425px]">
+        <div className="mt-6 space-y-6">
+          <RowsPerPageSection
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
+          <DateFormatSection
+            dateFormatValue={dateFormatValue}
+            onDateFormatChange={handleDateFormatChange}
+          />
+          <ThemeChangeSection
+            themeColor={themeColor}
+            onThemeChange={handleThemeChange}
+            themeColors={THEME_COLORS}
+          />
+          <QueryHistorySection queryHistory={queryHestory} />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 }

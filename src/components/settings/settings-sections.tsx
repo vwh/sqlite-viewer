@@ -7,6 +7,13 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 
+import {
+  Rows3Icon,
+  CalendarIcon,
+  PaletteIcon,
+  HistoryIcon
+} from "lucide-react";
+
 interface RowsPerPageSectionProps {
   rowsPerPage: string;
   onRowsPerPageChange: (value: string) => void;
@@ -39,24 +46,24 @@ export function RowsPerPageSection({
   const isAutoRowsPerPage = rowsPerPage === "auto";
 
   return (
-    <div>
-      <p className="mb-1 text-sm text-muted-foreground">Rows Per Page</p>
-      <div className="flex items-center justify-center gap-1 rounded border p-2">
+    <div className="flex grow flex-col gap-1">
+      <div className="flex items-center gap-1">
+        <Rows3Icon className="h-4 w-4" />
+        <p className="text-sm font-medium">Rows Per Page</p>
+      </div>
+      <div className="flex flex-col items-center justify-center gap-1 rounded border p-2">
         <Input
+          id="rowsPerPage"
           value={isAutoRowsPerPage ? "" : rowsPerPage}
           onChange={(e) => onRowsPerPageChange(e.target.value)}
           placeholder="Number of rows"
           type="number"
-          name="rowsPerPage"
+          className="w-full"
         />
-        <span className="h-full text-center text-sm text-muted-foreground">
-          OR
-        </span>
         <Button
-          className={isAutoRowsPerPage ? "border border-primary" : ""}
+          variant={isAutoRowsPerPage ? "secondary" : "outline"}
           onClick={() => onRowsPerPageChange("auto")}
-          title="Toggle auto rows per page"
-          variant="outline"
+          className="w-full whitespace-nowrap"
         >
           Auto Calculate
         </Button>
@@ -71,7 +78,10 @@ export function DateFormatSection({
 }: DateFormatSectionProps) {
   return (
     <div className="flex grow flex-col gap-1">
-      <p className="text-sm text-muted-foreground">Date Type Format</p>
+      <div className="flex items-center gap-1">
+        <CalendarIcon className="h-4 w-4" />
+        <p className="text-sm font-medium">Date Format</p>
+      </div>
       <div className="rounded border p-2">
         <RadioGroup
           className="flex flex-col gap-2"
@@ -96,7 +106,10 @@ export function ThemeChangeSection({
 }: ThemeChangeSectionProps) {
   return (
     <div className="flex grow flex-col gap-1">
-      <p className="text-sm text-muted-foreground">Theme Color</p>
+      <div className="flex items-center gap-1">
+        <PaletteIcon className="h-4 w-4" />
+        <p className="text-sm font-medium">Theme Color</p>
+      </div>
       <RadioGroup
         className="flex flex-col gap-2 rounded border p-2"
         name="themeColor"
@@ -120,15 +133,18 @@ export function QueryHistorySection({
   queryHistory
 }: QueryHistorySectionProps) {
   return (
-    <div>
-      <p className="mb-1 text-sm text-muted-foreground">
-        Query History ({queryHistory.length})
-      </p>
-      <ScrollArea className="h-[155px] rounded-md border">
+    <div className="flex grow flex-col gap-1">
+      <div className="flex items-center gap-1">
+        <HistoryIcon className="h-4 w-4" />
+        <p className="text-sm font-medium">
+          Query History ({queryHistory.length})
+        </p>
+      </div>
+      <ScrollArea className="h-[155px] rounded-md border font-medium">
         <div className="p-4">
           {queryHistory.map((query, index) => (
             <div key={index}>
-              <div className="text-xs">{query}</div>
+              <div className="text-sm font-normal">{query}</div>
               <Separator className="my-2" />
             </div>
           ))}
