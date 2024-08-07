@@ -1,9 +1,9 @@
 import React from "react";
 import {
   AlertTriangleIcon,
-  LoaderIcon,
+  Loader2Icon,
   CheckCircleIcon,
-  TextSearchIcon
+  InfoIcon
 } from "lucide-react";
 
 type MessageType = "error" | "loading" | "success" | "info";
@@ -17,32 +17,41 @@ interface StatusMessageProps {
 export default function StatusMessage({
   type,
   children,
-  className
+  className = ""
 }: StatusMessageProps) {
+  const baseClasses = "flex items-center p-4 rounded-lg shadow-md";
   let icon;
+  let typeClasses;
+
   switch (type) {
     case "error":
-      icon = <AlertTriangleIcon className="h-6 w-6 text-red-500" />;
+      icon = <AlertTriangleIcon className="mr-3 h-6 w-6 text-red-500" />;
+      typeClasses = "bg-red-100 text-red-800 border-l-4 border-red-500";
       break;
     case "loading":
-      icon = <LoaderIcon className="h-6 w-6 animate-spin" />;
+      icon = (
+        <Loader2Icon className="mr-3 h-6 w-6 animate-spin text-blue-500" />
+      );
+      typeClasses = "bg-blue-100 text-blue-800 border-l-4 border-blue-500";
       break;
     case "success":
-      icon = <CheckCircleIcon className="h-6 w-6 text-green-500" />;
+      icon = <CheckCircleIcon className="mr-3 h-6 w-6 text-green-500" />;
+      typeClasses = "bg-green-100 text-green-800 border-l-4 border-green-500";
       break;
     case "info":
-      icon = <TextSearchIcon className="h-6 w-6" />;
+      icon = <InfoIcon className="mr-3 h-6 w-6 text-yellow-500" />;
+      typeClasses =
+        "bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500";
       break;
     default:
       icon = null;
+      typeClasses = "";
   }
 
   return (
-    <div
-      className={`${className} flex items-center justify-center gap-3 rounded border p-4`}
-    >
+    <div className={`${baseClasses} ${typeClasses} ${className}`}>
       {icon}
-      <span className="font-semibold">{children}</span>
+      <span className="font-medium">{children}</span>
     </div>
   );
 }

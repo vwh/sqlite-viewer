@@ -32,7 +32,7 @@ export function usePagination(rowPerPageOrAuto: "auto" | number) {
     let rowHeight = defaultRowHeight;
     for (const threshold of thresholds) {
       if (screenHeight > threshold.height) {
-        rowHeight = threshold.rowHeight;
+        rowHeight = threshold.rowHeight - 10;
         break;
       }
     }
