@@ -3,6 +3,13 @@ import React, { useMemo, useEffect, useState } from "react";
 
 import type { TableInfo, TableRow } from "@/types";
 import { dateFormats } from "@/lib/date-format";
+import {
+  isDate,
+  IsNumber,
+  isText,
+  isBlob,
+  isBoolean
+} from "@/lib/sqlite-type-check";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -24,7 +31,11 @@ import {
   KeyRoundIcon,
   KeySquareIcon,
   CuboidIcon,
-  CalendarIcon
+  CalendarIcon,
+  TypeIcon,
+  HashIcon,
+  ToggleLeftIcon,
+  CircleHelpIcon
 } from "lucide-react";
 
 interface DBTableComponentProps {
@@ -42,14 +53,20 @@ interface ColumnSchema {
 
 const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   ({ columnSchema }) => {
-    if (columnSchema?.isPrimaryKey) return <KeyRoundIcon className="h-4 w-4" />;
-    if (columnSchema?.isForeignKey)
-      return <KeySquareIcon className="h-4 w-4" />;
-    if (columnSchema?.type === "BLOB")
-      return <CuboidIcon className="h-4 w-4" />;
-    if (columnSchema?.type?.includes("DATE"))
-      return <CalendarIcon className="h-4 w-4" />;
-    return null;
+    const { type, isPrimaryKey, isForeignKey } = columnSchema;
+
+    if (isPrimaryKey) return <KeyRoundIcon className="h-4 w-4" />;
+    if (isForeignKey) return <KeySquareIcon className="h-4 w-4" />;
+
+    if (type) {
+      if (isBlob(type)) return <CuboidIcon className="h-4 w-4" />;
+      if (isDate(type)) return <CalendarIcon className="h-4 w-4" />;
+      if (isText(type)) return <TypeIcon className="h-4 w-4" />;
+      if (IsNumber(type)) return <HashIcon className="h-4 w-4" />;
+      if (isBoolean(type)) return <ToggleLeftIcon className="h-4 w-4" />;
+    }
+
+    return <CircleHelpIcon className="h-4 w-4" />;
   }
 );
 
@@ -74,7 +91,7 @@ const TableHeadCell: React.FC<{
         <span className="cursor-pointer hover:underline">
           <div className="flex items-center gap-1">
             {col}
-            <ColumnIcon columnSchema={columnSchema} />
+            {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
           </div>
           {children}
         </span>
@@ -91,13 +108,13 @@ const TableHeadCell: React.FC<{
 const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
   ({ value, dataType }) => {
     const { dateFormatValue } = useSQLiteStore();
-    const isDate = dataType === "DATE" || dataType === "DATETIME";
+
     const renderCellContent = () => {
       if (!value) {
         return <span className="italic opacity-40">NULL</span>;
       }
 
-      if (isDate) {
+      if (dataType && isDate(dataType)) {
         if (dateFormats[dateFormatValue]) {
           return dateFormats[dateFormatValue].func(value);
         }

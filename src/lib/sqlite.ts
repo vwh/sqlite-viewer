@@ -39,7 +39,7 @@ export const getTableSchema = async (database: Database, tableName: string) => {
     const tableSchema = tableInfoResult.values.reduce(
       (acc, row) => {
         acc[row[1] as string] = {
-          type: row[2] as string,
+          type: row[2] ? (row[2] as string).toUpperCase() : (row[2] as string),
           isPrimaryKey: (row[5] as number) === 1,
           isForeignKey: false
         };
