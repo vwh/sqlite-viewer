@@ -51,7 +51,7 @@ export default function TableSelect() {
       </Select>
       <Badge
         title="Rows"
-        className="hidden min-w-[100px] grow bg-background py-2 text-sm md:block md:min-w-[200px]"
+        className="hidden min-w-[100px] grow bg-background py-2 text-center text-sm md:block md:min-w-[200px]"
         variant="outline"
       >
         <span className="w-full text-center">{selectedTableCount}</span>

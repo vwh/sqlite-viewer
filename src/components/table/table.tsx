@@ -130,7 +130,7 @@ export default function DBTable() {
 
     return (
       <div
-        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700`}
+        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border-2 border-gray-200 dark:border dark:border-gray-700`}
       >
         <DBTableComponent
           data={data}

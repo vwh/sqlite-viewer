@@ -66,4 +66,37 @@
       "rlig" 1,
       "calt" 1;
   }
+
+  /* For Webkit browsers like Chrome and Safari */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+    transition: background 0.2s ease-in-out;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  :root {
+    --scrollbar-track: hsl(var(--secondary));
+    --scrollbar-thumb: hsl(var(--muted-foreground) / 0.5);
+    --scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.7);
+  }
+
+  .dark {
+    --scrollbar-track: hsl(var(--secondary));
+    --scrollbar-thumb: hsl(var(--muted-foreground) / 0.5);
+    --scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.7);
+  }
 }

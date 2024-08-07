@@ -125,7 +125,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
             </span>
           </HoverCardTrigger>
           <HoverCardContent side="bottom" align="start">
-            <div className="flex flex-col justify-center gap-2">
+            <div className="flex flex-col justify-center gap-1">
               {isBlob && typeof children === "string" ? (
                 <>
                   <img
@@ -143,11 +143,11 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
               ) : (
                 <span className="max-w-full break-words">{children}</span>
               )}
-              {dataType && (
+              {
                 <Badge className="w-full self-start text-xs font-semibold">
-                  {dataType}
+                  {dataType || "Unknown"}
                 </Badge>
-              )}
+              }
             </div>
           </HoverCardContent>
         </HoverCard>

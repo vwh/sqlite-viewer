@@ -23,6 +23,8 @@ import {
   HoverCardContent,
   HoverCardTrigger
 } from "@/components/ui/hover-card";
+import { Badge } from "../ui/badge";
+
 import {
   KeyRoundIcon,
   KeySquareIcon,
@@ -107,16 +109,20 @@ const TableHeadCell: React.FC<{
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-64">
-        <div className="space-y-1">
+        <div className="mb-1 flex items-center space-x-1">
           <p className="text-sm font-medium">{col}</p>
-          <p className="text-sm">{columnSchema?.type || "Unknown"}</p>
           {columnSchema?.isPrimaryKey && (
-            <p className="text-sm font-semibold text-yellow-600">Primary Key</p>
+            <p className="text-sm font-semibold text-yellow-600">(Primary)</p>
           )}
           {columnSchema?.isForeignKey && (
-            <p className="text-sm font-semibold text-purple-600">Foreign Key</p>
+            <p className="text-sm font-semibold text-purple-600">(Foreign)</p>
           )}
         </div>
+        {
+          <Badge className="w-full self-start text-xs font-semibold">
+            {columnSchema?.type || "Unknown"}
+          </Badge>
+        }
       </HoverCardContent>
     </HoverCard>
     <TableHeadFilter col={col} />

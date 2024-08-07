@@ -34,7 +34,7 @@ export default function Features() {
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               <Feature
                 icon={GlobeIcon}
-                title="Browser-Based"
+                title="Browser Based"
                 description="No installation required. Access and analyze your SQLite databases directly in your web browser."
               />
               <Feature
