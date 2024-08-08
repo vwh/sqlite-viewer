@@ -14,7 +14,7 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
 </div>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/968d9192-4316-4d3a-b33d-33a3cfb22fec" alt="SQLite Viewer Preview">
+  <img src="https://github.com/user-attachments/assets/cd0b95ba-bcc4-45a1-bd33-4504f42098b9" alt="SQLite Viewer Preview">
 </div>
 
 ## 🌟 Features

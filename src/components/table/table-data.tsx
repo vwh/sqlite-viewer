@@ -148,7 +148,7 @@ const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
     };
 
     return (
-      <TableCell dataType={dataType} className="px-5 py-3 text-sm">
+      <TableCell dataType={dataType} className="px-5 py-[11px] text-sm">
         {renderCellContent()}
       </TableCell>
     );

@@ -130,7 +130,7 @@ export default function DBTable() {
 
     return (
       <div
-        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border-2 border-gray-200 dark:border dark:border-gray-700`}
+        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border dark:border-gray-700`}
       >
         <DBTableComponent
           data={data}
@@ -151,8 +151,8 @@ export default function DBTable() {
   ]);
 
   return (
-    <div className="flex flex-col gap-4 pb-8">
-      <section className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-700">
+    <div className="flex flex-col gap-3 pb-8">
+      <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
         <div className="mb-[7px] flex items-center justify-between gap-2">
           <TableSelect />
           <div className="flex items-center justify-center gap-1">
