@@ -18,4 +18,5 @@ export interface ColumnSchema {
   isPrimaryKey?: boolean;
   isForeignKey?: boolean;
   type?: string;
+  nullable?: boolean;
 }

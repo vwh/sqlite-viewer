@@ -50,9 +50,16 @@ const TableHeadCell: React.FC<{
             <p className="text-sm font-medium">{columnName}</p>
             <KeyIcon columnSchema={columnSchema} />
           </div>
-          <Badge className="w-full self-start text-xs font-semibold">
-            {columnSchema?.type || "Unknown"}
-          </Badge>
+          <div className="flex items-center gap-1">
+            <Badge className="w-full self-start text-center text-xs font-semibold">
+              {columnSchema?.type || "Unknown"}
+            </Badge>
+            {columnSchema?.nullable && (
+              <Badge className="w-full self-start text-center text-xs font-semibold">
+                NULLABLE
+              </Badge>
+            )}
+          </div>
         </HoverCardContent>
       </HoverCard>
     </div>

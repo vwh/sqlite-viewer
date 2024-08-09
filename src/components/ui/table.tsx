@@ -144,7 +144,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
                 <span className="max-w-full break-words">{children}</span>
               )}
               {
-                <Badge className="w-full self-start text-xs font-semibold">
+                <Badge className="w-full self-start text-center text-xs font-semibold">
                   {dataType || "Unknown"}
                 </Badge>
               }
