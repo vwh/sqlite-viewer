@@ -8,8 +8,7 @@ import type { TableRow } from "@/types";
 export function useQueryData(
   tableName: string,
   rowsPerPage: number,
-  page: number,
-  isCustomQuery: boolean
+  page: number
 ) {
   const {
     db,
@@ -22,7 +21,9 @@ export function useQueryData(
     filters,
     totalRows,
     setTotalRows,
-    orderBy
+    orderBy,
+    selectedTable,
+    tables
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
@@ -31,7 +32,7 @@ export function useQueryData(
 
   // Only god knows what this does but it is the main useEffect for all the site
   useEffect(() => {
-    if (db && tableName && !isCustomQuery) {
+    if (db && tableName) {
       setIsQueryLoading(true);
       (async () => {
         try {
@@ -103,10 +104,8 @@ export function useQueryData(
     tableName,
     page,
     rowsPerPage,
-    isCustomQuery,
     setQueryError,
     query,
-    setCustomQuery,
     unShiftToQueryHistory,
     filters,
     setTotalRows,
@@ -121,7 +120,11 @@ export function useQueryData(
     setIsQueryLoading(true);
     (async () => {
       try {
-        const customResult: QueryExecResult[] = query(customQuery);
+        const tableName = tables[parseInt(selectedTable)].name;
+        const customResult: QueryExecResult[] = query(
+          // @ used to represent the current table name
+          customQuery.replace("@", `"${tableName}"`)
+        );
         const { data, columns } = mapQueryResults(customResult);
         setColumns(columns);
         setData(data);

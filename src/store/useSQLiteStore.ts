@@ -42,6 +42,8 @@ interface SQLiteState {
   };
   setFilters: (value: { [columnName: string]: string }) => void;
   appendToFilters: (columnName: string, value: string) => void;
+  filtersNeedClear: boolean;
+  setFiltersNeedClear: (value: boolean) => void;
 
   totalRows: number;
   setTotalRows: (value: number) => void;
@@ -129,6 +131,8 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     set((state) => ({
       filters: { ...state.filters, [columnName]: value }
     })),
+  filtersNeedClear: false,
+  setFiltersNeedClear: (value: boolean) => set({ filtersNeedClear: value }),
 
   totalRows: 0,
   setTotalRows: (value: number) => set({ totalRows: value }),

@@ -6,13 +6,25 @@ import { Input } from "@/components/ui/input";
 import { ArrowDownNarrowWideIcon, ArrowUpNarrowWideIcon } from "lucide-react";
 
 export function TableFilter({ columnName }: { columnName: string }) {
-  const { appendToFilters, selectedTable } = useSQLiteStore();
+  const {
+    appendToFilters,
+    selectedTable,
+    filtersNeedClear,
+    setFiltersNeedClear
+  } = useSQLiteStore();
   const [inputValue, setInputValue] = useState("");
 
   // reset the input value when the table changes
   useEffect(() => {
     setInputValue("");
   }, [selectedTable]);
+
+  useEffect(() => {
+    if (filtersNeedClear) {
+      setInputValue("");
+      setFiltersNeedClear(false);
+    }
+  }, [filtersNeedClear]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);

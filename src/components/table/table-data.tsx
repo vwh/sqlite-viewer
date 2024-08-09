@@ -22,6 +22,7 @@ import {
 import { Badge } from "../ui/badge";
 import { TableFilter, TableOrderBy } from "./table-operations";
 import { ColumnIcon, KeyIcon } from "./table-decorations";
+import { Button } from "../ui/button";
 
 interface DBTableComponentProps {
   data: TableRow[];
@@ -89,6 +90,8 @@ export default function DBTableComponent({
   tableName,
   tableSchemas
 }: DBTableComponentProps) {
+  const { filters, setFiltersNeedClear, setFilters } = useSQLiteStore();
+
   const tableHead = useMemo(
     () => (
       <TableHeader>
@@ -132,9 +135,23 @@ export default function DBTableComponent({
         {data.length > 0 && tableBody}
       </Table>
       {data.length === 0 && (
-        <div className="w-full p-4 text-center font-medium">
-          No data available for {tableName}
-        </div>
+        <>
+          <div className="w-full p-4 text-center font-medium">
+            No data available for {tableName}
+          </div>
+          {Object.keys(filters).length > 0 && (
+            <Button
+              className="w-full rounded-none"
+              variant={"outline"}
+              onClick={() => {
+                setFiltersNeedClear(true);
+                setFilters({});
+              }}
+            >
+              Clear filters
+            </Button>
+          )}
+        </>
       )}
     </div>
   );
