@@ -35,7 +35,8 @@ export default function DBTable() {
     expandPage,
     setExpandPage,
     filters,
-    setFilters
+    setFilters,
+    setOrderBy
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -74,6 +75,7 @@ export default function DBTable() {
   useEffect(() => {
     setPage(0);
     setFilters({});
+    setOrderBy(null);
   }, [selectedTable]);
 
   useEffect(() => {

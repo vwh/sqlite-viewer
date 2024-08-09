@@ -21,7 +21,8 @@ export function useQueryData(
     setCustomQuery,
     filters,
     totalRows,
-    setTotalRows
+    setTotalRows,
+    orderBy
   } = useSQLiteStore();
 
   const [data, setData] = useState<TableRow[]>([]);
@@ -69,15 +70,18 @@ export function useQueryData(
           setTotalRows(totalRows);
 
           // Construct the data query string
-          let queryString = `SELECT ${columnSelects} FROM "${tableName}" LIMIT ${rowsPerPage} OFFSET ${page};`;
+          let queryString = `SELECT ${columnSelects} FROM "${tableName}"`;
           if (Object.keys(cleanFilters).length > 0) {
             const filterQuery = Object.entries(cleanFilters)
               .map(([key, value]) => {
                 return `LOWER(${key}) LIKE LOWER('%${value}%')`;
               })
               .join(" AND ");
-            queryString = `SELECT ${columnSelects} FROM "${tableName}" WHERE ${filterQuery} LIMIT ${rowsPerPage} OFFSET ${page};`;
+            queryString += ` WHERE ${filterQuery}`;
           }
+
+          if (orderBy) queryString += ` ORDER BY ${orderBy}`;
+          queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
 
           const tableResult: QueryExecResult[] = query(queryString);
           const { data, columns } = mapQueryResults(tableResult);
@@ -104,7 +108,8 @@ export function useQueryData(
     setCustomQuery,
     unShiftToQueryHestory,
     filters,
-    setTotalRows
+    setTotalRows,
+    orderBy
   ]);
 
   const handleCustomQuery = useCallback(() => {

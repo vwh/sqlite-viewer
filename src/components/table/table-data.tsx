@@ -33,7 +33,9 @@ import {
   TypeIcon,
   HashIcon,
   ToggleLeftIcon,
-  HelpCircleIcon
+  HelpCircleIcon,
+  ArrowDownNarrowWideIcon,
+  ArrowUpNarrowWideIcon
 } from "lucide-react";
 
 interface DBTableComponentProps {
@@ -77,14 +79,14 @@ function TableHeadFilter({ col }: { col: string }) {
   const { appendToFilters, selectedTable } = useSQLiteStore();
   const [inputValue, setInputValue] = useState("");
 
+  useEffect(() => {
+    setInputValue("");
+  }, [selectedTable]);
+
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
     appendToFilters(col, e.target.value);
   };
-
-  useEffect(() => {
-    setInputValue("");
-  }, [selectedTable]);
 
   return (
     <Input
@@ -96,35 +98,60 @@ function TableHeadFilter({ col }: { col: string }) {
   );
 }
 
+function TableOrderBy({ col }: { col: string }) {
+  const { orderBy, setOrderBy } = useSQLiteStore();
+
+  const handleButtonClick = () => {
+    if (orderBy === col) {
+      setOrderBy(null);
+    } else {
+      setOrderBy(col);
+    }
+  };
+
+  return (
+    <button onClick={handleButtonClick}>
+      {orderBy === col ? (
+        <ArrowUpNarrowWideIcon className="h-4 w-4" />
+      ) : (
+        <ArrowDownNarrowWideIcon className="h-4 w-4" />
+      )}
+    </button>
+  );
+}
+
 const TableHeadCell: React.FC<{
   col: string;
   columnSchema: ColumnSchema;
 }> = React.memo(({ col, columnSchema }) => (
   <TableHead className="bg-gray-100 py-2 dark:bg-gray-700">
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <div className="flex cursor-pointer items-center space-x-1">
-          <span>{col}</span>
-          {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
-        </div>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-64">
-        <div className="mb-1 flex items-center space-x-1">
-          <p className="text-sm font-medium">{col}</p>
-          {columnSchema?.isPrimaryKey && (
-            <p className="text-sm font-semibold text-yellow-600">(Primary)</p>
-          )}
-          {columnSchema?.isForeignKey && (
-            <p className="text-sm font-semibold text-purple-600">(Foreign)</p>
-          )}
-        </div>
-        {
-          <Badge className="w-full self-start text-xs font-semibold">
-            {columnSchema?.type || "Unknown"}
-          </Badge>
-        }
-      </HoverCardContent>
-    </HoverCard>
+    <div className="flex items-center gap-1">
+      <TableOrderBy col={col} />
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <div className="flex cursor-pointer items-center space-x-1">
+            <span>{col}</span>
+            {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
+          </div>
+        </HoverCardTrigger>
+        <HoverCardContent className="w-64">
+          <div className="mb-1 flex items-center space-x-1">
+            <p className="text-sm font-medium">{col}</p>
+            {columnSchema?.isPrimaryKey && (
+              <p className="text-sm font-semibold text-yellow-600">(Primary)</p>
+            )}
+            {columnSchema?.isForeignKey && (
+              <p className="text-sm font-semibold text-purple-600">(Foreign)</p>
+            )}
+          </div>
+          {
+            <Badge className="w-full self-start text-xs font-semibold">
+              {columnSchema?.type || "Unknown"}
+            </Badge>
+          }
+        </HoverCardContent>
+      </HoverCard>
+    </div>
     <TableHeadFilter col={col} />
   </TableHead>
 ));

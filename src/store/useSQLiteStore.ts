@@ -36,6 +36,9 @@ interface SQLiteState {
 
   totalRows: number;
   setTotalRows: (value: number) => void;
+
+  orderBy: string | null;
+  setOrderBy: (value: string | null) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -122,7 +125,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     })),
 
   totalRows: 0,
-  setTotalRows: (value: number) => set({ totalRows: value })
+  setTotalRows: (value: number) => set({ totalRows: value }),
+
+  orderBy: null,
+  setOrderBy: (value: string | null) => set({ orderBy: value })
 }));
 
 export default initializeStore;
