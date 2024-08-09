@@ -4,15 +4,27 @@ import useLocalStorageState, {
   getLocalStorageItem,
   setLocalStorageItem
 } from "@/hooks/useLocalStorageState";
+
 import { toast } from "sonner";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import {
   DateFormatSection,
   RowsPerPageSection,
-  ThemeChangeSection,
+  ThemeColorSection,
   QueryHistorySection
 } from "./settings-sections";
+
 import { SettingsIcon } from "lucide-react";
 
 const ROWS_PER_PAGE_KEY = "rowsPerPage";
@@ -24,7 +36,7 @@ export default function Settings() {
   const {
     setRowPerPageOrAuto,
     setIsCustomQuery,
-    queryHestory,
+    queryHistory,
     dateFormatValue,
     setDateFormatValue
   } = useSQLiteStore();
@@ -76,7 +88,7 @@ export default function Settings() {
     [setDateFormatValue]
   );
 
-  const handleThemeChange = useCallback(
+  const handleThemeColorChange = useCallback(
     (value: string) => {
       setThemeColor(value);
     },
@@ -84,30 +96,39 @@ export default function Settings() {
   );
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Drawer>
+      <DrawerTrigger asChild>
         <Button className="grow" title="Open settings drawer">
           <SettingsIcon className="h-5 w-5" />
         </Button>
-      </SheetTrigger>
-      <SheetContent className="sm:max-w-[425px]">
-        <div className="mt-6 space-y-6">
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader className="hidden">
+          <DrawerTitle>Settings</DrawerTitle>
+          <DrawerDescription>Change settings.</DrawerDescription>
+        </DrawerHeader>
+        <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
           <RowsPerPageSection
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleRowsPerPageChange}
+          />
+          <ThemeColorSection
+            themeColor={themeColor}
+            onThemeColorChange={handleThemeColorChange}
+            themeColors={THEME_COLORS}
           />
           <DateFormatSection
             dateFormatValue={dateFormatValue}
             onDateFormatChange={handleDateFormatChange}
           />
-          <ThemeChangeSection
-            themeColor={themeColor}
-            onThemeChange={handleThemeChange}
-            themeColors={THEME_COLORS}
-          />
-          <QueryHistorySection queryHistory={queryHestory} />
+          <QueryHistorySection queryHistory={queryHistory} />
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

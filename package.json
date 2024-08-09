@@ -9,20 +9,12 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "gh:deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/vwh/sqlite-viewer.git"
   },
-  "keywords": [
-    "sqlite",
-    "viewer",
-    "browser",
-    "sql.js",
-    "react"
-  ],
   "author": "vwh",
   "license": "MIT",
   "dependencies": {
@@ -48,6 +40,7 @@
     "sql.js": "^1.11.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "vaul": "^0.9.1",
     "zustand": "^4.5.4"
   },
   "devDependencies": {

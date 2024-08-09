@@ -1,4 +1,4 @@
-export default function Logo() {
+export default function Hero() {
   return (
     <header className="rounded bg-gradient-to-r shadow-md dark:from-gray-800 dark:to-indigo-900">
       <div className="mx-auto max-w-4xl px-4 py-8 sm:py-12">

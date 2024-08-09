@@ -1,8 +1,6 @@
 import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 import { GithubIcon } from "lucide-react";
 
-export const REPO = "https://github.com/vwh/sqlite-viewer";
-
 export default function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 right-0 border-t-2 bg-background shadow-md">
@@ -16,7 +14,7 @@ export default function Footer() {
               <p className="text-sm sm:hidden">No file uploads to server.</p>
             </div>
             <a
-              href={REPO}
+              href="https://github.com/vwh/sqlite-viewer"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 text-blue-500 transition-colors dark:text-blue-400"

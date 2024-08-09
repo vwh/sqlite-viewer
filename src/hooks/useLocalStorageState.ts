@@ -11,6 +11,7 @@ const useLocalStorageState = (key: string, defaultValue: string) => {
     getLocalStorageItem(key, defaultValue)
   );
 
+  // update local storage on state change
   useEffect(() => {
     setLocalStorageItem(key, state);
   }, [key, state]);

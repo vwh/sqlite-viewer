@@ -23,10 +23,6 @@ export default function UploadFile() {
 
   const onDrop = useCallback(
     async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
-      setErrors([]);
-      setTables([]);
-      setSelectedTable("0");
-
       if (fileRejections.length > 0) {
         const rejectionErrors = fileRejections.flatMap(
           (rejection) => rejection.errors
@@ -35,11 +31,14 @@ export default function UploadFile() {
         return;
       }
 
+      setErrors([]);
+      setTables([]);
+      setSelectedTable("0");
+
       if (acceptedFiles.length > 0) {
         try {
           await loadDatabase(acceptedFiles[0]);
         } catch (error) {
-          console.error("Failed to load database:", error);
           if (error instanceof Error) {
             return toast(error.message, { position: "bottom-right" });
           } else {

@@ -16,7 +16,7 @@ export function useQueryData(
     setQueryError,
     setIsCustomQuery,
     query,
-    unShiftToQueryHestory,
+    unShiftToQueryHistory,
     customQuery,
     setCustomQuery,
     filters,
@@ -29,6 +29,7 @@ export function useQueryData(
   const [columns, setColumns] = useState<string[]>([]);
   const [isQueryLoading, setIsQueryLoading] = useState(true);
 
+  // Only god knows what this does but it is the main useEffect for all the site
   useEffect(() => {
     if (db && tableName && !isCustomQuery) {
       setIsQueryLoading(true);
@@ -89,7 +90,7 @@ export function useQueryData(
           setData(data);
           setQueryError(null);
           setCustomQuery(queryString);
-          unShiftToQueryHestory(queryString);
+          unShiftToQueryHistory(queryString);
         } catch (error) {
           if (error instanceof Error) setQueryError(error.message);
         } finally {
@@ -106,7 +107,7 @@ export function useQueryData(
     setQueryError,
     query,
     setCustomQuery,
-    unShiftToQueryHestory,
+    unShiftToQueryHistory,
     filters,
     setTotalRows,
     orderBy

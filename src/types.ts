@@ -13,3 +13,9 @@ export interface TableInfo {
 export interface TableRow {
   [key: string]: SqlValue;
 }
+
+export interface ColumnSchema {
+  isPrimaryKey?: boolean;
+  isForeignKey?: boolean;
+  type?: string;
+}

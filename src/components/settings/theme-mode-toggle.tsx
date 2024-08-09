@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+
 import { MoonIcon, SunIcon } from "lucide-react";
 
 const THEME_KEY = "theme-mode";
@@ -29,6 +30,7 @@ export default function ThemeModeToggle() {
     }, 500);
   }, []);
 
+  // Apply the initial
   useEffect(() => {
     const handleSystemThemeChange = (event: MediaQueryListEvent) => {
       if (!localStorage.getItem(THEME_KEY)) {

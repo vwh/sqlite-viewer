@@ -6,28 +6,37 @@ import { getTableSchema, getTableNames, loadDatabase } from "@/lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;
-  isLoading: boolean;
-  queryError: string | null;
-  tables: { name: string; count: number }[];
-  selectedTable: string;
-  tableSchemas: TableInfo;
   loadDatabase: (file: File) => Promise<void>;
-  query: (sql: string) => QueryExecResult[] | [];
-  setQueryError: (value: string | null) => void;
+  isLoading: boolean;
+
+  tables: { name: string; count: number }[];
   setTables: (tables: { name: string; count: number }[]) => void;
+  selectedTable: string;
   setSelectedTable: (value: string) => void;
+
+  tableSchemas: TableInfo;
+
+  query: (sql: string) => QueryExecResult[] | [];
+  queryError: string | null;
+  setQueryError: (value: string | null) => void;
+
   rowPerPageOrAuto: number | "auto";
   setRowPerPageOrAuto: (value: number | "auto") => void;
+
   customQuery: string;
   setCustomQuery: (value: string) => void;
   isCustomQuery: boolean;
   setIsCustomQuery: (value: boolean) => void;
-  queryHestory: string[];
-  unShiftToQueryHestory: (value: string) => void;
+
+  queryHistory: string[];
+  unShiftToQueryHistory: (value: string) => void;
+
   expandPage: boolean;
   setExpandPage: (value: boolean) => void;
+
   dateFormatValue: string;
   setDateFormatValue: (value: string) => void;
+
   filters: {
     [columnName: string]: string;
   };
@@ -44,20 +53,12 @@ interface SQLiteState {
 const initializeStore = create<SQLiteState>((set, get) => ({
   db: null,
   isLoading: false,
-  queryError: null,
-  tables: [],
-  selectedTable: "0",
-  tableSchemas: {},
-  rowPerPageOrAuto: "auto",
-  isCustomQuery: false,
-
   loadDatabase: async (file: File) => {
     set({ isLoading: true, queryError: null });
 
     try {
       const database = await loadDatabase(file);
       const tableNames = getTableNames(database);
-
       const tableCountsAndSchemas = await Promise.all(
         tableNames.map(async (name) => {
           const countResult = database.exec(`SELECT COUNT(*) FROM "${name}"`);
@@ -66,7 +67,6 @@ const initializeStore = create<SQLiteState>((set, get) => ({
           return { name, count, schema };
         })
       );
-
       const tables = tableCountsAndSchemas.map(({ name, count }) => ({
         name,
         count
@@ -78,7 +78,6 @@ const initializeStore = create<SQLiteState>((set, get) => ({
         },
         {} as TableInfo
       );
-
       set({ db: database, tables, tableSchemas, isLoading: false });
     } catch (error) {
       console.error("Failed to load database:", error);
@@ -87,6 +86,19 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     }
   },
 
+  tables: [],
+  setTables: (tables: { name: string; count: number }[]) => set({ tables }),
+  selectedTable: "0",
+  setSelectedTable: (value: string) => set({ selectedTable: value }),
+
+  tableSchemas: {},
+
+  customQuery: "",
+  setIsCustomQuery: (value: boolean) => set({ isCustomQuery: value }),
+  setCustomQuery: (value: string) => set({ customQuery: value }),
+  isCustomQuery: false,
+  queryError: null,
+  setQueryError: (value: string | null) => set({ queryError: value }),
   query: (sql: string): QueryExecResult[] | [] => {
     const { db } = get();
     if (!db) {
@@ -96,19 +108,13 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     return db.exec(sql);
   },
 
-  setQueryError: (value: string | null) => set({ queryError: value }),
-  setTables: (tables: { name: string; count: number }[]) => set({ tables }),
-  setSelectedTable: (value: string) => set({ selectedTable: value }),
+  rowPerPageOrAuto: "auto",
   setRowPerPageOrAuto: (value: number | "auto") =>
     set({ rowPerPageOrAuto: value }),
 
-  customQuery: "",
-  setIsCustomQuery: (value: boolean) => set({ isCustomQuery: value }),
-  setCustomQuery: (value: string) => set({ customQuery: value }),
-
-  queryHestory: [],
-  unShiftToQueryHestory: (value: string) =>
-    set((state) => ({ queryHestory: [value, ...state.queryHestory] })),
+  queryHistory: [],
+  unShiftToQueryHistory: (value: string) =>
+    set((state) => ({ queryHistory: [value, ...state.queryHistory] })),
 
   expandPage: false,
   setExpandPage: (value: boolean) => set({ expandPage: value }),

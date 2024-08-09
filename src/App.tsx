@@ -1,16 +1,22 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useSQLiteStore from "./store/useSQLiteStore";
 
-import DBTable from "./components/table/table";
-import UploadFile from "./components/landing/dropzone";
-import StatusMessage from "./components/table/stats-message";
-import Logo from "./components/landing/logo";
-import Dialog from "./components/landing/dialog";
+import DBTable from "./components/table/table-section";
+import UploadFile from "./components/dropzone";
+import StatusMessage from "./components/stats-message";
+import Hero from "./components/landing/hero";
+import ProxyMessage from "./components/landing/proxy-message";
 import Footer from "./components/landing/footer";
 import Features from "./components/landing/features";
 
 function App() {
-  const { db, tables, isLoading, loadDatabase, expandPage } = useSQLiteStore();
+  const {
+    db: isDatabaseLoaded,
+    tables,
+    isLoading,
+    loadDatabase,
+    expandPage
+  } = useSQLiteStore();
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [urlToFetch, setUrlToFetch] = useState<string | null>(null);
@@ -56,6 +62,7 @@ function App() {
     [loadDatabase]
   );
 
+  // Fetch database on page load if url in url params
   useEffect(() => {
     if (hasFetched.current) return;
 
@@ -83,10 +90,10 @@ function App() {
         </StatusMessage>
       );
     }
-    if (fetchError && !db) {
+    if (fetchError && !isDatabaseLoaded) {
       return <StatusMessage type="error">{fetchError}</StatusMessage>;
     }
-    if (db) {
+    if (isDatabaseLoaded) {
       return tables.length > 0 ? (
         <DBTable />
       ) : (
@@ -101,21 +108,21 @@ function App() {
   return (
     <main
       id="main"
-      className={`mx-auto flex h-screen flex-col ${db ? "gap-3" : "gap-4"} p-4 ${expandPage ? "w-full" : "container"}`}
+      className={`mx-auto flex h-screen flex-col ${isDatabaseLoaded ? "gap-3" : "gap-4"} p-4 ${expandPage ? "w-full" : "container"}`}
     >
-      {!db && <Logo />}
+      {!isDatabaseLoaded && <Hero />}
       <UploadFile />
       {renderContent()}
-      <Dialog
-        showDialog={showDialog}
-        setShowDialog={setShowDialog}
-        fn={handleRetryWithProxy}
-      />
-      {!db && (
+      {!isDatabaseLoaded && (
         <>
           <Features /> <Footer />
         </>
       )}
+      <ProxyMessage
+        showDialog={showDialog}
+        setShowDialog={setShowDialog}
+        fn={handleRetryWithProxy}
+      />
     </main>
   );
 }

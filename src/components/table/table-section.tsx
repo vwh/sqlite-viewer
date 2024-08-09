@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
-import StatusMessage from "./stats-message";
+import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
 
 import {
@@ -41,13 +41,13 @@ export default function DBTable() {
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
 
-  const tableName = useMemo(
+  const selectedTableName = useMemo(
     () => tables[parseInt(selectedTable)]?.name,
     [tables, selectedTable]
   );
 
   const { data, columns, isQueryLoading, handleCustomQuery } = useQueryData(
-    tableName,
+    selectedTableName,
     rowsPerPage,
     page,
     isCustomQuery
@@ -55,13 +55,14 @@ export default function DBTable() {
 
   const [savedColumns, setSavedColumns] = useState<string[]>([]);
 
+  // Save columns ( used for when filtering returns no results so it don't remove them )
   useEffect(() => {
     if (columns.length > 0) {
       setSavedColumns(columns);
     }
-  }, [tableName, columns]);
+  }, [selectedTableName, columns]);
 
-  const handleResetQuery = useCallback(() => {
+  const handleQueryRemove = useCallback(() => {
     setQueryError(null);
     setCustomQuery("");
     setIsCustomQuery(false);
@@ -69,15 +70,17 @@ export default function DBTable() {
 
   const handleResetPage = useCallback(() => {
     setPage(0);
-    handleResetQuery();
-  }, [handleResetQuery, setPage]);
+    handleQueryRemove();
+  }, [handleQueryRemove, setPage]);
 
+  // Reset page and filters when table changes
   useEffect(() => {
     setPage(0);
     setFilters({});
     setOrderBy(null);
   }, [selectedTable]);
 
+  // Reset page when any of the filters change
   useEffect(() => {
     setPage(0);
   }, [filters]);
@@ -107,7 +110,7 @@ export default function DBTable() {
           </Button>
           <Button
             className="grow"
-            onClick={handleResetQuery}
+            onClick={handleQueryRemove}
             title="Remove query"
           >
             <Trash2Icon className="h-5 w-5" />
@@ -123,21 +126,25 @@ export default function DBTable() {
         </div>
       </div>
     ),
-    [customQuery, handleCustomQuery, handleResetQuery, handleResetPage, page]
+    [customQuery, handleCustomQuery, handleQueryRemove, handleResetPage, page]
   );
 
   const renderTableContent = useMemo(() => {
     if (isQueryLoading)
-      return <StatusMessage type="loading">Loading {tableName}</StatusMessage>;
+      return (
+        <StatusMessage type="loading">
+          Loading {selectedTableName}
+        </StatusMessage>
+      );
 
     return (
       <div
-        className={`${rowPerPageOrAuto === "auto" ? "" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border dark:border-gray-700`}
+        className={`${rowPerPageOrAuto === "auto" ? "mb-0" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border dark:border-gray-700`}
       >
         <DBTableComponent
           data={data}
           columns={savedColumns.length > 0 ? savedColumns : columns}
-          tableName={tableName}
+          tableName={selectedTableName}
           tableSchemas={tableSchemas}
         />
       </div>
@@ -146,7 +153,7 @@ export default function DBTable() {
     isQueryLoading,
     data,
     columns,
-    tableName,
+    selectedTableName,
     tableSchemas,
     filters,
     savedColumns

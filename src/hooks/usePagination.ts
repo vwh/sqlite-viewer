@@ -5,6 +5,7 @@ export function usePagination(rowPerPageOrAuto: "auto" | number) {
   const { setIsCustomQuery } = useSQLiteStore();
   const [page, setPage] = useState(0);
 
+  // Reset page if custom query applied
   useEffect(() => {
     setPage(0);
     setIsCustomQuery(false);

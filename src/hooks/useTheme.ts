@@ -5,6 +5,7 @@ export default function useTheme() {
     document.body.classList.contains("dark")
   );
 
+  // Listen for changes in the body class
   useEffect(() => {
     const observer = new MutationObserver(() => {
       setIsDark(document.body.classList.contains("dark"));

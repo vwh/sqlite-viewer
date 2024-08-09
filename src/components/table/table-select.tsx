@@ -16,12 +16,12 @@ export default function TableSelect() {
   const { tables, selectedTable, setSelectedTable, setIsCustomQuery } =
     useSQLiteStore();
 
-  const selectedTableCount = useMemo(() => {
+  const selectedTableRowsCount = useMemo(() => {
     const index = parseInt(selectedTable);
     return isNaN(index) ? 0 : tables[index]?.count || 0;
   }, [tables, selectedTable]);
 
-  const tableOptions = useMemo(
+  const selectOptions = useMemo(
     () =>
       tables.map((table, index) => (
         <SelectItem key={table.name} value={`${index}`}>
@@ -31,21 +31,21 @@ export default function TableSelect() {
     [tables]
   );
 
-  function onSelectedTable(value: string) {
+  function handleTableChange(value: string) {
     setIsCustomQuery(false);
     setSelectedTable(value);
   }
 
   return (
     <section className="flex grow items-center justify-center gap-1">
-      <Select value={selectedTable} onValueChange={onSelectedTable}>
+      <Select value={selectedTable} onValueChange={handleTableChange}>
         <SelectTrigger className="grow">
           <SelectValue placeholder="Select a table" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Tables</SelectLabel>
-            {tableOptions}
+            {selectOptions}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -54,7 +54,7 @@ export default function TableSelect() {
         className="hidden min-w-[100px] grow bg-background py-2 text-center text-sm md:block md:min-w-[200px]"
         variant="outline"
       >
-        <span className="w-full text-center">{selectedTableCount}</span>
+        <span className="w-full text-center">{selectedTableRowsCount}</span>
       </Badge>
     </section>
   );

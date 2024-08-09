@@ -9,13 +9,17 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 
-interface DialogProps {
+interface ProxyMessageProps {
   showDialog: boolean;
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
   fn: () => void;
 }
 
-export default function Dialog({ showDialog, setShowDialog, fn }: DialogProps) {
+export default function ProxyMessage({
+  showDialog,
+  setShowDialog,
+  fn
+}: ProxyMessageProps) {
   return (
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
       <AlertDialogContent>
