@@ -3,7 +3,11 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Input } from "@/components/ui/input";
 
-import { ArrowDownNarrowWideIcon, ArrowUpNarrowWideIcon } from "lucide-react";
+import {
+  ArrowDownNarrowWideIcon,
+  ArrowUpNarrowWideIcon,
+  ArrowUpDownIcon
+} from "lucide-react";
 
 export function TableFilter({ columnName }: { columnName: string }) {
   const {
@@ -42,23 +46,39 @@ export function TableFilter({ columnName }: { columnName: string }) {
 }
 
 export function TableOrderBy({ columnName }: { columnName: string }) {
-  const { orderBy, setOrderBy } = useSQLiteStore();
+  const { orderBy, setOrderBy, orderByDirection, setOrderByDirection } =
+    useSQLiteStore();
 
   const handleButtonClick = () => {
     if (orderBy === columnName) {
-      setOrderBy(null);
+      if (orderByDirection === "ASC") {
+        setOrderByDirection("DESC");
+      } else {
+        setOrderByDirection("ASC");
+      }
     } else {
       setOrderBy(columnName);
+      setOrderByDirection("ASC");
     }
   };
 
   return (
-    <button onClick={handleButtonClick}>
+    <div onClick={handleButtonClick} className="flex items-center">
       {orderBy === columnName ? (
-        <ArrowUpNarrowWideIcon className="h-4 w-4" />
+        orderByDirection === "ASC" ? (
+          <button title="Descending">
+            <ArrowDownNarrowWideIcon className="h-4 w-4" />
+          </button>
+        ) : (
+          <button title="Ascending">
+            <ArrowUpNarrowWideIcon className="h-4 w-4" />
+          </button>
+        )
       ) : (
-        <ArrowDownNarrowWideIcon className="h-4 w-4" />
+        <button title="Sort column">
+          <ArrowUpDownIcon className="h-4 w-4" />
+        </button>
       )}
-    </button>
+    </div>
   );
 }

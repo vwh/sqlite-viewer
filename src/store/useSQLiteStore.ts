@@ -50,6 +50,8 @@ interface SQLiteState {
 
   orderBy: string | null;
   setOrderBy: (value: string | null) => void;
+  orderByDirection: "ASC" | "DESC";
+  setOrderByDirection: (value: "ASC" | "DESC") => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -138,7 +140,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   setTotalRows: (value: number) => set({ totalRows: value }),
 
   orderBy: null,
-  setOrderBy: (value: string | null) => set({ orderBy: value })
+  setOrderBy: (value: string | null) => set({ orderBy: value }),
+  orderByDirection: "ASC",
+  setOrderByDirection: (value: "ASC" | "DESC") =>
+    set({ orderByDirection: value })
 }));
 
 export default initializeStore;

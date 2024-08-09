@@ -22,6 +22,7 @@ export function useQueryData(
     totalRows,
     setTotalRows,
     orderBy,
+    orderByDirection,
     selectedTable,
     tables
   } = useSQLiteStore();
@@ -82,7 +83,8 @@ export function useQueryData(
             queryString += ` WHERE ${filterQuery}`;
           }
 
-          if (orderBy) queryString += ` ORDER BY ${orderBy}`;
+          if (orderBy)
+            queryString += ` ORDER BY "${orderBy}" ${orderByDirection}`;
           queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
 
           const tableResult: QueryExecResult[] = query(queryString);
@@ -109,7 +111,8 @@ export function useQueryData(
     unShiftToQueryHistory,
     filters,
     setTotalRows,
-    orderBy
+    orderBy,
+    orderByDirection
   ]);
 
   const handleCustomQuery = useCallback(() => {
