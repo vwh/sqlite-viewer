@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Input } from "@/components/ui/input";
@@ -18,11 +18,12 @@ export function TableFilter({ columnName }: { columnName: string }) {
   } = useSQLiteStore();
   const [inputValue, setInputValue] = useState("");
 
-  // reset the input value when the table changes
+  // Reset the input value when the table changes
   useEffect(() => {
     setInputValue("");
   }, [selectedTable]);
 
+  // Clear filters when required
   useEffect(() => {
     if (filtersNeedClear) {
       setInputValue("");
@@ -30,15 +31,19 @@ export function TableFilter({ columnName }: { columnName: string }) {
     }
   }, [filtersNeedClear]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    appendToFilters(columnName, e.target.value);
-  };
+  const handleFilterChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setInputValue(value);
+      appendToFilters(columnName, value);
+    },
+    [appendToFilters, columnName]
+  );
 
   return (
     <Input
       value={inputValue}
-      onChange={handleInputChange}
+      onChange={handleFilterChange}
       className="mt-[2px] max-h-7 w-full text-xs"
       placeholder="Filter"
     />
@@ -49,21 +54,25 @@ export function TableOrderBy({ columnName }: { columnName: string }) {
   const { orderBy, setOrderBy, orderByDirection, setOrderByDirection } =
     useSQLiteStore();
 
-  const handleButtonClick = () => {
+  const handleOrderByClick = useCallback(() => {
     if (orderBy === columnName) {
       if (orderByDirection === "ASC") {
         setOrderByDirection("DESC");
+      } else if (orderByDirection === "DESC") {
+        setOrderBy(null);
+        setOrderByDirection("ASC");
       } else {
+        setOrderBy(columnName);
         setOrderByDirection("ASC");
       }
     } else {
-      setOrderBy(columnName);
+      setOrderBy(columnName); // Start sorting with ASC for the new column
       setOrderByDirection("ASC");
     }
-  };
+  }, [orderBy, orderByDirection, columnName, setOrderBy, setOrderByDirection]);
 
   return (
-    <div onClick={handleButtonClick} className="flex items-center">
+    <div onClick={handleOrderByClick} className="flex items-center">
       {orderBy === columnName ? (
         orderByDirection === "ASC" ? (
           <button title="Descending">

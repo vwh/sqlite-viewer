@@ -90,15 +90,6 @@ export default function DBTable() {
     () => (
       <div className="flex flex-col gap-2 md:flex-row">
         <div className="flex-grow">
-          {/* <Input
-            type="text"
-            value={customQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCustomQuery(e.target.value)
-            }
-            placeholder="Enter your custom query"
-            className="w-full rounded-lg pr-10 shadow-sm"
-          /> */}
           <SqlRepl />
         </div>
         <div className="flex flex-row gap-1 md:flex-col">
@@ -161,7 +152,7 @@ export default function DBTable() {
   return (
     <div className="flex flex-col gap-3 pb-8">
       <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
-        <div className="mb-[7px] flex items-center justify-between gap-2">
+        <div className="mb-[5px] flex items-center justify-between gap-2">
           <TableSelect />
           <div className="flex items-center justify-center gap-1">
             <ExportButtons />

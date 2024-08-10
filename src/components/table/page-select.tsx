@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Button } from "@/components/ui/button";
@@ -16,39 +17,41 @@ export default function PageSelect({
   rowsPerPage
 }: PageSelectProps) {
   const { totalRows } = useSQLiteStore();
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-  const currentPage = Math.floor(page / rowsPerPage) + 1;
 
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setPage(page + rowsPerPage);
-    }
-  };
+  const totalPages = useMemo(
+    () => Math.ceil(totalRows / rowsPerPage),
+    [totalRows, rowsPerPage]
+  );
+  const currentPage = useMemo(
+    () => Math.ceil(page / rowsPerPage) + 1,
+    [page, rowsPerPage]
+  );
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setPage(page - rowsPerPage);
+  const canGoNext = currentPage < totalPages;
+  const canGoPrev = currentPage > 1;
+
+  const nextPage = useCallback(() => {
+    if (canGoNext) {
+      setPage((prevPage) => prevPage + rowsPerPage);
     }
-  };
+  }, [canGoNext, rowsPerPage, setPage]);
+
+  const prevPage = useCallback(() => {
+    if (canGoPrev) {
+      setPage((prevPage) => prevPage - rowsPerPage);
+    }
+  }, [canGoPrev, rowsPerPage, setPage]);
 
   return (
     <section className="fixed bottom-2 left-1/2 z-10 w-[270px] -translate-x-1/2 transform">
       <div className="flex justify-between gap-2 rounded border bg-secondary p-[6px]">
-        <Button
-          onClick={prevPage}
-          title="Previous page"
-          disabled={currentPage === 1}
-        >
+        <Button onClick={prevPage} title="Previous page" disabled={!canGoPrev}>
           <ChevronLeftIcon className="h-4 w-4" />
         </Button>
         <span className="flex items-center justify-center text-sm">
           Page {currentPage} of {totalPages}
         </span>
-        <Button
-          onClick={nextPage}
-          title="Next page"
-          disabled={currentPage >= totalPages}
-        >
+        <Button onClick={nextPage} title="Next page" disabled={!canGoNext}>
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
       </div>

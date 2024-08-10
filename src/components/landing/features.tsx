@@ -13,17 +13,19 @@ interface FeatureProps {
   icon: React.ElementType;
 }
 
-const Feature = ({ icon: Icon, title, description }: FeatureProps) => (
-  <div className="flex items-start space-x-3">
-    <div className="flex-shrink-0">
-      <Icon className="h-6 w-6 text-blue-500" />
+function Feature({ icon: Icon, title, description }: FeatureProps) {
+  return (
+    <div className="flex items-start space-x-3">
+      <div className="flex-shrink-0">
+        <Icon className="h-6 w-6 text-blue-500" />
+      </div>
+      <div>
+        <h3 className="text-lg font-medium">{title}</h3>
+        <p className="mt-1 text-sm">{description}</p>
+      </div>
     </div>
-    <div>
-      <h3 className="text-lg font-medium">{title}</h3>
-      <p className="mt-1 text-sm">{description}</p>
-    </div>
-  </div>
-);
+  );
+}
 
 export default function Features() {
   return (

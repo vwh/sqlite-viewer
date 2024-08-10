@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import type { TableInfo, TableRow, ColumnSchema } from "@/types";
@@ -135,6 +135,11 @@ export default function DBTableComponent({
     [data, columns, tableSchemas, tableName]
   );
 
+  const handleFiltersClear = useCallback(() => {
+    setFiltersNeedClear(true);
+    setFilters({});
+  }, [setFiltersNeedClear, setFilters]);
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -150,10 +155,7 @@ export default function DBTableComponent({
             <Button
               className="w-full rounded-none"
               variant={"outline"}
-              onClick={() => {
-                setFiltersNeedClear(true);
-                setFilters({});
-              }}
+              onClick={handleFiltersClear}
             >
               Clear filters
             </Button>

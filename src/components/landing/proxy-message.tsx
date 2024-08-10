@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +22,10 @@ export default function ProxyMessage({
   setShowDialog,
   fn
 }: ProxyMessageProps) {
+  const handleClose = useCallback(() => {
+    setShowDialog(false);
+  }, [setShowDialog]);
+
   return (
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
       <AlertDialogContent>
@@ -34,9 +40,7 @@ export default function ProxyMessage({
           Using the proxy may expose your database to corsproxy.io services.
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setShowDialog(false)}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={handleClose}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={fn}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
