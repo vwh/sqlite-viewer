@@ -126,6 +126,7 @@ export function useQueryData(
         const tableName = tables[parseInt(selectedTable)].name;
         const customResult: QueryExecResult[] = query(
           // @ used to represent the current table name
+          // Just for a shorter query :/
           customQuery.replace("@", `"${tableName}"`)
         );
         const { data, columns } = mapQueryResults(customResult);

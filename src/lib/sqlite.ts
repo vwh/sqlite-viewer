@@ -42,7 +42,7 @@ export const getTableSchema = async (database: Database, tableName: string) => {
           type: row[2] ? (row[2] as string).toUpperCase() : (row[2] as string),
           isPrimaryKey: (row[5] as number) === 1, // 1 means the column is a primary key
           isForeignKey: false,
-          nullable: (row[3] as number) === 0 // 0 means the column is nullable, 1 means it is not nullable
+          nullable: (row[3] as number) === 0 // 0 means the column is nullable
         };
         return acc;
       },

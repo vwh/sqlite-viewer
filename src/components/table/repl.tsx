@@ -7,8 +7,9 @@ import { format } from "sql-formatter";
 import CodeMirror from "@uiw/react-codemirror";
 import { sql, SQLite } from "@codemirror/lang-sql";
 import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
-import { nord } from "@uiw/codemirror-theme-nord"; // Import the Nord theme
+import { nord } from "@uiw/codemirror-theme-nord";
 
+// SQL Keywords used for autocompletion
 const KEYWORDS = [
   "SELECT",
   "FROM",
@@ -80,7 +81,7 @@ export default function SqlRepl() {
       onChange={handleChange}
       onBlur={handleBlur}
       className="rounded-md border"
-      theme={isDark ? nord : "light"} // Apply Nord theme
+      theme={isDark ? nord : "light"}
     />
   );
 }

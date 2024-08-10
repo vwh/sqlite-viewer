@@ -51,7 +51,6 @@ export const RowsPerPageSection: React.FC<RowsPerPageSectionProps> = ({
           placeholder="Number of rows"
           type="number"
           className="w-full"
-          // Prevent auto-focus when sheet opens
           autoFocus={false}
         />
         <Button
