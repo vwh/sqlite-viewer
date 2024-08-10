@@ -97,3 +97,7 @@
     --scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.7);
   }
 }
+
+.cm-focused {
+  outline: none !important;
+}

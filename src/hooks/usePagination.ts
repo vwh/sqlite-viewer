@@ -1,46 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 export function usePagination(rowPerPageOrAuto: "auto" | number) {
   const { setIsCustomQuery } = useSQLiteStore();
   const [page, setPage] = useState(0);
 
-  // Reset page if custom query applied
   useEffect(() => {
     setPage(0);
     setIsCustomQuery(false);
   }, [setIsCustomQuery]);
 
-  let rowsPerPage = 30;
-  if (rowPerPageOrAuto === "auto") {
-    const screenHeight = window.innerHeight;
-    const thresholds = [
-      { height: 1700, rowHeight: 65 },
-      { height: 1200, rowHeight: 70 },
-      { height: 1100, rowHeight: 75 },
-      { height: 1000, rowHeight: 80 },
-      { height: 910, rowHeight: 90 },
-      { height: 850, rowHeight: 95 },
-      { height: 799, rowHeight: 100 },
-      { height: 750, rowHeight: 110 },
-      { height: 730, rowHeight: 120 },
-      { height: 700, rowHeight: 135 },
-      { height: 599, rowHeight: 140 },
-      { height: 500, rowHeight: 200 },
-      { height: 0, rowHeight: 280 }
-    ];
-    const defaultRowHeight = 120;
-    let rowHeight = defaultRowHeight;
-    for (const threshold of thresholds) {
-      if (screenHeight > threshold.height) {
-        rowHeight = threshold.rowHeight - 10;
-        break;
-      }
+  const rowsPerPage = useMemo(() => {
+    if (rowPerPageOrAuto !== "auto") {
+      return rowPerPageOrAuto;
     }
-    rowsPerPage = Math.max(1, Math.floor(screenHeight / rowHeight));
-  } else {
-    rowsPerPage = rowPerPageOrAuto;
-  }
+
+    const screenHeight = window.innerHeight;
+
+    // Base row height calculation
+    const baseRowHeight = 40; // Minimum row height
+    const maxRowHeight = 2000; // Maximum row height
+    const scaleFactor = 0.03; // Adjust this to change how quickly row height increases with screen size
+
+    // Calculate adaptive row height
+    const adaptiveRowHeight = Math.min(
+      maxRowHeight,
+      baseRowHeight + screenHeight * scaleFactor
+    );
+
+    // Calculate rows per page
+    const calculatedRowsPerPage = Math.max(
+      1,
+      Math.floor(screenHeight / adaptiveRowHeight)
+    );
+
+    // Ensure a minimum and maximum number of rows per page
+    const minRowsPerPage = 5;
+    const maxRowsPerPage = 50;
+
+    return Math.min(
+      Math.max(calculatedRowsPerPage, minRowsPerPage),
+      maxRowsPerPage
+    );
+  }, [rowPerPageOrAuto]);
 
   return { page, setPage, rowsPerPage };
 }

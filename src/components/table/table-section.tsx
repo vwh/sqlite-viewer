@@ -1,23 +1,22 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
 import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
+import SqlRepl from "./repl";
 
 import {
   Trash2Icon,
   PlayIcon,
   ListRestartIcon,
   Maximize2Icon,
-  Minimize2Icon,
-  DatabaseIcon
+  Minimize2Icon
 } from "lucide-react";
 
 export default function DBTable() {
@@ -90,8 +89,8 @@ export default function DBTable() {
   const renderQueryInput = useMemo(
     () => (
       <div className="flex flex-col gap-2 md:flex-row">
-        <div className="relative flex-grow">
-          <Input
+        <div className="flex-grow">
+          {/* <Input
             type="text"
             value={customQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -99,10 +98,10 @@ export default function DBTable() {
             }
             placeholder="Enter your custom query"
             className="w-full rounded-lg pr-10 shadow-sm"
-          />
-          <DatabaseIcon className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+          /> */}
+          <SqlRepl />
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-row gap-1 md:flex-col">
           <Button
             className="grow"
             onClick={handleCustomQuery}
@@ -140,9 +139,7 @@ export default function DBTable() {
       );
 
     return (
-      <div
-        className={`${rowPerPageOrAuto === "auto" ? "mb-0" : "mb-[40px]"} overflow-hidden rounded-lg border border-gray-200 dark:border dark:border-gray-700`}
-      >
+      <div className="mb-[40px] overflow-hidden rounded-lg border border-gray-200 dark:border dark:border-gray-700">
         <DBTableComponent
           data={data}
           columns={savedColumns.length > 0 ? savedColumns : columns}
