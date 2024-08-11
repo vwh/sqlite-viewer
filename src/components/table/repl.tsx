@@ -10,54 +10,169 @@ import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
 
 import { nord } from "@uiw/codemirror-theme-nord";
 
-// SQL Keywords used for autocompletion
-const KEYWORDS = [
-  "SELECT",
-  "FROM",
-  "WHERE",
-  "INSERT",
-  "UPDATE",
-  "DELETE",
-  "CREATE",
-  "DROP",
+// SQLlite Keywords used for autocompletion
+const SQLITE_KEYWORDS = [
+  "ABORT",
+  "ACTION",
+  "ADD",
+  "AFTER",
+  "ALL",
   "ALTER",
-  "JOIN",
-  "LEFT",
-  "RIGHT",
-  "INNER",
-  "OUTER",
-  "GROUP BY",
-  "ORDER BY",
-  "LIMIT",
-  "OFFSET",
+  "ANALYZE",
   "AND",
-  "OR",
-  "NOT",
-  "NULL",
-  "LIKE",
+  "AS",
+  "ASC",
+  "ATTACH",
+  "AUTOINCREMENT",
+  "BEFORE",
+  "BEGIN",
+  "BETWEEN",
+  "BY",
+  "CASCADE",
+  "CASE",
+  "CAST",
+  "CHECK",
+  "COLLATE",
+  "COLUMN",
+  "COMMIT",
+  "CONFLICT",
+  "CONSTRAINT",
+  "CREATE",
+  "CROSS",
+  "CURRENT_DATE",
+  "CURRENT_TIME",
+  "CURRENT_TIMESTAMP",
+  "DATABASE",
+  "DEFAULT",
+  "DEFERRABLE",
+  "DEFERRED",
+  "DELETE",
+  "DESC",
+  "DETACH",
+  "DISTINCT",
+  "DROP",
+  "EACH",
+  "ELSE",
+  "END",
+  "ESCAPE",
+  "EXCEPT",
+  "EXCLUSIVE",
+  "EXISTS",
+  "EXPLAIN",
+  "FAIL",
+  "FOR",
+  "FOREIGN",
+  "FROM",
+  "FULL",
+  "GLOB",
+  "GROUP",
+  "HAVING",
+  "IF",
+  "IGNORE",
+  "IMMEDIATE",
   "IN",
+  "INDEX",
+  "INDEXED",
+  "INITIALLY",
+  "INNER",
+  "INSERT",
+  "INSTEAD",
+  "INTERSECT",
+  "INTO",
   "IS",
-  "AS"
+  "ISNULL",
+  "JOIN",
+  "KEY",
+  "LEFT",
+  "LIKE",
+  "LIMIT",
+  "MATCH",
+  "NATURAL",
+  "NO",
+  "NOT",
+  "NOTNULL",
+  "NULL",
+  "OF",
+  "OFFSET",
+  "ON",
+  "OR",
+  "ORDER",
+  "OUTER",
+  "PLAN",
+  "PRAGMA",
+  "PRIMARY",
+  "QUERY",
+  "RAISE",
+  "RECURSIVE",
+  "REFERENCES",
+  "REGEXP",
+  "REINDEX",
+  "RELEASE",
+  "RENAME",
+  "REPLACE",
+  "RESTRICT",
+  "RIGHT",
+  "ROLLBACK",
+  "ROW",
+  "SAVEPOINT",
+  "SELECT",
+  "SET",
+  "TABLE",
+  "TEMP",
+  "TEMPORARY",
+  "THEN",
+  "TO",
+  "TRANSACTION",
+  "TRIGGER",
+  "UNION",
+  "UNIQUE",
+  "UPDATE",
+  "USING",
+  "VACUUM",
+  "VALUES",
+  "VIEW",
+  "VIRTUAL",
+  "WHEN",
+  "WHERE",
+  "WITH",
+  "WITHOUT"
 ];
 
-export default function SqlRepl() {
-  const { customQuery, setCustomQuery, queryHistory } = useSQLiteStore();
+interface SqlReplProps {
+  columnNames: string[];
+}
+
+export default function SqlRepl({ columnNames }: SqlReplProps) {
+  const { customQuery, setCustomQuery, queryHistory, tables } =
+    useSQLiteStore();
   const isDark = useTheme();
 
-  // update customQuery formatted on queryHistory change
   useEffect(() => {
     setCustomQuery(sqlFormat(customQuery));
   }, [queryHistory]);
 
-  const myCompletions = useCallback((context: CompletionContext) => {
-    const word = context.matchBefore(/\w*/);
-    if (!word || (word.from === word.to && !context.explicit)) return null;
-    return {
-      from: word.from,
-      to: word.to,
-      options: KEYWORDS.map((keyword) => ({ label: keyword, type: "keyword" }))
-    };
-  }, []);
+  const myCompletions = useCallback(
+    (context: CompletionContext) => {
+      const word = context.matchBefore(/\w*/);
+      if (!word || (word.from === word.to && !context.explicit)) return null;
+
+      const options = [
+        ...SQLITE_KEYWORDS.map((keyword) => ({
+          label: keyword,
+          type: "keyword"
+        })),
+        ...tables.map((table) => ({ label: table.name, type: "table" })),
+        ...columnNames.map((column) => ({ label: column, type: "column" }))
+      ];
+
+      return {
+        from: word.from,
+        to: word.to,
+        options: options
+      };
+    },
+    [tables, columnNames]
+  );
 
   const handleBlur = useCallback(() => {
     setCustomQuery(sqlFormat(customQuery));

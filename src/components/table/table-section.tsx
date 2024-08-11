@@ -90,7 +90,7 @@ export default function DBTable() {
     () => (
       <div className="flex flex-col gap-1 md:flex-row">
         <div className="flex-grow">
-          <SqlRepl />
+          <SqlRepl columnNames={savedColumns} />
         </div>
         <div className="flex flex-row gap-1 md:flex-col">
           <Button
