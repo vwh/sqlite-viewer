@@ -1,6 +1,12 @@
 <div align="center">
 
+<a href="https://sqlite3.online/">
+    <img src="https://github.com/user-attachments/assets/aef749bf-df08-4a84-8148-d34b796449d8" alt="tgram" width="128">
+</a>
+
 # SQLite Viewer
+
+View and query SQLite databases directly in your browser. Built with [sql.js](https://github.com/sql-js/sql.js) and ReactJS.
 
 [![License](https://img.shields.io/github/license/vwh/sqlite-viewer?label=License)](https://github.com/vwh/sqlite-viewer/blob/main/LICENSE)
 [![Security Score](https://img.shields.io/badge/Security%20Score-A%20%7C%20Good-brightgreen)](https://snyk.io/test/github/vwh/sqlite-viewer)
@@ -9,12 +15,10 @@
 [![Format Check](https://github.com/vwh/sqlite-viewer/actions/workflows/format.yml/badge.svg)](https://github.com/vwh/sqlite-viewer/actions/workflows/format.yml)
 [![Lint](https://github.com/vwh/sqlite-viewer/actions/workflows/lint.yml/badge.svg)](https://github.com/vwh/sqlite-viewer/actions/workflows/lint.yml)
 
-View and query SQLite databases directly in your browser. Built with [sql.js](https://github.com/sql-js/sql.js) and ReactJS.
-
 </div>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/d68091d2-1748-4ecf-b9ca-1cb6bb0962ef" alt="SQLite Viewer Preview">
+  <img src="https://github.com/user-attachments/assets/a0fc7725-5c6a-4d48-bab9-52b9b1466d55" alt="SQLite Viewer Preview">
 </div>
 
 ## 🌟 Features
