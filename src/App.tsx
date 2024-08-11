@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useSQLiteStore from "./store/useSQLiteStore";
 
-import DBTable from "./components/table/table-section";
+import DBTable from "./components/database/upper-section";
 import UploadFile from "./components/dropzone";
 import StatusMessage from "./components/stats-message";
 import Hero from "./components/landing/hero";

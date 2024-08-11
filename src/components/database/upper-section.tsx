@@ -9,7 +9,7 @@ import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
 import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
-import SqlRepl from "./repl";
+import QueryTextarea from "./query-textarea";
 
 import {
   Trash2Icon,
@@ -90,7 +90,7 @@ export default function DBTable() {
     () => (
       <div className="flex flex-col gap-1 md:flex-row">
         <div className="flex-grow">
-          <SqlRepl columnNames={savedColumns} />
+          <QueryTextarea columnNames={savedColumns} />
         </div>
         <div className="flex flex-row gap-1 md:flex-col">
           <Button

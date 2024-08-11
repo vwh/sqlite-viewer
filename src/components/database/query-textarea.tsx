@@ -138,11 +138,11 @@ const SQLITE_KEYWORDS = [
   "WITHOUT"
 ];
 
-interface SqlReplProps {
+interface QueryTextareaProps {
   columnNames: string[];
 }
 
-export default function SqlRepl({ columnNames }: SqlReplProps) {
+export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
   const { customQuery, setCustomQuery, queryHistory, tables } =
     useSQLiteStore();
   const isDark = useTheme();
