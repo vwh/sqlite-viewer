@@ -49,10 +49,6 @@ export default function SqlRepl() {
     setCustomQuery(sqlFormat(customQuery));
   }, [queryHistory]);
 
-  useEffect(() => {
-    console.log(customQuery);
-  }, [customQuery]);
-
   const myCompletions = useCallback((context: CompletionContext) => {
     const word = context.matchBefore(/\w*/);
     if (!word || (word.from === word.to && !context.explicit)) return null;

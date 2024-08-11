@@ -41,7 +41,9 @@ const TableHeadCell: React.FC<{
       <HoverCard>
         <HoverCardTrigger asChild>
           <div className="flex cursor-pointer items-center space-x-1">
-            <span>{columnName}</span>
+            <span className="max-w-[200px] overflow-hidden truncate text-ellipsis whitespace-nowrap">
+              {columnName}
+            </span>
             {columnSchema && <ColumnIcon columnSchema={columnSchema} />}
           </div>
         </HoverCardTrigger>

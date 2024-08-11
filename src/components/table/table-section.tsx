@@ -88,7 +88,7 @@ export default function DBTable() {
 
   const renderQueryInput = useMemo(
     () => (
-      <div className="flex flex-col gap-2 md:flex-row">
+      <div className="flex flex-col gap-1 md:flex-row">
         <div className="flex-grow">
           <SqlRepl />
         </div>
@@ -152,7 +152,7 @@ export default function DBTable() {
   return (
     <div className="flex flex-col gap-3 pb-8">
       <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
-        <div className="mb-[5px] flex items-center justify-between gap-2">
+        <div className="mb-[5px] flex items-center justify-between gap-1">
           <TableSelect />
           <div className="flex items-center justify-center gap-1">
             <ExportButtons />
