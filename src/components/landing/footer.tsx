@@ -3,7 +3,7 @@ import { GithubIcon } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 border-t-2 bg-background shadow-md">
+    <footer className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-4 md:py-6">
           <div className="flex flex-col gap-1">
@@ -17,7 +17,7 @@ export default function Footer() {
               href="https://github.com/vwh/sqlite-viewer"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-blue-500 transition-colors dark:text-blue-400"
+              className="flex items-center space-x-2 text-blue-500"
               title="Star on GitHub"
             >
               <GithubIcon className="h-5 w-5" />

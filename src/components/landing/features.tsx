@@ -20,7 +20,7 @@ function Feature({ icon: Icon, title, description }: FeatureProps) {
         <Icon className="h-6 w-6 text-blue-500" />
       </div>
       <div>
-        <h3 className="text-lg font-medium">{title}</h3>
+        <h2 className="text-lg font-medium">{title}</h2>
         <p className="mt-1 text-sm">{description}</p>
       </div>
     </div>
