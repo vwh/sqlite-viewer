@@ -18,7 +18,8 @@ const ACCEPTED_TYPES = {
 };
 
 export default function UploadFile() {
-  const { loadDatabase, setTables, setSelectedTable, db } = useSQLiteStore();
+  const { loadDatabase, setTables, setSelectedTable, db, setCustomQuery } =
+    useSQLiteStore();
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
@@ -33,6 +34,7 @@ export default function UploadFile() {
 
       setErrors([]);
       setTables([]);
+      setCustomQuery("");
       setSelectedTable("0");
 
       if (acceptedFiles.length > 0) {
