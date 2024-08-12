@@ -76,8 +76,8 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are welcome! Feel free to open a pull request with your improvements or fixes.
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Under the MIT License. See [License](https://github.com/vwh/sqlite-viewer/blob/main/LICENSE) for more information.
