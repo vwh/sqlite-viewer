@@ -14,13 +14,13 @@ import {
 interface ProxyMessageProps {
   showDialog: boolean;
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  fn: () => void;
+  onConfirm: () => void;
 }
 
 export default function ProxyMessage({
   showDialog,
   setShowDialog,
-  fn
+  onConfirm
 }: ProxyMessageProps) {
   const handleClose = useCallback(() => {
     setShowDialog(false);
@@ -30,18 +30,19 @@ export default function ProxyMessage({
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Retry using a proxy?</AlertDialogTitle>
+          <AlertDialogTitle>Use Proxy to Load Database?</AlertDialogTitle>
           <AlertDialogDescription>
-            Failed to load the database from the provided URL due to possible
-            CORS restrictions.
+            We couldn't load the database from the provided URL due to CORS
+            restrictions. Would you like to try using a proxy?
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="text-sm font-semibold">
-          Using the proxy may expose your database to corsproxy.io services.
+        <div className="font-semibold text-yellow-600 md:text-left">
+          Warning: Using the proxy will route your database traffic through
+          cors.eu.org.
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={fn}>Confirm</AlertDialogAction>
+          <AlertDialogAction onClick={onConfirm}>Use Proxy</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

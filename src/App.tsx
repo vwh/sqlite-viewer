@@ -121,7 +121,7 @@ function App() {
       <ProxyMessage
         showDialog={showDialog}
         setShowDialog={setShowDialog}
-        fn={handleRetryWithProxy}
+        onConfirm={handleRetryWithProxy}
       />
     </main>
   );
