@@ -1,11 +1,11 @@
 @import "themes/nord.css";
-@import "themes/old.css";
 @import "themes/zinc.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* default theme is shadcn stale theme */
 @layer base {
   :root {
     --background: 0 0% 100%;
