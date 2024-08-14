@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
-
 import { mapQueryResults } from "@/lib/sqlite";
 import type { QueryExecResult } from "sql.js";
 import type { TableRow } from "@/types";
@@ -58,7 +57,7 @@ export function useQueryData(
           type: row[2] as string
         }));
 
-        // optimize blob columns
+        // Optimize blob columns
         const columnSelects = columnInfo
           .map((col) =>
             col.type.toUpperCase() === "BLOB"
@@ -72,20 +71,22 @@ export function useQueryData(
           filterQuery ? ` WHERE ${filterQuery}` : ""
         }`;
         const countResult: QueryExecResult[] = query(countQueryString);
-        const totalRows = countResult[0].values[0][0] as number;
-        setTotalRows(totalRows);
+        const newTotalRows = countResult[0].values[0][0] as number;
+        setTotalRows(newTotalRows);
 
+        // Main query
         let queryString = `SELECT ${columnSelects} FROM "${tableName}"`;
         if (filterQuery) queryString += ` WHERE ${filterQuery}`;
         if (orderBy)
           queryString += ` ORDER BY "${orderBy}" ${orderByDirection}`;
-
         queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
 
         const tableResult: QueryExecResult[] = query(queryString);
-        const { data, columns } = mapQueryResults(tableResult);
-        setColumns(columns);
-        setData(data);
+        const { data: newData, columns: newColumns } =
+          mapQueryResults(tableResult);
+
+        setColumns(newColumns);
+        setData(newData);
         setQueryError(null);
         setCustomQuery(queryString);
         unShiftToQueryHistory(queryString);
@@ -97,22 +98,37 @@ export function useQueryData(
     };
 
     fetchData();
-  }, [db, tableName, page, rowsPerPage, filterQuery, orderByDirection]);
+  }, [
+    db,
+    tableName,
+    page,
+    rowsPerPage,
+    filterQuery,
+    orderBy,
+    orderByDirection,
+    query,
+    setQueryError,
+    setCustomQuery,
+    unShiftToQueryHistory,
+    setTotalRows
+  ]);
 
   const handleCustomQuery = useCallback(() => {
     if (customQuery.trim() === "") {
       setQueryError(null);
       return;
     }
+
     setIsQueryLoading(true);
     try {
       const tableName = tables[parseInt(selectedTable)].name;
       const customResult: QueryExecResult[] = query(
         customQuery.replace("@", `"${tableName}"`)
       );
-      const { data, columns } = mapQueryResults(customResult);
-      setColumns(columns);
-      setData(data);
+      const { data: newData, columns: newColumns } =
+        mapQueryResults(customResult);
+      setColumns(newColumns);
+      setData(newData);
       setIsCustomQuery(true);
       setQueryError(null);
     } catch (error) {

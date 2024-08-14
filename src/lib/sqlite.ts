@@ -4,12 +4,19 @@ import type { TableRow } from "@/types";
 
 const SQL_WASM_PATH = "/sql.wasm";
 
+// Initialize SQL.js once
+let SQL: Awaited<ReturnType<typeof initSqlJs>>;
+const initSQL = async () => {
+  if (!SQL) {
+    SQL = await initSqlJs({ locateFile: () => SQL_WASM_PATH });
+  }
+  return SQL;
+};
+
 export const loadDatabase = async (file: File): Promise<Database> => {
   try {
-    const [arrayBuffer, SQL] = await Promise.all([
-      file.arrayBuffer(),
-      initSqlJs({ locateFile: () => SQL_WASM_PATH })
-    ]);
+    const SQL = await initSQL();
+    const arrayBuffer = await file.arrayBuffer();
     return new SQL.Database(new Uint8Array(arrayBuffer));
   } catch (error) {
     console.error("Failed to load database:", error);
@@ -19,50 +26,59 @@ export const loadDatabase = async (file: File): Promise<Database> => {
 
 export const getTableNames = (database: Database): string[] => {
   try {
-    const result = database.exec(
+    const stmt = database.prepare(
       "SELECT name FROM sqlite_master WHERE type='table';"
     );
-    return (result[0]?.values.flat() as string[]) || [];
+    const names: string[] = [];
+    while (stmt.step()) {
+      names.push(stmt.get()[0] as string);
+    }
+    stmt.free();
+    return names;
   } catch (error) {
     console.error("Failed to get table names:", error);
     return [];
   }
 };
 
-export const getTableSchema = async (database: Database, tableName: string) => {
+export const getTableSchema = (database: Database, tableName: string) => {
   try {
-    const [tableInfoResult, foreignKeyInfoResult] = database.exec(`
-      PRAGMA table_info("${tableName}");
-      PRAGMA foreign_key_list("${tableName}");
-    `);
-
-    const tableSchema = tableInfoResult.values.reduce(
-      (acc, row) => {
-        acc[row[1] as string] = {
-          type: row[2] ? (row[2] as string).toUpperCase() : (row[2] as string),
-          isPrimaryKey: (row[5] as number) === 1, // 1 means the column is a primary key
-          isForeignKey: false,
-          nullable: (row[3] as number) === 0 // 0 means the column is nullable
-        };
-        return acc;
-      },
-      {} as Record<
-        string,
-        {
-          type: string;
-          isPrimaryKey: boolean;
-          isForeignKey: boolean;
-          nullable: boolean;
-        }
-      >
-    );
-
-    foreignKeyInfoResult?.values.forEach((row) => {
-      const columnName = row[3] as string;
-      if (tableSchema[columnName]) {
-        tableSchema[columnName].isForeignKey = true;
+    const tableSchema: Record<
+      string,
+      {
+        type: string;
+        isPrimaryKey: boolean;
+        isForeignKey: boolean;
+        nullable: boolean;
       }
-    });
+    > = {};
+
+    const tableInfoStmt = database.prepare(
+      `PRAGMA table_info("${tableName}");`
+    );
+    while (tableInfoStmt.step()) {
+      const row = tableInfoStmt.getAsObject();
+      tableSchema[row.name as string] = {
+        type: row.type
+          ? (row.type as string).toUpperCase()
+          : (row.type as string),
+        isPrimaryKey: row.pk === 1,
+        isForeignKey: false,
+        nullable: row.notnull === 0
+      };
+    }
+    tableInfoStmt.free();
+
+    const foreignKeyStmt = database.prepare(
+      `PRAGMA foreign_key_list("${tableName}");`
+    );
+    while (foreignKeyStmt.step()) {
+      const row = foreignKeyStmt.getAsObject();
+      if (tableSchema[row.from as string]) {
+        tableSchema[row.from as string].isForeignKey = true;
+      }
+    }
+    foreignKeyStmt.free();
 
     return tableSchema;
   } catch (error) {
@@ -71,7 +87,6 @@ export const getTableSchema = async (database: Database, tableName: string) => {
   }
 };
 
-// Map query results to data and columns
 export const mapQueryResults = (
   result: QueryExecResult[]
 ): {
@@ -112,11 +127,20 @@ const exportFromQuery = (
   tableName: string
 ): void => {
   try {
-    const result = database.exec(query);
-    if (result.length === 0) {
+    const stmt = database.prepare(query);
+    const columns: string[] = stmt.getColumnNames();
+    const data: TableRow[] = [];
+
+    while (stmt.step()) {
+      const row = stmt.getAsObject();
+      data.push(row as TableRow);
+    }
+    stmt.free();
+
+    if (data.length === 0) {
       throw new Error(`Query "${query}" returned no results.`);
     }
-    const { data, columns } = mapQueryResults(result);
+
     const csvContent = arrayToCSV(columns, data);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${tableName}.csv`);
