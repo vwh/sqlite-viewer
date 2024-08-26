@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://sqlite3.online/">
+<a href="https://sqlite3.online/" target="_blank">
     <img src="https://github.com/user-attachments/assets/aef749bf-df08-4a84-8148-d34b796449d8" alt="tgram" width="128">
 </a>
 
@@ -18,7 +18,9 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
 </div>
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/a0fc7725-5c6a-4d48-bab9-52b9b1466d55" alt="SQLite Viewer Preview">
+  <a href="https://sqlite3.online/" target="_blank">
+      <img src="https://github.com/user-attachments/assets/a0fc7725-5c6a-4d48-bab9-52b9b1466d55" alt="SQLite Viewer Preview">
+  </a>
 </div>
 
 ## 🌟 Features
