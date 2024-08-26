@@ -73,7 +73,7 @@
     "vite-plugin-imagemin": "^0.6.1",
     "vite-plugin-inspect": "^0.8.5",
     "vite-plugin-pwa": "^0.20.1",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^5.0.1"
   },
   "packageManager": "npm@10.5.0"
 }
