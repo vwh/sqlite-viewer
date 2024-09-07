@@ -1,7 +1,7 @@
 import { formatDistanceToNow, format } from "date-fns";
 
 const isValidDate = (date: any) => {
-  return date instanceof Date && !isNaN(date.getTime());
+  return date instanceof Date && !Number.isNaN(date.getTime());
 };
 
 const formatDateRelative = (dateValue: string) => {

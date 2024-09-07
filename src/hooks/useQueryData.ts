@@ -121,7 +121,7 @@ export function useQueryData(
 
     setIsQueryLoading(true);
     try {
-      const tableName = tables[parseInt(selectedTable)].name;
+      const tableName = tables[Number.parseInt(selectedTable)].name;
       const customResult: QueryExecResult[] = query(
         customQuery.replace("@", `"${tableName}"`)
       );

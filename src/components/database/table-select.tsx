@@ -17,8 +17,8 @@ export default function TableSelect() {
     useSQLiteStore();
 
   const selectedTableRowsCount = useMemo(() => {
-    const index = parseInt(selectedTable);
-    return isNaN(index) ? 0 : tables[index]?.count || 0;
+    const index = Number.parseInt(selectedTable);
+    return Number.isNaN(index) ? 0 : tables[index]?.count || 0;
   }, [tables, selectedTable]);
 
   const selectOptions = useMemo(

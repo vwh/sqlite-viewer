@@ -115,7 +115,14 @@ export default function DBTable() {
         </div>
       </div>
     ),
-    [customQuery, handleCustomQuery, handleQueryRemove, handleResetPage, page]
+    [
+      customQuery,
+      handleCustomQuery,
+      handleQueryRemove,
+      handleResetPage,
+      page,
+      savedColumns
+    ]
   );
 
   const renderTableContent = useMemo(() => {

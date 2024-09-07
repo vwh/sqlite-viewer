@@ -54,16 +54,16 @@ export default function Settings() {
 
   useEffect(() => {
     setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : Number(rowsPerPage));
-  }, [rowsPerPage, setRowPerPageOrAuto]);
+  }, [rowsPerPage, setRowPerPageOrAuto, isAutoRowsPerPage]);
 
   useEffect(() => {
     setDateFormatValue(getLocalStorageItem(DATE_FORMAT_KEY, "default"));
   }, [setDateFormatValue]);
 
   useEffect(() => {
-    THEME_COLORS.forEach((t) =>
-      document.body?.classList.toggle(t, t === themeColor)
-    );
+    for (const t of THEME_COLORS) {
+      document.body?.classList.toggle(t, t === themeColor);
+    }
   }, [themeColor]);
 
   const handleRowsPerPageChange = useCallback(

@@ -161,10 +161,11 @@ export const exportTableAsCSV = (
 };
 
 export const exportAllTablesAsCSV = (database: Database): void => {
-  getTableNames(database).forEach((tableName) => {
+  const tableNames = getTableNames(database);
+  for (const tableName of tableNames) {
     const query = `SELECT * FROM "${tableName}"`;
     exportFromQuery(query, database, tableName);
-  });
+  }
 };
 
 export const exportCustomQueryAsCSV = (

@@ -24,7 +24,7 @@ function App() {
   const hasFetched = useRef(false);
 
   const fetchDatabase = useCallback(
-    async (url: string, useProxy: boolean = false) => {
+    async (url: string, useProxy = false) => {
       const isGoodURL =
         /^(https?:\/\/(?:www\.)?[a-zA-Z0-9-]{1,256}\.[a-zA-Z]{2,6}(?:\/[^\s]*)?)$/i.test(
           url

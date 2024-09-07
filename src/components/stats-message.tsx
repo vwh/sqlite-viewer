@@ -1,4 +1,4 @@
-import React from "react";
+import type { ReactNode } from "react";
 import {
   AlertTriangleIcon,
   Loader2Icon,
@@ -10,7 +10,7 @@ type MessageType = "error" | "loading" | "success" | "info";
 
 interface StatusMessageProps {
   type: MessageType;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 

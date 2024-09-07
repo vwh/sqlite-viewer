@@ -43,15 +43,14 @@ export default function UploadFile() {
         } catch (error) {
           if (error instanceof Error) {
             return toast(error.message, { position: "bottom-right" });
-          } else {
-            return toast("Failed to load database", {
-              position: "bottom-right"
-            });
           }
+          return toast("Failed to load database", {
+            position: "bottom-right"
+          });
         }
       }
     },
-    [loadDatabase, setTables, setSelectedTable]
+    [loadDatabase, setTables, setSelectedTable, setCustomQuery]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -117,9 +116,11 @@ export default function UploadFile() {
 const FileStats: React.FC<{ errors?: FileError[] }> = React.memo(
   ({ errors }) => {
     React.useEffect(() => {
-      errors?.forEach((error) =>
-        toast(error.message, { position: "bottom-right" })
-      );
+      if (errors) {
+        for (const error of errors) {
+          toast(error.message, { position: "bottom-right" });
+        }
+      }
     }, [errors]);
 
     return null;

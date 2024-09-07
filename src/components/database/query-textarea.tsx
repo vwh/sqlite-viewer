@@ -6,7 +6,10 @@ import { format } from "sql-formatter";
 import { sql, SQLite } from "@codemirror/lang-sql";
 
 import CodeMirror from "@uiw/react-codemirror";
-import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  type CompletionContext
+} from "@codemirror/autocomplete";
 
 import { nord } from "@uiw/codemirror-theme-nord";
 

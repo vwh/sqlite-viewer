@@ -40,8 +40,8 @@ export default function ExportButtons() {
             "Download database as SQLite"
           )}
           {renderExportButton(
-            () => exportTableAsCSV(db, parseInt(selectedTable)),
-            `Export ${tables[parseInt(selectedTable)]?.name || "selected"} table as CSV`,
+            () => exportTableAsCSV(db, Number.parseInt(selectedTable)),
+            `Export ${tables[Number.parseInt(selectedTable)]?.name || "selected"} table as CSV`,
             "Export selected table as CSV"
           )}
           {renderExportButton(

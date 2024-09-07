@@ -68,7 +68,7 @@ export default function Features() {
           </div>
         </div>
       </section>
-      <div className="pb-[72px] md:pb-0"></div>
+      <div className="pb-[72px] md:pb-0" />
     </>
   );
 }

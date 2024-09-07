@@ -66,7 +66,10 @@ const initializeStore = create<SQLiteState>((set, get) => ({
       const tableCountsAndSchemas = await Promise.all(
         tableNames.map(async (name) => {
           const countResult = database.exec(`SELECT COUNT(*) FROM "${name}"`);
-          const count = parseInt(countResult[0].values[0][0] as string, 10);
+          const count = Number.parseInt(
+            countResult[0].values[0][0] as string,
+            10
+          );
           const schema = await getTableSchema(database, name);
           return { name, count, schema };
         })

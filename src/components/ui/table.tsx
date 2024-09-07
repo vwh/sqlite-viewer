@@ -85,7 +85,7 @@ TableHead.displayName = "TableHead";
 // Function to convert hex blob string to data URL
 const hexToDataUrl = (hex: string): string => {
   const bytes = new Uint8Array(
-    hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))
+    hex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16))
   );
   const blob = new Blob([bytes], { type: "image/jpeg" });
   return URL.createObjectURL(blob);

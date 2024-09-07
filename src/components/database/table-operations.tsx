@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Input } from "@/components/ui/input";
@@ -72,19 +72,25 @@ export function TableOrderBy({ columnName }: { columnName: string }) {
   }, [orderBy, orderByDirection, columnName, setOrderBy, setOrderByDirection]);
 
   return (
-    <div onClick={handleOrderByClick} className="flex items-center">
+    <div
+      onClick={handleOrderByClick}
+      onKeyUp={handleOrderByClick}
+      role="button"
+      tabIndex={0}
+      className="flex items-center"
+    >
       {orderBy === columnName ? (
         orderByDirection === "ASC" ? (
-          <button title="Descending">
+          <button title="Descending" type="button" aria-label="Sort Descending">
             <ArrowDownNarrowWideIcon className="h-4 w-4" />
           </button>
         ) : (
-          <button title="Ascending">
+          <button title="Ascending" type="button" aria-label="Sort Ascending">
             <ArrowUpNarrowWideIcon className="h-4 w-4" />
           </button>
         )
       ) : (
-        <button title="Sort column">
+        <button title="Sort column" type="button" aria-label="Sort Column">
           <ArrowUpDownIcon className="h-4 w-4" />
         </button>
       )}
