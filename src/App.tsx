@@ -78,7 +78,10 @@ function App() {
           );
         } catch (error) {
           event.source?.postMessage(
-            { type: "loadDatabaseBytesError", error: error?.message },
+            {
+              type: "loadDatabaseBytesError",
+              error: error instanceof Error ? error.message : String(error)
+            },
             event.origin as WindowPostMessageOptions
           );
         }
