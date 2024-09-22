@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import {
@@ -8,6 +8,7 @@ import {
   downloadDatabase
 } from "@/lib/sqlite";
 
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -19,44 +20,57 @@ import {
 import { FileDownIcon } from "lucide-react";
 
 export default function ExportButtons() {
-  const { selectedTable, tables, customQuery, db } = useSQLiteStore();
+  const { selectedTable, customQuery, db } = useSQLiteStore();
 
-  const renderExportButton = useCallback(
-    (onClick: () => void, label: string, title: string, className?: string) => (
-      <Button className={className} onClick={onClick} title={title}>
-        <span className="ml-2">{label}</span>
-      </Button>
-    ),
-    []
-  );
-
-  const exportButtons = useMemo(
+  const MemoizedButtons = useMemo(
     () =>
       db && (
         <div className="flex flex-col gap-1">
-          {renderExportButton(
-            () => downloadDatabase(db),
-            "Export as SQLite",
-            "Download database as SQLite"
-          )}
-          {renderExportButton(
-            () => exportTableAsCSV(db, Number.parseInt(selectedTable)),
-            `Export ${tables[Number.parseInt(selectedTable)]?.name || "selected"} table as CSV`,
-            "Export selected table as CSV"
-          )}
-          {renderExportButton(
-            () => exportAllTablesAsCSV(db),
-            "Export all tables as CSV",
-            "Export all tables as CSV"
-          )}
-          {renderExportButton(
-            () => exportCustomQueryAsCSV(db, customQuery),
-            "Export custom query as CSV",
-            "Export the result of the custom query as CSV"
-          )}
+          <ExportButton
+            onClick={() => {
+              try {
+                downloadDatabase(db);
+              } catch {
+                toast.error("Failed to download database");
+              }
+            }}
+            label="Export as SQLite"
+            title="Download database as SQLite"
+          />
+          <ExportButton
+            onClick={() => {
+              try {
+                exportTableAsCSV(db, Number.parseInt(selectedTable));
+              } catch {
+                toast.error("Failed to export selected table as CSV");
+              }
+            }}
+            label="Export selected table as CSV"
+          />
+          <ExportButton
+            onClick={() => {
+              try {
+                exportAllTablesAsCSV(db);
+              } catch {
+                toast.error("Failed to export all tables as CSV");
+              }
+            }}
+            label="Export all tables as CSV"
+          />
+          <ExportButton
+            onClick={() => {
+              try {
+                exportCustomQueryAsCSV(db, customQuery);
+              } catch {
+                toast.error("Failed to export custom query as CSV");
+              }
+            }}
+            label="Export custom query as CSV"
+            title="Export the result of the custom query as CSV"
+          />
         </div>
       ),
-    [db, renderExportButton, selectedTable, tables, customQuery]
+    [db, selectedTable, customQuery]
   );
 
   return (
@@ -67,8 +81,26 @@ export default function ExportButtons() {
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80">
-        {exportButtons}
+        {MemoizedButtons}
       </PopoverContent>
     </Popover>
+  );
+}
+
+function ExportButton({
+  onClick,
+  label,
+  className,
+  title
+}: {
+  onClick: () => void;
+  label: string;
+  className?: string;
+  title?: string;
+}) {
+  return (
+    <Button className={className} onClick={onClick} title={title ?? label}>
+      <span className="ml-2">{label}</span>
+    </Button>
   );
 }
