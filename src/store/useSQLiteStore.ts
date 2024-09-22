@@ -2,11 +2,11 @@ import { create } from "zustand";
 import type { Database, QueryExecResult } from "sql.js";
 import type { TableInfo } from "@/types";
 
-import { getTableSchema, getTableNames, loadDatabase } from "@/lib/sqlite";
+import { getTableSchema, getTableNames, loadDatabaseBytes } from "@/lib/sqlite";
 
 interface SQLiteState {
   db: Database | null;
-  loadDatabase: (file: File) => Promise<void>;
+  loadDatabaseBytes: (bytes: Uint8Array) => Promise<void>;
   isLoading: boolean;
 
   tables: { name: string; count: number }[];
@@ -57,11 +57,11 @@ interface SQLiteState {
 const initializeStore = create<SQLiteState>((set, get) => ({
   db: null,
   isLoading: false,
-  loadDatabase: async (file: File) => {
+  loadDatabaseBytes: async (bytes: Uint8Array) => {
     set({ isLoading: true, queryError: null });
 
     try {
-      const database = await loadDatabase(file);
+      const database = await loadDatabaseBytes(bytes);
       const tableNames = getTableNames(database);
       const tableCountsAndSchemas = await Promise.all(
         tableNames.map(async (name) => {

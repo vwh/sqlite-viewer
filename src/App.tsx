@@ -14,7 +14,7 @@ function App() {
     db: isDatabaseLoaded,
     tables,
     isLoading,
-    loadDatabase,
+    loadDatabaseBytes,
     expandPage
   } = useSQLiteStore();
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -44,7 +44,8 @@ function App() {
         }
         const blob = await response.blob();
         const file = new File([blob], "database.sqlite");
-        await loadDatabase(file);
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        await loadDatabaseBytes(bytes);
         setFetchError(null);
       } catch (error) {
         if (!useProxy) {
@@ -59,8 +60,35 @@ function App() {
         setIsFetching(false);
       }
     },
-    [loadDatabase]
+    [loadDatabaseBytes]
   );
+
+  // Add loadDatabaseBytes to the window object
+  // https://github.com/vwh/sqlite-viewer/issues/50
+  useEffect(() => {
+    window.loadDatabaseBytes = loadDatabaseBytes;
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data.type === "invokeLoadDatabaseBytes") {
+        try {
+          const bytes = event.data.bytes;
+          await loadDatabaseBytes(bytes); // Invoke the function
+          event.source?.postMessage(
+            { type: "loadDatabaseBytesSuccess" },
+            event.origin as WindowPostMessageOptions
+          );
+        } catch (error) {
+          event.source?.postMessage(
+            { type: "loadDatabaseBytesError", error: error?.message },
+            event.origin as WindowPostMessageOptions
+          );
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [loadDatabaseBytes]);
 
   // Fetch database on page load if url in url params
   useEffect(() => {

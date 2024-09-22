@@ -18,7 +18,7 @@ const ACCEPTED_TYPES = {
 };
 
 export default function UploadFile() {
-  const { loadDatabase, setTables, setSelectedTable, db, setCustomQuery } =
+  const { loadDatabaseBytes, setTables, setSelectedTable, db, setCustomQuery } =
     useSQLiteStore();
   const [errors, setErrors] = useState<FileError[]>([]);
 
@@ -39,7 +39,8 @@ export default function UploadFile() {
 
       if (acceptedFiles.length > 0) {
         try {
-          await loadDatabase(acceptedFiles[0]);
+          const bytes = new Uint8Array(await acceptedFiles[0].arrayBuffer());
+          await loadDatabaseBytes(bytes);
         } catch (error) {
           if (error instanceof Error) {
             return toast(error.message, { position: "bottom-right" });
@@ -50,7 +51,7 @@ export default function UploadFile() {
         }
       }
     },
-    [loadDatabase, setTables, setSelectedTable, setCustomQuery]
+    [loadDatabaseBytes, setTables, setSelectedTable, setCustomQuery]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

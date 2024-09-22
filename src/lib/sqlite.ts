@@ -13,11 +13,12 @@ const initSQL = async () => {
   return SQL;
 };
 
-export const loadDatabase = async (file: File): Promise<Database> => {
+export const loadDatabaseBytes = async (
+  bytes: Uint8Array
+): Promise<Database> => {
   try {
     const SQL = await initSQL();
-    const arrayBuffer = await file.arrayBuffer();
-    return new SQL.Database(new Uint8Array(arrayBuffer));
+    return new SQL.Database(bytes);
   } catch (error) {
     console.error("Failed to load database:", error);
     throw error;
