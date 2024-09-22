@@ -19,9 +19,8 @@ export default function StatusMessage({
   children,
   className = ""
 }: StatusMessageProps) {
-  const baseClasses = "flex items-center p-4 rounded-lg shadow-md";
-  let icon;
-  let typeClasses;
+  let icon: ReactNode;
+  let typeClasses: string;
 
   switch (type) {
     case "error":
@@ -49,7 +48,9 @@ export default function StatusMessage({
   }
 
   return (
-    <div className={`${baseClasses} ${typeClasses} ${className}`}>
+    <div
+      className={`flex items-center rounded-lg p-4 shadow-md ${typeClasses} ${className}`}
+    >
       {icon}
       <span className="font-medium">{children}</span>
     </div>

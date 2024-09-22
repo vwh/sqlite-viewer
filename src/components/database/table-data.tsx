@@ -73,7 +73,7 @@ const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
   ({ value, dataType }) => {
     const { dateFormatValue } = useSQLiteStore();
 
-    const renderCellContent = () => {
+    const CellContent = () => {
       if (!value) {
         return <span className="italic text-gray-400">NULL</span>;
       }
@@ -87,7 +87,7 @@ const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
 
     return (
       <TableCell dataType={dataType} className="px-5 py-[11px] text-sm">
-        {renderCellContent()}
+        {CellContent()}
       </TableCell>
     );
   }

@@ -164,8 +164,13 @@ export const exportTableAsCSV = (
 export const exportAllTablesAsCSV = (database: Database): void => {
   const tableNames = getTableNames(database);
   for (const tableName of tableNames) {
-    const query = `SELECT * FROM "${tableName}"`;
-    exportFromQuery(query, database, tableName);
+    try {
+      const query = `SELECT * FROM "${tableName}"`;
+      exportFromQuery(query, database, tableName);
+    } catch (error) {
+      console.error(`Failed to get CSV for table "${tableName}":`, error);
+      throw error;
+    }
   }
 };
 

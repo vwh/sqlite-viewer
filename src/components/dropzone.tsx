@@ -11,10 +11,20 @@ import Settings from "@/components/settings/settings-drawer";
 import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 
 const ACCEPTED_TYPES = {
-  "application/vnd.sqlite3": [".sqlite", ".sqlite3"],
-  "application/x-sqlite3": [".sqlite", ".sqlite3"],
-  "application/octet-stream": [".db"],
-  "application/sql": [".sql"]
+  "application/vnd.sqlite3": [".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "application/x-sqlite3": [".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "application/sqlite3": [".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "application/octet-stream": [".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "application/sql": [".sql"],
+  "application/x-sql": [".sql"],
+  "text/x-sql": [".sql"],
+  "text/sql": [".sql"],
+  "text/x-sqlite3": [".sql", ".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "text/x-sqlite": [".sql", ".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "text/sqlite": [".sql", ".sqlite", ".sqlite3", ".db", ".sqlitedb"],
+  "text/x-sqlite3-dump": [".sql"],
+  "text/x-sqlite-dump": [".sql"],
+  "text/sqlite-dump": [".sql"]
 };
 
 export default function UploadFile() {
@@ -31,12 +41,10 @@ export default function UploadFile() {
         setErrors(rejectionErrors);
         return;
       }
-
       setErrors([]);
       setTables([]);
       setCustomQuery("");
       setSelectedTable("0");
-
       if (acceptedFiles.length > 0) {
         try {
           const bytes = new Uint8Array(await acceptedFiles[0].arrayBuffer());
@@ -60,8 +68,8 @@ export default function UploadFile() {
     accept: ACCEPTED_TYPES
   });
 
-  const renderDropzoneContent = useCallback(
-    (hasDatabase: boolean) => (
+  const MemoizedDrop = useMemo(
+    (hasDatabase = Boolean(db)) => (
       <div className="flex w-full items-center justify-between gap-2">
         <div
           {...getRootProps()}
@@ -98,17 +106,12 @@ export default function UploadFile() {
         )}
       </div>
     ),
-    [getRootProps, getInputProps, isDragActive, db]
-  );
-
-  const memoizedContent = useMemo(
-    () => renderDropzoneContent(Boolean(db)),
-    [renderDropzoneContent, db]
+    [db, getRootProps, getInputProps, isDragActive]
   );
 
   return (
     <section className="mx-auto w-full">
-      {memoizedContent}
+      {MemoizedDrop}
       <FileStats errors={errors} />
     </section>
   );
@@ -123,7 +126,6 @@ const FileStats: React.FC<{ errors?: FileError[] }> = React.memo(
         }
       }
     }, [errors]);
-
     return null;
   }
 );

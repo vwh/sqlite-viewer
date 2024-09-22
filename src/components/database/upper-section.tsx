@@ -41,7 +41,7 @@ export default function DBTable() {
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
 
   const selectedTableName = useMemo(
-    () => tables[parseInt(selectedTable)]?.name,
+    () => tables[Number.parseInt(selectedTable)]?.name,
     [tables, selectedTable]
   );
 
@@ -83,7 +83,7 @@ export default function DBTable() {
     setPage(0);
   }, [filters]);
 
-  const renderQueryInput = useMemo(
+  const MemoizedQueryInput = useMemo(
     () => (
       <div className="flex flex-col gap-1 md:flex-row">
         <div className="flex-grow">
@@ -125,7 +125,7 @@ export default function DBTable() {
     ]
   );
 
-  const renderTableContent = useMemo(() => {
+  const MemoizedTableContent = useMemo(() => {
     if (isQueryLoading)
       return (
         <StatusMessage type="loading">
@@ -173,14 +173,14 @@ export default function DBTable() {
             </Button>
           </div>
         </div>
-        {renderQueryInput}
+        {MemoizedQueryInput}
         {queryError && (
           <p className="mt-2 text-center text-sm text-red-500 dark:text-red-400">
             {queryError}
           </p>
         )}
       </section>
-      {renderTableContent}
+      {MemoizedTableContent}
       {!isCustomQuery && (
         <PageSelect page={page} setPage={setPage} rowsPerPage={rowsPerPage} />
       )}

@@ -9,6 +9,9 @@ import ProxyMessage from "./components/landing/proxy-message";
 import Footer from "./components/landing/footer";
 import Features from "./components/landing/features";
 
+const REGEX_URL =
+  /^(https?:\/\/(?:www\.)?[a-zA-Z0-9-]{1,256}\.[a-zA-Z]{2,6}(?:\/[^\s]*)?)$/i;
+
 function App() {
   const {
     db: isDatabaseLoaded,
@@ -25,11 +28,7 @@ function App() {
 
   const fetchDatabase = useCallback(
     async (url: string, useProxy = false) => {
-      const isGoodURL =
-        /^(https?:\/\/(?:www\.)?[a-zA-Z0-9-]{1,256}\.[a-zA-Z]{2,6}(?:\/[^\s]*)?)$/i.test(
-          url
-        );
-      if (!isGoodURL) {
+      if (!REGEX_URL.test(url)) {
         setFetchError("Invalid URL");
         return;
       }
@@ -113,7 +112,7 @@ function App() {
     }
   }, [urlToFetch, fetchDatabase]);
 
-  const renderContent = () => {
+  const Content = () => {
     if (isLoading || isFetching) {
       return (
         <StatusMessage type="loading">
@@ -143,7 +142,7 @@ function App() {
     >
       {!isDatabaseLoaded && <Hero />}
       <UploadFile />
-      {renderContent()}
+      {Content()}
       {!isDatabaseLoaded && (
         <>
           <Features /> <Footer />
