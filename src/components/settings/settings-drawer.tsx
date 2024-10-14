@@ -20,8 +20,7 @@ import { toast } from "sonner";
 import {
   DateFormatSection,
   RowsPerPageSection,
-  ThemeColorSection,
-  QueryHistorySection
+  ThemeColorSection
 } from "./settings-sections";
 
 import { SettingsIcon } from "lucide-react";
@@ -35,7 +34,6 @@ export default function Settings() {
   const {
     setRowPerPageOrAuto,
     setIsCustomQuery,
-    queryHistory,
     dateFormatValue,
     setDateFormatValue
   } = useSQLiteStore();
@@ -95,7 +93,7 @@ export default function Settings() {
   );
 
   return (
-    <Drawer>
+    <Drawer key="settings-drawer">
       <DrawerTrigger asChild>
         <Button className="grow" title="Open settings drawer">
           <SettingsIcon className="h-5 w-5" />
@@ -120,7 +118,6 @@ export default function Settings() {
             dateFormatValue={dateFormatValue}
             onDateFormatChange={handleDateFormatChange}
           />
-          <QueryHistorySection queryHistory={queryHistory} />
           <DrawerFooter>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>

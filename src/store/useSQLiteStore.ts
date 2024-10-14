@@ -4,6 +4,8 @@ import type { TableInfo } from "@/types";
 
 import { getTableSchema, getTableNames, loadDatabaseBytes } from "@/lib/sqlite";
 
+type OrderDirection = "ASC" | "DESC";
+
 interface SQLiteState {
   db: Database | null;
   loadDatabaseBytes: (bytes: Uint8Array) => Promise<void>;
@@ -48,10 +50,11 @@ interface SQLiteState {
   totalRows: number;
   setTotalRows: (value: number) => void;
 
-  orderBy: string | null;
-  setOrderBy: (value: string | null) => void;
-  orderByDirection: "ASC" | "DESC";
-  setOrderByDirection: (value: "ASC" | "DESC") => void;
+  orderBy: {
+    column: string | null;
+    direction: OrderDirection;
+  };
+  setOrderBy: (column: string | null, direction: OrderDirection) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -141,11 +144,12 @@ const initializeStore = create<SQLiteState>((set, get) => ({
   totalRows: 0,
   setTotalRows: (value: number) => set({ totalRows: value }),
 
-  orderBy: null,
-  setOrderBy: (value: string | null) => set({ orderBy: value }),
-  orderByDirection: "ASC",
-  setOrderByDirection: (value: "ASC" | "DESC") =>
-    set({ orderByDirection: value })
+  orderBy: {
+    column: null,
+    direction: "ASC"
+  },
+  setOrderBy: (column: string | null, direction: OrderDirection) =>
+    set({ orderBy: { column, direction } })
 }));
 
 export default initializeStore;

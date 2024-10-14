@@ -21,7 +21,6 @@ export function useQueryData(
     totalRows,
     setTotalRows,
     orderBy,
-    orderByDirection,
     selectedTable,
     tables
   } = useSQLiteStore();
@@ -78,7 +77,7 @@ export function useQueryData(
         let queryString = `SELECT ${columnSelects} FROM "${tableName}"`;
         if (filterQuery) queryString += ` WHERE ${filterQuery}`;
         if (orderBy)
-          queryString += ` ORDER BY "${orderBy}" ${orderByDirection}`;
+          queryString += ` ORDER BY "${orderBy.column}" ${orderBy.direction}`;
         queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
 
         const tableResult: QueryExecResult[] = query(queryString);
@@ -105,7 +104,6 @@ export function useQueryData(
     rowsPerPage,
     filterQuery,
     orderBy,
-    orderByDirection,
     query,
     setQueryError,
     setCustomQuery,

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 import { MoonIcon, SunIcon } from "lucide-react";
@@ -53,17 +53,22 @@ export default function ThemeModeToggle() {
     applyTheme(theme === "light" ? "dark" : "light");
   }, [theme, applyTheme]);
 
-  return (
-    <Button
-      className="relative grow"
-      onClick={toggleTheme}
-      title={theme === "dark" ? "Enable light mode" : "Enable dark mode"}
-    >
-      {theme === "dark" ? (
-        <SunIcon className="h-5 w-5" />
-      ) : (
-        <MoonIcon className="h-5 w-5" />
-      )}
-    </Button>
+  const MemoizedThemeButton = useMemo(
+    () => (
+      <Button
+        className="relative grow"
+        onClick={toggleTheme}
+        title={theme === "dark" ? "Enable light mode" : "Enable dark mode"}
+      >
+        {theme === "dark" ? (
+          <SunIcon className="h-5 w-5" />
+        ) : (
+          <MoonIcon className="h-5 w-5" />
+        )}
+      </Button>
+    ),
+    [theme]
   );
+
+  return MemoizedThemeButton;
 }

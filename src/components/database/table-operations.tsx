@@ -51,36 +51,23 @@ export function TableFilter({ columnName }: { columnName: string }) {
 }
 
 export function TableOrderBy({ columnName }: { columnName: string }) {
-  const { orderBy, setOrderBy, orderByDirection, setOrderByDirection } =
-    useSQLiteStore();
+  const { orderBy, setOrderBy } = useSQLiteStore();
 
   const handleOrderByClick = useCallback(() => {
-    if (orderBy === columnName) {
-      if (orderByDirection === "ASC") {
-        setOrderByDirection("DESC");
-      } else if (orderByDirection === "DESC") {
-        setOrderBy(null);
-        setOrderByDirection("ASC");
-      } else {
-        setOrderBy(columnName);
-        setOrderByDirection("ASC");
-      }
-    } else {
-      setOrderBy(columnName); // Start sorting with ASC for the new column
-      setOrderByDirection("ASC");
-    }
-  }, [orderBy, orderByDirection, columnName, setOrderBy, setOrderByDirection]);
+    if (orderBy.column === columnName) {
+      if (orderBy.direction === "ASC") setOrderBy(columnName, "DESC");
+      else if (orderBy.direction === "DESC") setOrderBy(null, "ASC");
+    } else setOrderBy(columnName, "ASC"); // Start sorting with ASC for the new column
+  }, [orderBy, columnName, setOrderBy]);
 
   return (
     <div
       onClick={handleOrderByClick}
       onKeyUp={handleOrderByClick}
-      role="button"
-      tabIndex={0}
       className="flex items-center"
     >
-      {orderBy === columnName ? (
-        orderByDirection === "ASC" ? (
+      {orderBy.column === columnName ? (
+        orderBy.direction === "ASC" ? (
           <button title="Descending" type="button" aria-label="Sort Descending">
             <ArrowDownNarrowWideIcon className="h-4 w-4" />
           </button>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import useTheme from "@/hooks/useTheme";
 
@@ -146,13 +146,15 @@ interface QueryTextareaProps {
 }
 
 export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
-  const { customQuery, setCustomQuery, queryHistory, tables } =
-    useSQLiteStore();
+  const { customQuery, setCustomQuery, tables } = useSQLiteStore();
+
+  const [sqlQuery, setSqlQuery] = useState(customQuery);
   const isDark = useTheme();
 
   useEffect(() => {
-    setCustomQuery(sqlFormat(customQuery));
-  }, [queryHistory]);
+    console.log("format");
+    setSqlQuery(sqlFormat(customQuery));
+  }, [customQuery]);
 
   const myCompletions = useCallback(
     (context: CompletionContext) => {
@@ -178,12 +180,13 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
   );
 
   const handleBlur = useCallback(() => {
-    setCustomQuery(sqlFormat(customQuery));
-  }, [customQuery, setCustomQuery]);
+    setSqlQuery(sqlFormat(customQuery));
+  }, [customQuery]);
 
   const handleChange = useCallback(
     (newValue: string) => {
       setCustomQuery(newValue);
+      setSqlQuery(newValue);
     },
     [setCustomQuery]
   );
@@ -195,7 +198,8 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
 
   return (
     <CodeMirror
-      value={customQuery}
+      value={sqlQuery}
+      defaultValue={sqlQuery}
       height="126px"
       extensions={extensions}
       onChange={handleChange}

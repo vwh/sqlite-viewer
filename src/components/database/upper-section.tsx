@@ -37,8 +37,7 @@ export default function DBTable() {
     expandPage,
     setExpandPage,
     filters,
-    setFilters,
-    setOrderBy
+    setFilters
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -78,7 +77,6 @@ export default function DBTable() {
   useEffect(() => {
     setPage(0);
     setFilters({});
-    setOrderBy(null);
   }, [selectedTable]);
 
   // Reset page when any of the filters change
@@ -156,38 +154,45 @@ export default function DBTable() {
     savedColumns
   ]);
 
+  const MemoizedExportButtonsComponent = useMemo(
+    () => <MemoizedExportButtons />,
+    []
+  );
+
   return (
-    <div className="flex flex-col gap-3 pb-8">
-      <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
-        <div className="mb-[5px] flex items-center justify-between gap-1">
-          {/* Use MemoizedTableSelect instead of TableSelect */}
-          <MemoizedTableSelect />
-          <div className="flex items-center justify-center gap-1">
-            <MemoizedExportButtons />
-            <Button
-              className="hidden expand:block"
-              onClick={() => setExpandPage(!expandPage)}
-              title="Toggle page size"
-            >
-              {expandPage ? (
-                <Minimize2Icon className="h-5 w-5" />
-              ) : (
-                <Maximize2Icon className="h-5 w-5" />
-              )}
-            </Button>
+    <>
+      <div className="flex flex-col gap-3 pb-8">
+        <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
+          <div className="mb-[5px] flex items-center justify-between gap-1">
+            {/* Use MemoizedTableSelect instead of TableSelect */}
+            <MemoizedTableSelect />
+            <div className="flex items-center justify-center gap-1">
+              {MemoizedExportButtonsComponent}
+              <Button
+                className="hidden expand:block"
+                onClick={() => setExpandPage(!expandPage)}
+                title="Toggle page size"
+              >
+                {expandPage ? (
+                  <Minimize2Icon className="h-5 w-5" />
+                ) : (
+                  <Maximize2Icon className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-        {MemoizedQueryInput}
-        {queryError && (
-          <p className="mt-2 text-center text-sm text-red-500 dark:text-red-400">
-            {queryError}
-          </p>
+          {MemoizedQueryInput}
+          {queryError && (
+            <p className="mt-2 text-center text-sm text-red-500 dark:text-red-400">
+              {queryError}
+            </p>
+          )}
+        </section>
+        {MemoizedTableContent}
+        {!isCustomQuery && (
+          <PageSelect page={page} setPage={setPage} rowsPerPage={rowsPerPage} />
         )}
-      </section>
-      {MemoizedTableContent}
-      {!isCustomQuery && (
-        <PageSelect page={page} setPage={setPage} rowsPerPage={rowsPerPage} />
-      )}
-    </div>
+      </div>
+    </>
   );
 }

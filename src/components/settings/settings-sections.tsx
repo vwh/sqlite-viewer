@@ -1,18 +1,11 @@
 import { dateFormats } from "@/lib/date-format";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 
-import {
-  Rows3Icon,
-  CalendarIcon,
-  PaletteIcon,
-  HistoryIcon
-} from "lucide-react";
+import { Rows3Icon, CalendarIcon, PaletteIcon } from "lucide-react";
 
 type OptionProps = {
   value: string;
@@ -126,32 +119,5 @@ export const ThemeColorSection: React.FC<ThemeColorSectionProps> = ({
         />
       ))}
     </RadioGroup>
-  </div>
-);
-
-type QueryHistorySectionProps = {
-  queryHistory: string[];
-};
-
-export const QueryHistorySection: React.FC<QueryHistorySectionProps> = ({
-  queryHistory
-}) => (
-  <div className="flex grow flex-col gap-1">
-    <div className="flex items-center gap-1">
-      <HistoryIcon className="h-4 w-4" />
-      <p className="text-sm font-medium">
-        Query History ({queryHistory.length})
-      </p>
-    </div>
-    <ScrollArea className="h-[155px] rounded-md border font-medium">
-      <div className="p-4">
-        {queryHistory.map((query, index) => (
-          <div key={index}>
-            <div className="text-sm font-normal">{query}</div>
-            <Separator className="my-2" />
-          </div>
-        ))}
-      </div>
-    </ScrollArea>
   </div>
 );

@@ -34,12 +34,15 @@ export default function UrlFetch() {
           ? `${CORS_SERVER}/${encodeURIComponent(url)}`
           : url;
         const response = await fetch(fetchUrl);
+
         if (!response.ok) {
           throw new Error("URL not found or invalid");
         }
+
         const blob = await response.blob();
         const file = new File([blob], "database.sqlite");
         const bytes = new Uint8Array(await file.arrayBuffer());
+
         await loadDatabaseBytes(bytes);
         setFetchError(null);
       } catch (error) {
@@ -91,10 +94,15 @@ export default function UrlFetch() {
   }
 
   return (
-    <ProxyMessage
-      showDialog={showDialog}
-      setShowDialog={setShowDialog}
-      onConfirm={handleRetryWithProxy}
-    />
+    <>
+      {showDialog && (
+        <ProxyMessage
+          key="proxy-message"
+          showDialog={showDialog}
+          setShowDialog={setShowDialog}
+          onConfirm={handleRetryWithProxy}
+        />
+      )}
+    </>
   );
 }
