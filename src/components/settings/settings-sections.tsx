@@ -36,7 +36,7 @@ export const RowsPerPageSection: React.FC<RowsPerPageSectionProps> = ({
         <Rows3Icon className="h-4 w-4" />
         <p className="text-sm font-medium">Rows Per Page</p>
       </div>
-      <div className="flex h-full flex-col items-center justify-center gap-1 rounded border p-2">
+      <div className="flex h-full flex-col items-center justify-center gap-1 rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50">
         <Input
           id="rowsPerPage"
           value={isAutoRowsPerPage ? "" : rowsPerPage}
@@ -47,7 +47,7 @@ export const RowsPerPageSection: React.FC<RowsPerPageSectionProps> = ({
           autoFocus={false}
         />
         <Button
-          variant={isAutoRowsPerPage ? "secondary" : "outline"}
+          variant="outline"
           onClick={() => onRowsPerPageChange("auto")}
           className="w-full whitespace-nowrap"
         >
@@ -72,7 +72,7 @@ export const DateFormatSection: React.FC<DateFormatSectionProps> = ({
       <CalendarIcon className="h-4 w-4" />
       <p className="text-sm font-medium">Date Format</p>
     </div>
-    <div className="h-full rounded border p-2">
+    <div className="h-full rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50">
       <RadioGroup
         className="flex h-full flex-col gap-2"
         name="dateType"
@@ -105,7 +105,7 @@ export const ThemeColorSection: React.FC<ThemeColorSectionProps> = ({
       <p className="text-sm font-medium">Theme Color</p>
     </div>
     <RadioGroup
-      className="flex flex-col gap-2 rounded border p-2"
+      className="flex flex-col gap-2 rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50"
       name="themeColor"
       value={themeColor}
       onValueChange={onThemeColorChange}

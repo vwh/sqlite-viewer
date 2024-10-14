@@ -69,7 +69,7 @@ export default function UploadFile() {
       <div className="flex w-full items-center justify-between gap-2">
         <div
           {...getRootProps()}
-          className={`flex w-full grow transform cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors duration-300 ease-in-out hover:bg-secondary ${
+          className={`flex w-full grow transform cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-gray-100/50 p-6 transition-colors duration-300 ease-in-out hover:bg-secondary dark:bg-gray-700/50 ${
             isDragActive
               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
               : "border-primary dark:border-gray-700"
@@ -85,9 +85,11 @@ export default function UploadFile() {
             </span>
             <div className="block sm:hidden">
               {hasDatabase ? (
-                <span className="font-medium">Click to select a file</span>
+                <span className="text-lg font-medium">
+                  Click to select a file
+                </span>
               ) : (
-                <span className="font-medium">
+                <span className="text-lg font-medium">
                   Click to select a SQLite file
                 </span>
               )}

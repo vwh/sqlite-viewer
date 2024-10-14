@@ -152,7 +152,6 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
   const isDark = useTheme();
 
   useEffect(() => {
-    console.log("format");
     setSqlQuery(sqlFormat(customQuery));
   }, [customQuery]);
 
