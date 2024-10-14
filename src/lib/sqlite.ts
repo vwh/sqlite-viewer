@@ -36,9 +36,8 @@ export const getTableNames = (database: Database): string[] => {
     }
     stmt.free();
     return names;
-  } catch (error) {
-    console.error("Failed to get table names:", error);
-    return [];
+  } catch {
+    throw new Error("Invalid database file");
   }
 };
 

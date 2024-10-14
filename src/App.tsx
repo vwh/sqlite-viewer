@@ -3,7 +3,6 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 
 import DBTable from "@/components/database/upper-section";
 import UploadFile from "@/components/dropzone";
-import StatusMessage from "@/components/stats-message";
 import Hero from "@/components/landing/hero";
 import Features from "@/components/landing/features";
 import UrlFetch from "@/components/landing/url-fetch";
@@ -16,7 +15,6 @@ const MemoizedUrlFetch = memo(UrlFetch);
 export default function App() {
   const {
     db: isDatabaseLoaded,
-    tables,
     loadDatabaseBytes,
     expandPage
   } = useSQLiteStore();
@@ -59,13 +57,7 @@ export default function App() {
       <MemoizedUploadFile />
       <MemoizedUrlFetch />
       {isDatabaseLoaded ? (
-        tables.length > 0 ? (
-          <MemoizedDBTable />
-        ) : (
-          <StatusMessage type="info">
-            Your database is empty, no tables found
-          </StatusMessage>
-        )
+        <MemoizedDBTable />
       ) : (
         <>
           <Features />

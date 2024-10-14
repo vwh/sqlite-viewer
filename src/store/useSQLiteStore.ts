@@ -57,9 +57,9 @@ interface SQLiteState {
 const initializeStore = create<SQLiteState>((set, get) => ({
   db: null,
   isLoading: false,
-  loadDatabaseBytes: async (bytes: Uint8Array) => {
-    set({ isLoading: true, queryError: null });
 
+  loadDatabaseBytes: async (bytes: Uint8Array) => {
+    set({ isLoading: true });
     try {
       const database = await loadDatabaseBytes(bytes);
       const tableNames = getTableNames(database);
@@ -87,8 +87,7 @@ const initializeStore = create<SQLiteState>((set, get) => ({
       );
       set({ db: database, tables, tableSchemas, isLoading: false });
     } catch (error) {
-      console.error("Failed to load database:", error);
-      set({ isLoading: false, queryError: "Failed to load database" });
+      set({ isLoading: false });
       throw error;
     }
   },

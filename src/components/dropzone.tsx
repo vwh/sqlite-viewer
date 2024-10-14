@@ -28,8 +28,8 @@ const ACCEPTED_TYPES = {
 };
 
 export default function UploadFile() {
-  const { loadDatabaseBytes, setTables, setSelectedTable, db, setCustomQuery } =
-    useSQLiteStore();
+  const { loadDatabaseBytes, db } = useSQLiteStore();
+
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
@@ -41,10 +41,6 @@ export default function UploadFile() {
         setErrors(rejectionErrors);
         return;
       }
-      setErrors([]);
-      setTables([]);
-      setCustomQuery("");
-      setSelectedTable("0");
       if (acceptedFiles.length > 0) {
         try {
           const bytes = new Uint8Array(await acceptedFiles[0].arrayBuffer());
@@ -59,7 +55,7 @@ export default function UploadFile() {
         }
       }
     },
-    [loadDatabaseBytes, setTables, setSelectedTable, setCustomQuery]
+    [loadDatabaseBytes]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
