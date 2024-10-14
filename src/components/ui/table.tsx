@@ -95,65 +95,67 @@ interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   dataType?: string;
 }
 
-const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ className, children, dataType, ...props }, ref) => {
-    const isBlob = dataType?.toUpperCase() === "BLOB";
-    const content = React.useMemo(() => {
-      if (typeof children === "string" && children.length > 40) {
-        return children.slice(0, 40) + "...";
-      }
-      return children;
-    }, [children]);
+const TableCell = React.memo(
+  React.forwardRef<HTMLTableCellElement, TableCellProps>(
+    ({ className, children, dataType, ...props }, ref) => {
+      const isBlob = dataType?.toUpperCase() === "BLOB";
+      const content = React.useMemo(() => {
+        if (typeof children === "string" && children.length > 40) {
+          return `${children.slice(0, 40)}...`;
+        }
+        return children;
+      }, [children]);
 
-    return (
-      <td
-        ref={ref}
-        className={cn(
-          "max-w-[200px] overflow-hidden truncate text-ellipsis whitespace-nowrap p-4 align-middle [&:has([role=checkbox])]:pr-0",
-          className
-        )}
-        {...props}
-      >
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <span className="cursor-pointer hover:underline">
-              {isBlob ? (
-                <span className="italic opacity-40">BLOB</span>
-              ) : (
-                content
-              )}
-            </span>
-          </HoverCardTrigger>
-          <HoverCardContent side="bottom" align="start">
-            <div className="flex flex-col justify-center gap-1">
-              {isBlob && typeof children === "string" ? (
-                <>
-                  <img
-                    src={hexToDataUrl(children)}
-                    alt="BLOB content"
-                    className="flex max-h-40 flex-col items-center justify-center gap-2 rounded object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    Blob length: {children.length}
-                  </span>
-                </>
-              ) : (
-                <span className="max-w-full break-words">{children}</span>
-              )}
-              {
-                <Badge className="w-full self-start text-center text-xs font-semibold">
-                  {dataType || "Unknown"}
-                </Badge>
-              }
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      </td>
-    );
-  }
+      return (
+        <td
+          ref={ref}
+          className={cn(
+            "max-w-[200px] overflow-hidden truncate text-ellipsis whitespace-nowrap p-4 align-middle [&:has([role=checkbox])]:pr-0",
+            className
+          )}
+          {...props}
+        >
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="cursor-pointer hover:underline">
+                {isBlob ? (
+                  <span className="italic opacity-40">BLOB</span>
+                ) : (
+                  content
+                )}
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent side="bottom" align="start">
+              <div className="flex flex-col justify-center gap-1">
+                {isBlob && typeof children === "string" ? (
+                  <>
+                    <img
+                      src={hexToDataUrl(children)}
+                      alt="BLOB content"
+                      className="flex max-h-40 flex-col items-center justify-center gap-2 rounded object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      Blob length: {children.length}
+                    </span>
+                  </>
+                ) : (
+                  <span className="max-w-full break-words">{children}</span>
+                )}
+                {
+                  <Badge className="w-full self-start text-center text-xs font-semibold">
+                    {dataType || "Unknown"}
+                  </Badge>
+                }
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </td>
+      );
+    }
+  )
 );
 TableCell.displayName = "TableCell";
 

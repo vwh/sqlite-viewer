@@ -1,46 +1,39 @@
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow, format, isValid, parseISO } from "date-fns";
 
-const isValidDate = (date: any) => {
-  return date instanceof Date && !Number.isNaN(date.getTime());
-};
+type DateFormatter = (dateValue: string) => string;
 
-const formatDateRelative = (dateValue: string) => {
-  const date = new Date(dateValue);
-  if (!isValidDate(date)) return dateValue;
+const createDateFormatter =
+  (formatString: string): DateFormatter =>
+  (dateValue: string) => {
+    const date = parseISO(dateValue);
+    return isValid(date) ? format(date, formatString) : dateValue;
+  };
 
-  return formatDistanceToNow(date, { addSuffix: true });
-};
-
-const formatDateFormatted = (dateValue: string) => {
-  const date = new Date(dateValue);
-  if (!isValidDate(date)) return dateValue;
-
-  return format(date, "MMMM do, yyyy");
-};
-
-const formatDateShort = (dateValue: string) => {
-  const date = new Date(dateValue);
-  if (!isValidDate(date)) return dateValue;
-
-  return format(date, "MM/dd/yyyy");
-};
-
-const formatDateShort2 = (dateValue: string) => {
-  const date = new Date(dateValue);
-  if (!isValidDate(date)) return dateValue;
-
-  return format(date, "yyyy/dd/MM");
+const formatDateRelative: DateFormatter = (dateValue: string) => {
+  const date = parseISO(dateValue);
+  return isValid(date)
+    ? formatDistanceToNow(date, { addSuffix: true })
+    : dateValue;
 };
 
 export const dateFormats: Record<
   string,
-  { label: string; func: (dateValue: string) => string }
+  { label: string; func: DateFormatter }
 > = {
-  formatDateRelative: { label: "Over 56 years ago", func: formatDateRelative },
+  formatDateRelative: {
+    label: "Over 56 years ago",
+    func: formatDateRelative
+  },
   formatDateFormatted: {
     label: "January 9th, 1968",
-    func: formatDateFormatted
+    func: createDateFormatter("MMMM do, yyyy")
   },
-  formatDateLong: { label: "1968/09/01", func: formatDateShort2 },
-  formatDateShort: { label: "01/09/1968", func: formatDateShort }
+  formatDateLong: {
+    label: "1968/09/01",
+    func: createDateFormatter("yyyy/MM/dd")
+  },
+  formatDateShort: {
+    label: "01/09/1968",
+    func: createDateFormatter("MM/dd/yyyy")
+  }
 };

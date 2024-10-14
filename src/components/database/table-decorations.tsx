@@ -4,7 +4,7 @@ import type { ColumnSchema } from "@/types";
 
 import {
   isDate,
-  IsNumber,
+  isNumber,
   isText,
   isBlob,
   isBoolean
@@ -51,7 +51,7 @@ export const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
       if (isDate(type))
         return <CalendarIcon className="h-4 w-4 text-blue-500" />;
       if (isText(type)) return <TypeIcon className="h-4 w-4 text-indigo-500" />;
-      if (IsNumber(type)) return <HashIcon className="h-4 w-4 text-red-500" />;
+      if (isNumber(type)) return <HashIcon className="h-4 w-4 text-red-500" />;
       if (isBoolean(type))
         return <ToggleLeftIcon className="h-4 w-4 text-pink-500" />;
     }

@@ -1,16 +1,17 @@
-import path from "path";
-import react from "@vitejs/plugin-react";
+import path from "node:path";
 import { defineConfig } from "vite";
 
+import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import compression from "vite-plugin-compression";
 import tsconfigPaths from "vite-tsconfig-paths";
 import dynamicImport from "vite-plugin-dynamic-import";
-import Inspect from "vite-plugin-inspect";
 import viteImagemin from "vite-plugin-imagemin";
+import MillionLint from "@million/lint";
 
 export default defineConfig({
   plugins: [
+    MillionLint.vite(),
     compression(),
     react(),
     VitePWA({
@@ -23,7 +24,6 @@ export default defineConfig({
     }),
     tsconfigPaths(),
     dynamicImport(),
-    Inspect(),
     viteImagemin({
       gifsicle: {
         optimizationLevel: 7,

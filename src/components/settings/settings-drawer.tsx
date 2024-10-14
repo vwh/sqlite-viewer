@@ -5,8 +5,6 @@ import useLocalStorageState, {
   setLocalStorageItem
 } from "@/hooks/useLocalStorageState";
 
-import { toast } from "sonner";
-
 import {
   Drawer,
   DrawerClose,
@@ -18,6 +16,7 @@ import {
   DrawerTrigger
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   DateFormatSection,
   RowsPerPageSection,

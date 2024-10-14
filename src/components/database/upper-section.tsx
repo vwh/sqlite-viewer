@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, useState } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
@@ -18,6 +18,9 @@ import {
   Maximize2Icon,
   Minimize2Icon
 } from "lucide-react";
+
+const MemoizedTableSelect = React.memo(TableSelect);
+const MemoizedExportButtons = React.memo(ExportButtons);
 
 export default function DBTable() {
   const {
@@ -157,9 +160,10 @@ export default function DBTable() {
     <div className="flex flex-col gap-3 pb-8">
       <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
         <div className="mb-[5px] flex items-center justify-between gap-1">
-          <TableSelect />
+          {/* Use MemoizedTableSelect instead of TableSelect */}
+          <MemoizedTableSelect />
           <div className="flex items-center justify-center gap-1">
-            <ExportButtons />
+            <MemoizedExportButtons />
             <Button
               className="hidden expand:block"
               onClick={() => setExpandPage(!expandPage)}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import {
   useDropzone,
@@ -119,7 +119,7 @@ export default function UploadFile() {
 
 const FileStats: React.FC<{ errors?: FileError[] }> = React.memo(
   ({ errors }) => {
-    React.useEffect(() => {
+    useEffect(() => {
       if (errors) {
         for (const error of errors) {
           toast(error.message, { position: "bottom-right" });

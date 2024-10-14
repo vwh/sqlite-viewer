@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import type React from "react";
+import { useCallback, memo } from "react";
 
 import {
   AlertDialog,
@@ -17,6 +18,8 @@ interface ProxyMessageProps {
   onConfirm: () => void;
 }
 
+const MemoizedAlertDialogContent = memo(AlertDialogContent);
+
 export default function ProxyMessage({
   showDialog,
   setShowDialog,
@@ -28,7 +31,7 @@ export default function ProxyMessage({
 
   return (
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-      <AlertDialogContent>
+      <MemoizedAlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Use Proxy to Load Database?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -44,7 +47,7 @@ export default function ProxyMessage({
           <AlertDialogCancel onClick={handleClose}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>Use Proxy</AlertDialogAction>
         </AlertDialogFooter>
-      </AlertDialogContent>
+      </MemoizedAlertDialogContent>
     </AlertDialog>
   );
 }

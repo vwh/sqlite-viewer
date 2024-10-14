@@ -1,9 +1,12 @@
-import { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Button } from "@/components/ui/button";
 
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
+
+const MemoizedChevronLeftIcon = React.memo(ChevronLeftIcon);
+const MemoizedChevronRightIcon = React.memo(ChevronRightIcon);
 
 interface PageSelectProps {
   page: number;
@@ -46,13 +49,13 @@ export default function PageSelect({
     <section className="fixed bottom-2 left-1/2 z-10 w-[270px] -translate-x-1/2 transform">
       <div className="flex justify-between gap-2 rounded border bg-secondary p-[6px]">
         <Button onClick={prevPage} title="Previous page" disabled={!canGoPrev}>
-          <ChevronLeftIcon className="h-4 w-4" />
+          <MemoizedChevronLeftIcon className="h-4 w-4" />
         </Button>
         <span className="flex items-center justify-center text-sm">
           Page {currentPage} of {totalPages}
         </span>
         <Button onClick={nextPage} title="Next page" disabled={!canGoNext}>
-          <ChevronRightIcon className="h-4 w-4" />
+          <MemoizedChevronRightIcon className="h-4 w-4" />
         </Button>
       </div>
     </section>

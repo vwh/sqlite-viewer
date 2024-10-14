@@ -13,20 +13,6 @@ interface FeatureProps {
   icon: React.ElementType;
 }
 
-function Feature({ icon: Icon, title, description }: FeatureProps) {
-  return (
-    <div className="flex items-start space-x-3">
-      <div className="flex-shrink-0">
-        <Icon className="h-6 w-6 text-blue-500" />
-      </div>
-      <div>
-        <h2 className="text-lg font-medium">{title}</h2>
-        <p className="mt-1 text-sm">{description}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function Features() {
   return (
     <>
@@ -70,5 +56,19 @@ export default function Features() {
       </section>
       <div className="pb-[72px] md:pb-0" />
     </>
+  );
+}
+
+function Feature({ icon: Icon, title, description }: FeatureProps) {
+  return (
+    <div className="flex items-start space-x-3">
+      <div className="flex-shrink-0">
+        <Icon className="h-6 w-6 text-blue-500" />
+      </div>
+      <div>
+        <h2 className="text-lg font-medium">{title}</h2>
+        <p className="mt-1 text-sm">{description}</p>
+      </div>
+    </div>
   );
 }

@@ -20,9 +20,3 @@ export interface ColumnSchema {
   type?: string;
   nullable?: boolean;
 }
-
-declare global {
-  interface Window {
-    loadDatabaseBytes: (bytes: Uint8Array) => Promise<void>;
-  }
-}

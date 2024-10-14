@@ -20,6 +20,7 @@
   "dependencies": {
     "@codemirror/autocomplete": "^6.18.0",
     "@codemirror/lang-sql": "^6.7.0",
+    "@million/lint": "^1.0.9",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-hover-card": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
@@ -36,6 +37,7 @@
     "date-fns": "^3.6.0",
     "file-saver": "^2.0.5",
     "lucide-react": "^0.424.0",
+    "million": "^3.1.11",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -71,7 +73,6 @@
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-dynamic-import": "^1.5.0",
     "vite-plugin-imagemin": "^0.6.1",
-    "vite-plugin-inspect": "^0.8.5",
     "vite-plugin-pwa": "^0.20.1",
     "vite-tsconfig-paths": "^4.3.2"
   },
