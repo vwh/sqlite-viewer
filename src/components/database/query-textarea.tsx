@@ -210,12 +210,16 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
 }
 
 function sqlFormat(code: string) {
-  return format(code, {
-    language: "sqlite",
-    useTabs: false,
-    keywordCase: "upper",
-    tabWidth: 2,
-    expressionWidth: 100,
-    linesBetweenQueries: 1
-  });
+  try {
+    return format(code, {
+      language: "sqlite",
+      useTabs: false,
+      keywordCase: "upper",
+      tabWidth: 2,
+      expressionWidth: 100,
+      linesBetweenQueries: 1
+    });
+  } catch {
+    return code;
+  }
 }
