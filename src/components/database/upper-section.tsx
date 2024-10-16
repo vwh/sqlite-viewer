@@ -4,11 +4,11 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
 
 import { Button } from "@/components/ui/button";
+import StatusMessage from "@/components/stats-message";
+import ExportButtons from "@/components/settings/export-buttons";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
-import StatusMessage from "@/components/stats-message";
-import ExportButtons from "@/components/settings/export-buttons";
 import QueryTextarea from "./query-textarea";
 
 import {
@@ -32,7 +32,6 @@ export default function DBTable() {
     rowPerPageOrAuto,
     isCustomQuery,
     setIsCustomQuery,
-    customQuery,
     setCustomQuery,
     expandPage,
     setExpandPage,
@@ -60,7 +59,7 @@ export default function DBTable() {
     if (columns.length > 0) {
       setSavedColumns(columns);
     }
-  }, [selectedTableName, columns]);
+  }, [columns]);
 
   const handleQueryRemove = useCallback(() => {
     setQueryError(null);
@@ -116,14 +115,7 @@ export default function DBTable() {
         </div>
       </div>
     ),
-    [
-      customQuery,
-      handleCustomQuery,
-      handleQueryRemove,
-      handleResetPage,
-      page,
-      savedColumns
-    ]
+    [handleCustomQuery, handleQueryRemove, handleResetPage, page, savedColumns]
   );
 
   const MemoizedTableContent = useMemo(() => {
@@ -150,7 +142,6 @@ export default function DBTable() {
     columns,
     selectedTableName,
     tableSchemas,
-    filters,
     savedColumns
   ]);
 
@@ -164,7 +155,6 @@ export default function DBTable() {
       <div className="flex flex-col gap-3 pb-8">
         <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
           <div className="mb-[5px] flex items-center justify-between gap-1">
-            {/* Use MemoizedTableSelect instead of TableSelect */}
             <MemoizedTableSelect />
             <div className="flex items-center justify-center gap-1">
               {MemoizedExportButtonsComponent}

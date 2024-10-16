@@ -198,7 +198,6 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
   return (
     <CodeMirror
       value={sqlQuery}
-      defaultValue={sqlQuery}
       height="126px"
       extensions={extensions}
       onChange={handleChange}

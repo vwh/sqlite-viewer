@@ -24,7 +24,6 @@ const areEqual = (
   return prevProps.isDatabaseLoaded === nextProps.isDatabaseLoaded;
 };
 
-// Memoize DBTable with custom comparison function
 const MemoizedDBTable = memo<DBTableProps>(DBTable, areEqual);
 const MemoizedUploadFile = memo(UploadFile);
 const MemoizedUrlFetch = memo(UrlFetch);

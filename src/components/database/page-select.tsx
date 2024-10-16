@@ -25,6 +25,7 @@ export default function PageSelect({
     () => Math.ceil(totalRows / rowsPerPage),
     [totalRows, rowsPerPage]
   );
+
   const currentPage = useMemo(
     () => Math.ceil(page / rowsPerPage) + 1,
     [page, rowsPerPage]

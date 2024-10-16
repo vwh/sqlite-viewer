@@ -67,7 +67,7 @@ export default function ThemeModeToggle() {
         )}
       </Button>
     ),
-    [theme]
+    [theme, toggleTheme]
   );
 
   return MemoizedThemeButton;
