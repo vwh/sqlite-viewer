@@ -76,7 +76,7 @@ export function useQueryData(
         // Main query
         let queryString = `SELECT ${columnSelects} FROM "${tableName}"`;
         if (filterQuery) queryString += ` WHERE ${filterQuery}`;
-        if (orderBy)
+        if (orderBy.column)
           queryString += ` ORDER BY "${orderBy.column}" ${orderBy.direction}`;
         queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
 
