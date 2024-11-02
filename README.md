@@ -23,7 +23,7 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
   </a>
 </div>
 
-## 🌟 Features
+## Features
 
 <table>
   <tr>
@@ -76,10 +76,10 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
 > SQLite Viewer supports loading databases directly from a URL. Use the `url` parameter. <br>
 > Example: [`https://sqlite3.online/?url=...db_examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to open a pull request with your improvements or fixes.
 
-## 📄 License
+## License
 
 Under the MIT License. See [License](https://github.com/vwh/sqlite-viewer/blob/main/LICENSE) for more information.
