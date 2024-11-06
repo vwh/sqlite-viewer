@@ -60,7 +60,7 @@ export default function UrlFetch() {
         setIsFetching(false);
       }
     },
-    [loadDatabaseBytes]
+    [loadDatabaseBytes, setDatabaseData]
   );
 
   // Fetch database on page load if url in url params

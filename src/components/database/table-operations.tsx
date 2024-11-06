@@ -29,7 +29,7 @@ export function TableFilter({ columnName }: { columnName: string }) {
       setInputValue("");
       setFiltersNeedClear(false);
     }
-  }, [filtersNeedClear]);
+  }, [filtersNeedClear, setFiltersNeedClear]);
 
   const handleFilterChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

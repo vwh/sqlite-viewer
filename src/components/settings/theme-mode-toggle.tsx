@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, memo } from "react";
 import { Button } from "@/components/ui/button";
 
 import { MoonIcon, SunIcon } from "lucide-react";
@@ -8,7 +8,7 @@ const ANIMATION_CLASS = "animate-circular-reveal";
 
 type Theme = "light" | "dark";
 
-export default function ThemeModeToggle() {
+function ThemeModeToggle() {
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem(THEME_KEY) as Theme | null;
     const prefersDark = window.matchMedia(
@@ -72,3 +72,5 @@ export default function ThemeModeToggle() {
 
   return MemoizedThemeButton;
 }
+
+export default memo(ThemeModeToggle);

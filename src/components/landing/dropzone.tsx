@@ -55,7 +55,7 @@ export default function UploadFile() {
         }
       }
     },
-    [loadDatabaseBytes]
+    [loadDatabaseBytes, setDatabaseData]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
