@@ -25,7 +25,7 @@ const ACCEPTED_TYPES = {
   "text/sqlite-dump": [".sql"]
 };
 
-export default function UploadFile() {
+function UploadFile() {
   const { loadDatabaseBytes, setDatabaseData } = useSQLiteStore();
 
   const [errors, setErrors] = useState<FileError[]>([]);
@@ -113,3 +113,5 @@ const FileStats: React.FC<{ errors?: FileError[] }> = memo(({ errors }) => {
   }, [errors]);
   return null;
 });
+
+export default memo(UploadFile);

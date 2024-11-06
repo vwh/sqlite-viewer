@@ -140,12 +140,9 @@ const SQLITE_KEYWORDS = [
   "WITHOUT"
 ];
 
-interface QueryTextareaProps {
-  columnNames: string[];
-}
-
-export default function SQLRepl({ columnNames }: QueryTextareaProps) {
-  const { customQuery, setCustomQuery, tables } = useSQLiteStore();
+export default function QueryTextarea() {
+  const { customQuery, setCustomQuery, tables, tableSchemas } =
+    useSQLiteStore();
 
   const isDark = useTheme();
 
@@ -153,6 +150,11 @@ export default function SQLRepl({ columnNames }: QueryTextareaProps) {
     (context: CompletionContext) => {
       const word = context.matchBefore(/\w*/);
       if (!word || (word.from === word.to && !context.explicit)) return null;
+
+      const columnNames: string[] = [];
+      for (const i of Object.values(tableSchemas)) {
+        columnNames.push(...Object.keys(i));
+      }
 
       const options = [
         ...SQLITE_KEYWORDS.map((keyword) => ({
@@ -169,7 +171,7 @@ export default function SQLRepl({ columnNames }: QueryTextareaProps) {
         options: options
       };
     },
-    [tables, columnNames]
+    [tables, tableSchemas]
   );
 
   const handleChange = useCallback(

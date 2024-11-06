@@ -121,7 +121,7 @@ export function DBTable() {
           <AccordionTrigger className="text-xs">Execute Query</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-[6px]">
             <div className="flex-grow">
-              <QueryTextarea columnNames={savedColumns} />
+              <QueryTextarea />
             </div>
             <div className="flex flex-row gap-1 md:gap-2">
               <Button
@@ -194,6 +194,14 @@ export function DBTable() {
     []
   );
 
+  const MemoizedExpandIcon = useMemo(() => {
+    return expandPage ? (
+      <Minimize2Icon className="h-5 w-5" />
+    ) : (
+      <Maximize2Icon className="h-5 w-5" />
+    );
+  }, [expandPage]);
+
   return (
     <>
       <div className="flex flex-col gap-3 pb-8">
@@ -210,11 +218,7 @@ export function DBTable() {
                 onClick={() => setExpandPage(!expandPage)}
                 title="Toggle page size"
               >
-                {expandPage ? (
-                  <Minimize2Icon className="h-5 w-5" />
-                ) : (
-                  <Maximize2Icon className="h-5 w-5" />
-                )}
+                {MemoizedExpandIcon}
               </Button>
               <ThemeModeToggle />
               <Settings />
