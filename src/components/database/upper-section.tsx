@@ -3,6 +3,14 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
 
+import { format } from "sql-formatter";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
@@ -14,7 +22,7 @@ import QueryTextarea from "./query-textarea";
 import {
   Trash2Icon,
   PlayIcon,
-  ListRestartIcon,
+  PaletteIcon,
   Maximize2Icon,
   Minimize2Icon
 } from "lucide-react";
@@ -31,6 +39,7 @@ export default function DBTable() {
     setQueryError,
     rowPerPageOrAuto,
     isCustomQuery,
+    customQuery,
     setIsCustomQuery,
     setCustomQuery,
     expandPage,
@@ -67,10 +76,25 @@ export default function DBTable() {
     setIsCustomQuery(false);
   }, [setIsCustomQuery, setQueryError, setCustomQuery]);
 
-  const handleResetPage = useCallback(() => {
-    setPage(0);
-    handleQueryRemove();
-  }, [handleQueryRemove, setPage]);
+  const handleSQLFormatter = useCallback(() => {
+    function sqlFormat(code: string) {
+      try {
+        return format(code, {
+          language: "sqlite",
+          useTabs: false,
+          keywordCase: "upper",
+          tabWidth: 2,
+          expressionWidth: 100,
+          linesBetweenQueries: 1
+        });
+      } catch {
+        return code;
+      }
+    }
+
+    const formattedQuery = sqlFormat(customQuery);
+    setCustomQuery(formattedQuery);
+  }, [customQuery]);
 
   // Reset page and filters when table changes
   useEffect(() => {
@@ -85,37 +109,51 @@ export default function DBTable() {
 
   const MemoizedQueryInput = useMemo(
     () => (
-      <div className="flex flex-col gap-1 md:flex-row">
-        <div className="flex-grow">
-          <QueryTextarea columnNames={savedColumns} />
-        </div>
-        <div className="flex flex-row gap-1 md:flex-col">
-          <Button
-            className="grow"
-            onClick={handleCustomQuery}
-            title="Run custom query"
-          >
-            <PlayIcon className="h-5 w-5" />
-          </Button>
-          <Button
-            className="grow"
-            onClick={handleQueryRemove}
-            title="Remove query"
-          >
-            <Trash2Icon className="h-5 w-5" />
-          </Button>
-          <Button
-            className="grow"
-            onClick={handleResetPage}
-            title="Reset to first page"
-            disabled={page === 0}
-          >
-            <ListRestartIcon className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full rounded-lg bg-background px-3"
+      >
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-sm">Execute Query</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <div className="flex-grow">
+              <QueryTextarea columnNames={savedColumns} />
+            </div>
+            <div className="flex flex-row gap-1">
+              <Button
+                className="grow opacity-80"
+                onClick={handleCustomQuery}
+                title="Run custom query"
+              >
+                <PlayIcon className="h-5 w-5" />
+              </Button>
+              <Button
+                className="grow opacity-80"
+                onClick={handleQueryRemove}
+                title="Remove query"
+              >
+                <Trash2Icon className="h-5 w-5" />
+              </Button>
+              <Button
+                className="grow opacity-80"
+                onClick={handleSQLFormatter}
+                title="Format SQL"
+              >
+                <PaletteIcon className="h-5 w-5" />
+              </Button>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     ),
-    [handleCustomQuery, handleQueryRemove, handleResetPage, page, savedColumns]
+    [
+      handleCustomQuery,
+      handleQueryRemove,
+      handleSQLFormatter,
+      page,
+      savedColumns
+    ]
   );
 
   const MemoizedTableContent = useMemo(() => {

@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import useTheme from "@/hooks/useTheme";
 
-import { format } from "sql-formatter";
 import { sql, SQLite } from "@codemirror/lang-sql";
 
 import CodeMirror from "@uiw/react-codemirror";
@@ -148,12 +147,7 @@ interface QueryTextareaProps {
 export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
   const { customQuery, setCustomQuery, tables } = useSQLiteStore();
 
-  const [sqlQuery, setSqlQuery] = useState(customQuery);
   const isDark = useTheme();
-
-  useEffect(() => {
-    setSqlQuery(sqlFormat(customQuery));
-  }, [customQuery]);
 
   const myCompletions = useCallback(
     (context: CompletionContext) => {
@@ -178,14 +172,9 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
     [tables, columnNames]
   );
 
-  const handleBlur = useCallback(() => {
-    setSqlQuery(sqlFormat(customQuery));
-  }, [customQuery]);
-
   const handleChange = useCallback(
     (newValue: string) => {
       setCustomQuery(newValue);
-      setSqlQuery(newValue);
     },
     [setCustomQuery]
   );
@@ -197,28 +186,12 @@ export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
 
   return (
     <CodeMirror
-      value={sqlQuery}
+      value={customQuery}
       height="126px"
       extensions={extensions}
       onChange={handleChange}
-      onBlur={handleBlur}
       className="rounded-md border"
       theme={isDark ? nord : "light"}
     />
   );
-}
-
-function sqlFormat(code: string) {
-  try {
-    return format(code, {
-      language: "sqlite",
-      useTabs: false,
-      keywordCase: "upper",
-      tabWidth: 2,
-      expressionWidth: 100,
-      linesBetweenQueries: 1
-    });
-  } catch {
-    return code;
-  }
 }

@@ -74,11 +74,11 @@ export function useQueryData(
         setTotalRows(newTotalRows);
 
         // Main query
-        let queryString = `SELECT ${columnSelects} FROM "${tableName}"`;
-        if (filterQuery) queryString += ` WHERE ${filterQuery}`;
+        let queryString = `SELECT\n\t${columnSelects}\nFROM "${tableName}"`;
+        if (filterQuery) queryString += `\nWHERE ${filterQuery}`;
         if (orderBy.column)
-          queryString += ` ORDER BY "${orderBy.column}" ${orderBy.direction}`;
-        queryString += ` LIMIT ${rowsPerPage} OFFSET ${page};`;
+          queryString += `\nORDER BY "${orderBy.column}" ${orderBy.direction}`;
+        queryString += `\nLIMIT ${rowsPerPage} OFFSET ${page};`;
 
         const tableResult: QueryExecResult[] = query(queryString);
         const { data: newData, columns: newColumns } =
