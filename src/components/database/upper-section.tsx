@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
+import Settings from "@/components/settings/settings-drawer";
+import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
 import DBTableComponent from "./table-data";
@@ -207,6 +209,8 @@ export default function DBTable() {
                   <Maximize2Icon className="h-5 w-5" />
                 )}
               </Button>
+              <ThemeModeToggle />
+              <Settings />
             </div>
           </div>
           {MemoizedQueryInput}

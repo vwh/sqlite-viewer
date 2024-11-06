@@ -68,17 +68,15 @@ export default function App() {
     <main
       className={`mx-auto flex h-screen flex-col ${isDatabaseLoaded ? "gap-3" : "gap-4"} p-4 ${expandPage ? "w-full" : "container"}`}
     >
-      {!isDatabaseLoaded && <Hero />}
-      <MemoizedUploadFile />
-      <MemoizedUrlFetch />
-      {isDatabaseLoaded && (
-        <MemoizedDBTable isDatabaseLoaded={isDatabaseLoaded} />
-      )}
       {!isDatabaseLoaded && (
         <>
+          <Hero /> <MemoizedUploadFile /> <MemoizedUrlFetch />
           <Features />
           <Footer />
         </>
+      )}
+      {isDatabaseLoaded && (
+        <MemoizedDBTable isDatabaseLoaded={isDatabaseLoaded} />
       )}
     </main>
   );

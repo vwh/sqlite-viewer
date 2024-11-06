@@ -7,8 +7,6 @@ import {
 } from "react-dropzone";
 
 import { toast } from "sonner";
-import Settings from "@/components/settings/settings-drawer";
-import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 
 const ACCEPTED_TYPES = {
   "application/vnd.sqlite3": [".sqlite", ".sqlite3", ".db", ".sqlitedb"],
@@ -28,7 +26,7 @@ const ACCEPTED_TYPES = {
 };
 
 export default function UploadFile() {
-  const { loadDatabaseBytes, db } = useSQLiteStore();
+  const { loadDatabaseBytes } = useSQLiteStore();
 
   const [errors, setErrors] = useState<FileError[]>([]);
 
@@ -65,15 +63,15 @@ export default function UploadFile() {
   });
 
   const MemoizedDrop = useMemo(
-    (hasDatabase = Boolean(db)) => (
+    () => (
       <div className="flex w-full items-center justify-between gap-2">
         <div
           {...getRootProps()}
           className={`flex w-full grow transform cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-gray-100/50 p-6 transition-colors duration-300 ease-in-out hover:bg-secondary dark:bg-gray-700/50 ${
             isDragActive
               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-              : "border-primary dark:border-gray-700"
-          } ${hasDatabase ? "py-7" : "py-12"}`}
+              : "border-primary py-12 dark:border-gray-700"
+          }`}
         >
           <input id="file-upload" {...getInputProps()} />
           <label htmlFor="file-upload" className="sr-only">
@@ -84,27 +82,15 @@ export default function UploadFile() {
               Drag and drop file here, or click to select one
             </span>
             <div className="block sm:hidden">
-              {hasDatabase ? (
-                <span className="text-lg font-medium">
-                  Click to select a file
-                </span>
-              ) : (
-                <span className="text-lg font-medium">
-                  Click to select a SQLite file
-                </span>
-              )}
+              <span className="text-lg font-medium">
+                Click to select a SQLite file
+              </span>
             </div>
           </div>
         </div>
-        {hasDatabase && (
-          <div className="flex flex-col gap-1">
-            <ThemeModeToggle />
-            <Settings />
-          </div>
-        )}
       </div>
     ),
-    [db, getRootProps, getInputProps, isDragActive]
+    [getRootProps, getInputProps, isDragActive]
   );
 
   return (
