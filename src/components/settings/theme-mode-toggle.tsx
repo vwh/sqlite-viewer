@@ -14,6 +14,7 @@ function ThemeModeToggle() {
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
+
     return savedTheme || (prefersDark ? "dark" : "light");
   });
 
@@ -22,9 +23,11 @@ function ThemeModeToggle() {
 
     document.body.classList.remove("light", "dark");
     document.body.classList.add(newTheme);
+
     localStorage.setItem(THEME_KEY, newTheme);
 
     document.body.classList.add(ANIMATION_CLASS);
+
     setTimeout(() => {
       document.body.classList.remove(ANIMATION_CLASS);
     }, 500);

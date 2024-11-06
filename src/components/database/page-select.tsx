@@ -35,15 +35,11 @@ export default function PageSelect({
   const canGoPrev = currentPage > 1;
 
   const nextPage = useCallback(() => {
-    if (canGoNext) {
-      setPage((prevPage) => prevPage + rowsPerPage);
-    }
+    if (canGoNext) setPage((prevPage) => prevPage + rowsPerPage);
   }, [canGoNext, rowsPerPage, setPage]);
 
   const prevPage = useCallback(() => {
-    if (canGoPrev) {
-      setPage((prevPage) => prevPage - rowsPerPage);
-    }
+    if (canGoPrev) setPage((prevPage) => prevPage - rowsPerPage);
   }, [canGoPrev, rowsPerPage, setPage]);
 
   return (

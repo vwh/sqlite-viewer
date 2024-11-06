@@ -1,5 +1,7 @@
 import { memo } from "react";
+
 import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
+
 import { GithubIcon } from "lucide-react";
 
 function Footer() {

@@ -7,12 +7,6 @@ import {
   AppWindowIcon
 } from "lucide-react";
 
-interface FeatureProps {
-  title: string;
-  description: string;
-  icon: React.ElementType;
-}
-
 export default function Features() {
   return (
     <>
@@ -57,6 +51,12 @@ export default function Features() {
       <div className="pb-[72px] md:pb-0" />
     </>
   );
+}
+
+interface FeatureProps {
+  title: string;
+  description: string;
+  icon: React.ElementType;
 }
 
 function Feature({ icon: Icon, title, description }: FeatureProps) {

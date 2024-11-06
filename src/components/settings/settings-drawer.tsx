@@ -30,7 +30,7 @@ const DATE_FORMAT_KEY = "dateFormat";
 const THEME_COLOR_KEY = "theme-color";
 const THEME_COLORS = ["nord", "zinc"];
 
-const Settings = memo(function Settings() {
+function Settings() {
   const {
     setRowPerPageOrAuto,
     setIsCustomQuery,
@@ -49,31 +49,33 @@ const Settings = memo(function Settings() {
 
   const isAutoRowsPerPage = rowsPerPage === "auto";
 
+  // Set the rows per page to auto if the value is "auto"
   useEffect(() => {
     setRowPerPageOrAuto(isAutoRowsPerPage ? "auto" : Number(rowsPerPage));
   }, [rowsPerPage, setRowPerPageOrAuto, isAutoRowsPerPage]);
 
+  // Set the date format to the stored value
   useEffect(() => {
     setDateFormatValue(getLocalStorageItem(DATE_FORMAT_KEY, "default"));
   }, [setDateFormatValue]);
 
+  // Toggle the theme color class on the body element
   useEffect(() => {
-    for (const t of THEME_COLORS) {
+    for (const t of THEME_COLORS)
       document.body?.classList.toggle(t, t === themeColor);
-    }
   }, [themeColor]);
 
   const handleRowsPerPageChange = useCallback(
     (value: string) => {
       setIsCustomQuery(false);
-      if (value === "auto" || Number(value) > 0) {
-        setRowsPerPage(value);
-      } else {
+
+      if (value === "auto" || Number(value) > 0) setRowsPerPage(value);
+      else
         toast.error(
           "Please provide a positive number of rows per page or set it to auto."
         );
-      }
     },
+
     [setIsCustomQuery, setRowsPerPage]
   );
 
@@ -82,6 +84,7 @@ const Settings = memo(function Settings() {
       setDateFormatValue(value);
       setLocalStorageItem(DATE_FORMAT_KEY, value);
     },
+
     [setDateFormatValue]
   );
 
@@ -89,6 +92,7 @@ const Settings = memo(function Settings() {
     (value: string) => {
       setThemeColor(value);
     },
+
     [setThemeColor]
   );
 
@@ -127,6 +131,6 @@ const Settings = memo(function Settings() {
       </DrawerContent>
     </Drawer>
   );
-});
+}
 
-export default Settings;
+export default memo(Settings);

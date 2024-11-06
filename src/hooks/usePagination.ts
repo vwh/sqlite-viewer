@@ -11,9 +11,7 @@ export function usePagination(rowPerPageOrAuto: "auto" | number) {
   }, [setIsCustomQuery]);
 
   const rowsPerPage = useMemo(() => {
-    if (rowPerPageOrAuto !== "auto") {
-      return rowPerPageOrAuto;
-    }
+    if (rowPerPageOrAuto !== "auto") return rowPerPageOrAuto;
 
     const screenHeight = window.innerHeight;
 

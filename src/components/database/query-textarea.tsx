@@ -3,7 +3,6 @@ import useSQLiteStore from "@/store/useSQLiteStore";
 import useTheme from "@/hooks/useTheme";
 
 import { sql, SQLite } from "@codemirror/lang-sql";
-
 import CodeMirror from "@uiw/react-codemirror";
 import {
   autocompletion,

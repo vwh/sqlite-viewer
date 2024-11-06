@@ -27,7 +27,6 @@ const ACCEPTED_TYPES = {
 
 function UploadFile() {
   const { loadDatabaseBytes, setDatabaseData } = useSQLiteStore();
-
   const [errors, setErrors] = useState<FileError[]>([]);
 
   const onDrop = useCallback(
@@ -36,19 +35,22 @@ function UploadFile() {
         const rejectionErrors = fileRejections.flatMap(
           (rejection) => rejection.errors
         );
+
         setErrors(rejectionErrors);
         return;
       }
+
       if (acceptedFiles.length > 0) {
         try {
           const file = acceptedFiles[0];
           const bytes = new Uint8Array(await file.arrayBuffer());
+
           setDatabaseData({ name: file.name, size: file.size });
           await loadDatabaseBytes(bytes);
         } catch (error) {
-          if (error instanceof Error) {
+          if (error instanceof Error)
             return toast(error.message, { position: "bottom-right" });
-          }
+
           return toast("Failed to load database", {
             position: "bottom-right"
           });
@@ -111,6 +113,7 @@ const FileStats: React.FC<{ errors?: FileError[] }> = memo(({ errors }) => {
       }
     }
   }, [errors]);
+
   return null;
 });
 

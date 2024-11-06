@@ -37,6 +37,7 @@ export default function ExportButtons() {
             label="Export as SQLite"
             title="Download database as SQLite"
           />
+
           <ExportButton
             onClick={() => {
               try {
@@ -47,6 +48,7 @@ export default function ExportButtons() {
             }}
             label="Export selected table as CSV"
           />
+
           <ExportButton
             onClick={() => {
               try {
@@ -57,6 +59,7 @@ export default function ExportButtons() {
             }}
             label="Export all tables as CSV"
           />
+
           <ExportButton
             onClick={() => {
               try {
@@ -87,17 +90,14 @@ export default function ExportButtons() {
   );
 }
 
-function ExportButton({
-  onClick,
-  label,
-  className,
-  title
-}: {
+interface ExportButtonProps {
   onClick: () => void;
   label: string;
   className?: string;
   title?: string;
-}) {
+}
+
+function ExportButton({ onClick, label, className, title }: ExportButtonProps) {
   return (
     <Button className={className} onClick={onClick} title={title ?? label}>
       <span className="ml-2">{label}</span>

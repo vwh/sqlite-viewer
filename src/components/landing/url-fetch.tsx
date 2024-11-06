@@ -29,6 +29,7 @@ export default function UrlFetch() {
         setFetchError("Invalid URL");
         return;
       }
+
       try {
         setIsFetching(true);
         const fetchUrl = useProxy
@@ -36,9 +37,7 @@ export default function UrlFetch() {
           : url;
         const response = await fetch(fetchUrl);
 
-        if (!response.ok) {
-          throw new Error("URL not found or invalid");
-        }
+        if (!response.ok) throw new Error("URL not found or invalid");
 
         const blob = await response.blob();
         const file = new File([blob], "database.sqlite");

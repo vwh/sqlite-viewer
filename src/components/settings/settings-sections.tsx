@@ -12,22 +12,24 @@ type OptionProps = {
   label: string;
 };
 
-const Option: React.FC<OptionProps> = ({ value, label }) => (
-  <div className="flex items-center space-x-2">
-    <RadioGroupItem value={value} id={`r-${value}`} />
-    <Label htmlFor={`r-${value}`}>{label}</Label>
-  </div>
-);
+function Option({ value, label }: OptionProps) {
+  return (
+    <div className="flex items-center space-x-2">
+      <RadioGroupItem value={value} id={`r-${value}`} />
+      <Label htmlFor={`r-${value}`}>{label}</Label>
+    </div>
+  );
+}
 
 type RowsPerPageSectionProps = {
   rowsPerPage: string;
   onRowsPerPageChange: (value: string) => void;
 };
 
-export const RowsPerPageSection: React.FC<RowsPerPageSectionProps> = ({
+export function RowsPerPageSection({
   rowsPerPage,
   onRowsPerPageChange
-}) => {
+}: RowsPerPageSectionProps) {
   const isAutoRowsPerPage = rowsPerPage === "auto";
 
   return (
@@ -56,37 +58,39 @@ export const RowsPerPageSection: React.FC<RowsPerPageSectionProps> = ({
       </div>
     </div>
   );
-};
+}
 
 type DateFormatSectionProps = {
   dateFormatValue: string;
   onDateFormatChange: (value: string) => void;
 };
 
-export const DateFormatSection: React.FC<DateFormatSectionProps> = ({
+export function DateFormatSection({
   dateFormatValue,
   onDateFormatChange
-}) => (
-  <div className="flex h-full grow flex-col gap-1">
-    <div className="flex items-center gap-1">
-      <CalendarIcon className="h-4 w-4" />
-      <p className="text-sm font-medium">Date Format</p>
+}: DateFormatSectionProps) {
+  return (
+    <div className="flex h-full grow flex-col gap-1">
+      <div className="flex items-center gap-1">
+        <CalendarIcon className="h-4 w-4" />
+        <p className="text-sm font-medium">Date Format</p>
+      </div>
+      <div className="h-full rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50">
+        <RadioGroup
+          className="flex h-full flex-col gap-2"
+          name="dateType"
+          value={dateFormatValue}
+          onValueChange={onDateFormatChange}
+        >
+          <Option value="default" label="Default" />
+          {Object.entries(dateFormats).map(([key, { label }]) => (
+            <Option key={key} value={key} label={label} />
+          ))}
+        </RadioGroup>
+      </div>
     </div>
-    <div className="h-full rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50">
-      <RadioGroup
-        className="flex h-full flex-col gap-2"
-        name="dateType"
-        value={dateFormatValue}
-        onValueChange={onDateFormatChange}
-      >
-        <Option value="default" label="Default" />
-        {Object.entries(dateFormats).map(([key, { label }]) => (
-          <Option key={key} value={key} label={label} />
-        ))}
-      </RadioGroup>
-    </div>
-  </div>
-);
+  );
+}
 
 type ThemeColorSectionProps = {
   themeColor: string;
@@ -94,30 +98,32 @@ type ThemeColorSectionProps = {
   themeColors: string[];
 };
 
-export const ThemeColorSection: React.FC<ThemeColorSectionProps> = ({
+export function ThemeColorSection({
   themeColor,
   onThemeColorChange,
   themeColors
-}) => (
-  <div className="flex grow flex-col gap-1">
-    <div className="flex items-center gap-1">
-      <PaletteIcon className="h-4 w-4" />
-      <p className="text-sm font-medium">Theme Color</p>
+}: ThemeColorSectionProps) {
+  return (
+    <div className="flex grow flex-col gap-1">
+      <div className="flex items-center gap-1">
+        <PaletteIcon className="h-4 w-4" />
+        <p className="text-sm font-medium">Theme Color</p>
+      </div>
+      <RadioGroup
+        className="flex flex-col gap-2 rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50"
+        name="themeColor"
+        value={themeColor}
+        onValueChange={onThemeColorChange}
+      >
+        <Option value="default" label="Default" />
+        {themeColors.map((theme) => (
+          <Option
+            key={theme}
+            value={theme}
+            label={theme[0].toUpperCase() + theme.slice(1)}
+          />
+        ))}
+      </RadioGroup>
     </div>
-    <RadioGroup
-      className="flex flex-col gap-2 rounded border bg-gray-100/50 p-2 dark:bg-gray-700/50"
-      name="themeColor"
-      value={themeColor}
-      onValueChange={onThemeColorChange}
-    >
-      <Option value="default" label="Default" />
-      {themeColors.map((theme) => (
-        <Option
-          key={theme}
-          value={theme}
-          label={theme[0].toUpperCase() + theme.slice(1)}
-        />
-      ))}
-    </RadioGroup>
-  </div>
-);
+  );
+}
