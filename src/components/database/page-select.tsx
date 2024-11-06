@@ -1,12 +1,12 @@
-import React, { useMemo, useCallback } from "react";
+import { useMemo, useCallback, memo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import { Button } from "@/components/ui/button";
 
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react";
 
-const MemoizedChevronLeftIcon = React.memo(ChevronLeftIcon);
-const MemoizedChevronRightIcon = React.memo(ChevronRightIcon);
+const MemoizedChevronLeftIcon = memo(ChevronLeftIcon);
+const MemoizedChevronRightIcon = memo(ChevronRightIcon);
 
 interface PageSelectProps {
   page: number;

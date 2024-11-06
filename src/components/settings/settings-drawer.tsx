@@ -1,5 +1,5 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, memo } from "react";
 import useLocalStorageState, {
   getLocalStorageItem,
   setLocalStorageItem
@@ -30,7 +30,7 @@ const DATE_FORMAT_KEY = "dateFormat";
 const THEME_COLOR_KEY = "theme-color";
 const THEME_COLORS = ["nord", "zinc"];
 
-export default function Settings() {
+const Settings = memo(function Settings() {
   const {
     setRowPerPageOrAuto,
     setIsCustomQuery,
@@ -127,4 +127,6 @@ export default function Settings() {
       </DrawerContent>
     </Drawer>
   );
-}
+});
+
+export default Settings;

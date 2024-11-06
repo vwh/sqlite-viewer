@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import { useMemo, useCallback, memo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import type { TableInfo, TableRow, ColumnSchema } from "@/types";
@@ -34,7 +34,7 @@ interface DBTableComponentProps {
 const TableHeadCell: React.FC<{
   columnName: string;
   columnSchema: ColumnSchema;
-}> = React.memo(({ columnName, columnSchema }) => (
+}> = memo(({ columnName, columnSchema }) => (
   <TableHead className="bg-gray-100 py-2 dark:bg-gray-700">
     <div className="flex items-center gap-1">
       <TableOrderBy columnName={columnName} />
@@ -69,7 +69,7 @@ const TableHeadCell: React.FC<{
   </TableHead>
 ));
 
-const TableBodyCell: React.FC<{ value: any; dataType?: string }> = React.memo(
+const TableBodyCell: React.FC<{ value: any; dataType?: string }> = memo(
   ({ value, dataType }) => {
     const { dateFormatValue } = useSQLiteStore();
 

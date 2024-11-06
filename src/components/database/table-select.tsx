@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
-export default function TableSelect() {
+function TableSelect() {
   const { tables, selectedTable, setSelectedTable, setIsCustomQuery } =
     useSQLiteStore();
 
@@ -59,3 +59,5 @@ export default function TableSelect() {
     </section>
   );
 }
+
+export default memo(TableSelect);

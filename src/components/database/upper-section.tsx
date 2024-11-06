@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect, useState } from "react";
+import { useMemo, memo, useCallback, useEffect, useState } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import { useQueryData } from "@/hooks/useQueryData";
 import { usePagination } from "@/hooks/usePagination";
@@ -29,10 +29,10 @@ import {
   Minimize2Icon
 } from "lucide-react";
 
-const MemoizedTableSelect = React.memo(TableSelect);
-const MemoizedExportButtons = React.memo(ExportButtons);
+const MemoizedTableSelect = memo(TableSelect);
+const MemoizedExportButtons = memo(ExportButtons);
 
-export default function DBTable() {
+export function DBTable() {
   const {
     tables,
     selectedTable,
@@ -117,7 +117,7 @@ export default function DBTable() {
         className="w-full rounded-lg bg-background px-3"
       >
         <AccordionItem value="item-1">
-          <AccordionTrigger className="text-sm">Execute Query</AccordionTrigger>
+          <AccordionTrigger className="text-xs">Execute Query</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-[6px]">
             <div className="flex-grow">
               <QueryTextarea columnNames={savedColumns} />
@@ -197,7 +197,7 @@ export default function DBTable() {
     <>
       <div className="flex flex-col gap-3 pb-8">
         <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
-          <div className="mb-[5px] flex items-center justify-between gap-[6px]">
+          <div className="mb-[5px] flex items-center justify-between gap-[6px] pb-[3px]">
             <MemoizedTableSelect />
             <div className="g-1 flex items-center justify-center gap-1">
               {MemoizedExportButtonsComponent}
@@ -231,3 +231,5 @@ export default function DBTable() {
     </>
   );
 }
+
+export default memo(DBTable);

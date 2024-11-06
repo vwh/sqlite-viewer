@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 
 import type { ColumnSchema } from "@/types";
 
@@ -21,7 +21,7 @@ import {
   HelpCircleIcon
 } from "lucide-react";
 
-export const KeyIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
+export const KeyIcon: React.FC<{ columnSchema: ColumnSchema }> = memo(
   ({ columnSchema }) => {
     return (
       <>
@@ -36,7 +36,7 @@ export const KeyIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
   }
 );
 
-export const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = React.memo(
+export const ColumnIcon: React.FC<{ columnSchema: ColumnSchema }> = memo(
   ({ columnSchema }) => {
     const { type, isPrimaryKey, isForeignKey } = columnSchema;
 
