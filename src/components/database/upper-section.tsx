@@ -47,7 +47,8 @@ export function DBTable() {
     expandPage,
     setExpandPage,
     filters,
-    setFilters
+    setFilters,
+    databaseData
   } = useSQLiteStore();
 
   const { page, setPage, rowsPerPage } = usePagination(rowPerPageOrAuto);
@@ -96,7 +97,7 @@ export function DBTable() {
 
     const formattedQuery = sqlFormat(customQuery);
     setCustomQuery(formattedQuery);
-  }, [customQuery]);
+  }, [customQuery, setCustomQuery]);
 
   // Reset page and filters when table changes
   useEffect(() => {
@@ -196,6 +197,9 @@ export function DBTable() {
   return (
     <>
       <div className="flex flex-col gap-3 pb-8">
+        <p className="text-center text-sm text-muted-foreground">
+          {databaseData.name}, ({databaseData.sizeAsString})
+        </p>
         <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
           <div className="mb-[5px] flex items-center justify-between gap-[6px] pb-[3px]">
             <MemoizedTableSelect />

@@ -13,7 +13,8 @@ export default function UrlFetch() {
   const {
     db: isDatabaseLoaded,
     isLoading,
-    loadDatabaseBytes
+    loadDatabaseBytes,
+    setDatabaseData
   } = useSQLiteStore();
 
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -43,6 +44,7 @@ export default function UrlFetch() {
         const file = new File([blob], "database.sqlite");
         const bytes = new Uint8Array(await file.arrayBuffer());
 
+        setDatabaseData({ name: file.name, size: file.size });
         await loadDatabaseBytes(bytes);
         setFetchError(null);
       } catch (error) {

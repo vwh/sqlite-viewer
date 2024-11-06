@@ -3,6 +3,7 @@ import type { Database, QueryExecResult } from "sql.js";
 import type { TableInfo } from "@/types";
 
 import { getTableSchema, getTableNames, loadDatabaseBytes } from "@/lib/sqlite";
+import { formatFileSize } from "@/lib/file";
 
 type OrderDirection = "ASC" | "DESC";
 
@@ -55,6 +56,9 @@ interface SQLiteState {
     direction: OrderDirection;
   };
   setOrderBy: (column: string | null, direction: OrderDirection) => void;
+
+  databaseData: { name: string; size: number; sizeAsString: string };
+  setDatabaseData: (value: { name: string; size: number }) => void;
 }
 
 const initializeStore = create<SQLiteState>((set, get) => ({
@@ -149,7 +153,14 @@ const initializeStore = create<SQLiteState>((set, get) => ({
     direction: "ASC"
   },
   setOrderBy: (column: string | null, direction: OrderDirection) =>
-    set({ orderBy: { column, direction } })
+    set({ orderBy: { column, direction } }),
+
+  databaseData: { name: "database.db", size: 0, sizeAsString: "0 Bytes" },
+  setDatabaseData: (value: { name: string; size: number }) => {
+    set({
+      databaseData: { ...value, sizeAsString: formatFileSize(value.size) }
+    });
+  }
 }));
 
 export default initializeStore;

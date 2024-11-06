@@ -26,7 +26,7 @@ const ACCEPTED_TYPES = {
 };
 
 export default function UploadFile() {
-  const { loadDatabaseBytes } = useSQLiteStore();
+  const { loadDatabaseBytes, setDatabaseData } = useSQLiteStore();
 
   const [errors, setErrors] = useState<FileError[]>([]);
 
@@ -41,7 +41,9 @@ export default function UploadFile() {
       }
       if (acceptedFiles.length > 0) {
         try {
-          const bytes = new Uint8Array(await acceptedFiles[0].arrayBuffer());
+          const file = acceptedFiles[0];
+          const bytes = new Uint8Array(await file.arrayBuffer());
+          setDatabaseData({ name: file.name, size: file.size });
           await loadDatabaseBytes(bytes);
         } catch (error) {
           if (error instanceof Error) {
