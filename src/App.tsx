@@ -1,10 +1,10 @@
-import { useEffect, memo } from "react";
+import { memo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 
 import type { Database } from "sql.js";
 
 import DBTable from "@/components/database/upper-section";
-import UploadFile from "@/components/dropzone";
+import UploadFile from "@/components/landing/dropzone";
 import Hero from "@/components/landing/hero";
 import Features from "@/components/landing/features";
 import UrlFetch from "@/components/landing/url-fetch";
@@ -14,55 +14,12 @@ interface DBTableProps {
   isDatabaseLoaded: Database;
 }
 
-const areEqual = (
-  prevProps: DBTableProps,
-  nextProps: DBTableProps
-): boolean => {
-  if (prevProps == null || nextProps == null) {
-    return false;
-  }
-  return prevProps.isDatabaseLoaded === nextProps.isDatabaseLoaded;
-};
-
-const MemoizedDBTable = memo<DBTableProps>(DBTable, areEqual);
+const MemoizedDBTable = memo<DBTableProps>(DBTable);
 const MemoizedUploadFile = memo(UploadFile);
 const MemoizedUrlFetch = memo(UrlFetch);
 
 export default function App() {
-  const {
-    db: isDatabaseLoaded,
-    loadDatabaseBytes,
-    expandPage
-  } = useSQLiteStore();
-
-  // useEffect for window message handling
-  useEffect(() => {
-    window.loadDatabaseBytes = loadDatabaseBytes;
-    const handleMessage = async (event: MessageEvent) => {
-      if (event.data.type === "invokeLoadDatabaseBytes") {
-        try {
-          const bytes = event.data.bytes;
-          await loadDatabaseBytes(bytes);
-          event.source?.postMessage(
-            { type: "loadDatabaseBytesSuccess" },
-            event.origin as WindowPostMessageOptions
-          );
-        } catch (error) {
-          event.source?.postMessage(
-            {
-              type: "loadDatabaseBytesError",
-              error: error instanceof Error ? error.message : String(error)
-            },
-            event.origin as WindowPostMessageOptions
-          );
-        }
-      }
-    };
-    window.addEventListener("message", handleMessage);
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, [loadDatabaseBytes]);
+  const { db: isDatabaseLoaded, expandPage } = useSQLiteStore();
 
   return (
     <main

@@ -118,13 +118,14 @@ export default function DBTable() {
       >
         <AccordionItem value="item-1">
           <AccordionTrigger className="text-sm">Execute Query</AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
+          <AccordionContent className="flex flex-col gap-[6px]">
             <div className="flex-grow">
               <QueryTextarea columnNames={savedColumns} />
             </div>
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-1 md:gap-2">
               <Button
-                className="grow opacity-80"
+                className="grow"
+                variant="secondary"
                 onClick={handleCustomQuery}
                 title="Run custom query"
               >
@@ -132,6 +133,7 @@ export default function DBTable() {
               </Button>
               <Button
                 className="grow opacity-80"
+                variant="secondary"
                 onClick={handleQueryRemove}
                 title="Remove query"
               >
@@ -139,6 +141,7 @@ export default function DBTable() {
               </Button>
               <Button
                 className="grow opacity-80"
+                variant="secondary"
                 onClick={handleSQLFormatter}
                 title="Format SQL"
               >
@@ -194,9 +197,9 @@ export default function DBTable() {
     <>
       <div className="flex flex-col gap-3 pb-8">
         <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
-          <div className="mb-[5px] flex items-center justify-between gap-1">
+          <div className="mb-[5px] flex items-center justify-between gap-[6px]">
             <MemoizedTableSelect />
-            <div className="flex items-center justify-center gap-1">
+            <div className="g-1 flex items-center justify-center gap-1">
               {MemoizedExportButtonsComponent}
               <Button
                 className="hidden expand:block"

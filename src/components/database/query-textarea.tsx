@@ -144,7 +144,7 @@ interface QueryTextareaProps {
   columnNames: string[];
 }
 
-export default function QueryTextarea({ columnNames }: QueryTextareaProps) {
+export default function SQLRepl({ columnNames }: QueryTextareaProps) {
   const { customQuery, setCustomQuery, tables } = useSQLiteStore();
 
   const isDark = useTheme();

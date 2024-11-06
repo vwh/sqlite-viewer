@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, memo } from "react";
 
 import {
   AlertTriangleIcon,
@@ -6,6 +6,8 @@ import {
   CheckCircleIcon,
   InfoIcon
 } from "lucide-react";
+
+const MemoizedLoaderIcon = memo(Loader2Icon);
 
 type MessageType = "error" | "loading" | "success" | "info";
 
@@ -28,12 +30,13 @@ export default function StatusMessage({
       icon = <AlertTriangleIcon className="mr-3 h-6 w-6 text-red-500" />;
       typeClasses = "bg-red-100 text-red-800 border-l-4 border-red-500";
       break;
-    case "loading":
+    case "loading": {
       icon = (
-        <Loader2Icon className="mr-3 h-6 w-6 animate-spin text-blue-500" />
+        <MemoizedLoaderIcon className="mr-3 h-6 w-6 animate-spin text-blue-500" />
       );
       typeClasses = "bg-blue-100 text-blue-800 border-l-4 border-blue-500";
       break;
+    }
     case "success":
       icon = <CheckCircleIcon className="mr-3 h-6 w-6 text-green-500" />;
       typeClasses = "bg-green-100 text-green-800 border-l-4 border-green-500";
