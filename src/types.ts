@@ -6,6 +6,7 @@ export interface TableInfo {
       type: string;
       isPrimaryKey: boolean;
       isForeignKey: boolean;
+      nullable: boolean;
     };
   };
 }

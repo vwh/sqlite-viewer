@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import {
   ShieldIcon,
   ZapIcon,
@@ -7,7 +9,7 @@ import {
   AppWindowIcon
 } from "lucide-react";
 
-export default function Features() {
+export function Features() {
   return (
     <>
       <section className="rounded bg-gradient-to-r py-6 shadow-md dark:from-gray-800 dark:to-indigo-900 md:py-10">
@@ -72,3 +74,5 @@ function Feature({ icon: Icon, title, description }: FeatureProps) {
     </div>
   );
 }
+
+export default memo(Features);

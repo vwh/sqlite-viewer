@@ -1,6 +1,4 @@
 import * as React from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
-import { Badge } from "./badge";
 import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<
@@ -83,29 +81,19 @@ const TableHead = React.forwardRef<
 TableHead.displayName = "TableHead";
 
 // Function to convert hex blob string to data URL
-const hexToDataUrl = (hex: string): string => {
-  const bytes = new Uint8Array(
-    hex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16))
-  );
-  const blob = new Blob([bytes], { type: "image/jpeg" });
-  return URL.createObjectURL(blob);
-};
+// const hexToDataUrl = (hex: string): string => {
+//   const bytes = new Uint8Array(
+//     hex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16))
+//   );
+//   const blob = new Blob([bytes], { type: "image/jpeg" });
+//   return URL.createObjectURL(blob);
+// };
 
-interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  dataType?: string;
-}
+type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement>;
 
 const TableCell = React.memo(
   React.forwardRef<HTMLTableCellElement, TableCellProps>(
-    ({ className, children, dataType, ...props }, ref) => {
-      const isBlob = dataType?.toUpperCase() === "BLOB";
-      const content = React.useMemo(() => {
-        if (typeof children === "string" && children.length > 40) {
-          return `${children.slice(0, 40)}...`;
-        }
-        return children;
-      }, [children]);
-
+    ({ className, children, ...props }, ref) => {
       return (
         <td
           ref={ref}
@@ -115,43 +103,7 @@ const TableCell = React.memo(
           )}
           {...props}
         >
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <span className="cursor-pointer hover:underline">
-                {isBlob ? (
-                  <span className="italic opacity-40">BLOB</span>
-                ) : (
-                  content
-                )}
-              </span>
-            </HoverCardTrigger>
-            <HoverCardContent side="bottom" align="start">
-              <div className="flex flex-col justify-center gap-1">
-                {isBlob && typeof children === "string" ? (
-                  <>
-                    <img
-                      src={hexToDataUrl(children)}
-                      alt="BLOB content"
-                      className="flex max-h-40 flex-col items-center justify-center gap-2 rounded object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      Blob length: {children.length}
-                    </span>
-                  </>
-                ) : (
-                  <span className="max-w-full break-words">{children}</span>
-                )}
-                {
-                  <Badge className="w-full self-start text-center text-xs font-semibold">
-                    {dataType || "Unknown"}
-                  </Badge>
-                }
-              </div>
-            </HoverCardContent>
-          </HoverCard>
+          {children}
         </td>
       );
     }

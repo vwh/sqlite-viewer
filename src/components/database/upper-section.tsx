@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import StatusMessage from "@/components/stats-message";
 import ExportButtons from "@/components/settings/export-buttons";
 import Settings from "@/components/settings/settings-drawer";
+import DatabaseSchema from "@/components/settings/database-schema-drawer";
 import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 import PageSelect from "./page-select";
 import TableSelect from "./table-select";
@@ -205,9 +206,20 @@ export function DBTable() {
   return (
     <>
       <div className="flex flex-col gap-3 pb-8">
-        <p className="text-center text-sm text-muted-foreground">
-          {databaseData.name}, ({databaseData.sizeAsString})
-        </p>
+        <section className="flex w-full items-center justify-between gap-4 rounded-lg bg-gray-100 p-4 text-sm shadow-sm dark:bg-gray-700">
+          <div className="flex items-center gap-1">
+            <div className="max-w-[160px] overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+              {databaseData.name}
+            </div>
+            <div className="hidden text-gray-500 dark:text-gray-400 sm:block">
+              ({databaseData.sizeAsString})
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <ThemeModeToggle />
+            <Settings />
+          </div>
+        </section>
         <section className="rounded-lg bg-gray-100 p-4 shadow-sm dark:bg-gray-700">
           <div className="mb-[5px] flex items-center justify-between gap-[6px] pb-[3px]">
             <MemoizedTableSelect />
@@ -220,8 +232,7 @@ export function DBTable() {
               >
                 {MemoizedExpandIcon}
               </Button>
-              <ThemeModeToggle />
-              <Settings />
+              <DatabaseSchema />
             </div>
           </div>
           {MemoizedQueryInput}

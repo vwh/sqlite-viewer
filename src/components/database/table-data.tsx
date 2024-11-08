@@ -69,25 +69,75 @@ const TableHeadCell: React.FC<{
   </TableHead>
 ));
 
+const hexToDataUrl = (hex: string): string => {
+  const bytes = new Uint8Array(
+    hex.match(/.{1,2}/g)!.map((byte) => Number.parseInt(byte, 16))
+  );
+  const blob = new Blob([bytes], { type: "image/jpeg" });
+  return URL.createObjectURL(blob);
+};
+
 const TableBodyCell: React.FC<{ value: any; dataType?: string }> = memo(
   ({ value, dataType }) => {
     const { dateFormatValue } = useSQLiteStore();
 
-    const CellContent = () => {
+    const isBlob = dataType?.toUpperCase() === "BLOB";
+
+    const content = useMemo(() => {
       if (!value) {
         return <span className="italic text-gray-400">NULL</span>;
       }
+
       if (dataType && isDate(dataType)) {
         if (dateFormats[dateFormatValue]) {
           return dateFormats[dateFormatValue].func(value);
         }
+        return value;
       }
-      return value;
-    };
+
+      const stringValue = typeof value === "string" ? value : String(value);
+      return stringValue.length > 40
+        ? `${stringValue.slice(0, 40)}...`
+        : stringValue;
+    }, [value, dataType, dateFormatValue]);
 
     return (
-      <TableCell dataType={dataType} className="px-5 py-[11px] text-sm">
-        {CellContent()}
+      <TableCell className="px-5 py-[11px] text-sm">
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <span className="cursor-pointer hover:underline">
+              {isBlob ? (
+                <span className="italic opacity-40">BLOB</span>
+              ) : (
+                content
+              )}
+            </span>
+          </HoverCardTrigger>
+          <HoverCardContent side="bottom" align="start">
+            <div className="flex flex-col justify-center gap-1">
+              {isBlob && typeof value === "string" ? (
+                <>
+                  <img
+                    src={hexToDataUrl(value)}
+                    alt="BLOB content"
+                    className="flex max-h-40 flex-col items-center justify-center gap-2 rounded object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    Blob length: {value.length}
+                  </span>
+                </>
+              ) : (
+                <span className="max-w-full break-words">{content}</span>
+              )}
+              <Badge className="w-full self-start text-center text-xs font-semibold">
+                {dataType || "Unknown"}
+              </Badge>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       </TableCell>
     );
   }

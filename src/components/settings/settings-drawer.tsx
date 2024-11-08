@@ -108,7 +108,7 @@ function Settings() {
           <DrawerTitle>Settings</DrawerTitle>
           <DrawerDescription>Change settings.</DrawerDescription>
         </DrawerHeader>
-        <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
+        <div className="mx-auto flex w-full max-w-sm flex-col gap-3 px-4 md:px-0">
           <RowsPerPageSection
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleRowsPerPageChange}
