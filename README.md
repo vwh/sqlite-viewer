@@ -19,7 +19,7 @@ View and query SQLite databases directly in your browser. Built with [sql.js](ht
 
 <div align="center">
   <a href="https://sqlite3.online/" target="_blank">
-      <img src="https://github.com/user-attachments/assets/a0fc7725-5c6a-4d48-bab9-52b9b1466d55" alt="SQLite Viewer Preview">
+      <img src="https://github.com/user-attachments/assets/8c5786fa-b97c-410e-b980-39798d79435e" alt="SQLite Viewer Preview">
   </a>
 </div>
 
