@@ -45,6 +45,7 @@ export default function UrlFetch() {
 
         setDatabaseData({ name: file.name, size: file.size });
         await loadDatabaseBytes(bytes);
+
         setFetchError(null);
       } catch (error) {
         if (!useProxy) {

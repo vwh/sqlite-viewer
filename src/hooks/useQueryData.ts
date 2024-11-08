@@ -72,6 +72,7 @@ export function useQueryData(
         }`;
         const countResult: QueryExecResult[] = query(countQueryString);
         const newTotalRows = countResult[0].values[0][0] as number;
+
         setTotalRows(newTotalRows);
 
         // Main query
@@ -126,6 +127,7 @@ export function useQueryData(
       );
       const { data: newData, columns: newColumns } =
         mapQueryResults(customResult);
+
       setColumns(newColumns);
       setData(newData);
       setIsCustomQuery(true);
