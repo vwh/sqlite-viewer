@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import useSQLiteStore from "@/store/useSQLiteStore";
 import useTheme from "@/hooks/useTheme";
 
@@ -139,7 +139,7 @@ const SQLITE_KEYWORDS = [
   "WITHOUT"
 ];
 
-export default function QueryTextarea() {
+function QueryTextarea() {
   const { customQuery, setCustomQuery, tables, tableSchemas } =
     useSQLiteStore();
 
@@ -154,6 +154,8 @@ export default function QueryTextarea() {
       for (const i of Object.values(tableSchemas)) {
         columnNames.push(...Object.keys(i));
       }
+
+      console.log(columnNames);
 
       const options = [
         ...SQLITE_KEYWORDS.map((keyword) => ({
@@ -196,3 +198,5 @@ export default function QueryTextarea() {
     />
   );
 }
+
+export default memo(QueryTextarea);

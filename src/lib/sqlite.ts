@@ -7,9 +7,8 @@ const SQL_WASM_PATH = "/sql.wasm";
 // Initialize SQL.js once
 let SQL: Awaited<ReturnType<typeof initSqlJs>>;
 const initSQL = async () => {
-  if (!SQL) {
-    SQL = await initSqlJs({ locateFile: () => SQL_WASM_PATH });
-  }
+  if (!SQL) SQL = await initSqlJs({ locateFile: () => SQL_WASM_PATH });
+
   return SQL;
 };
 
@@ -18,6 +17,7 @@ export const loadDatabaseBytes = async (
 ): Promise<Database> => {
   try {
     const SQL = await initSQL();
+
     return new SQL.Database(bytes);
   } catch (error) {
     console.error("Failed to load database:", error);
@@ -31,10 +31,13 @@ export const getTableNames = (database: Database): string[] => {
       "SELECT name FROM sqlite_master WHERE type='table';"
     );
     const names: string[] = [];
+
     while (stmt.step()) {
       names.push(stmt.get()[0] as string);
     }
+
     stmt.free();
+
     return names;
   } catch {
     throw new Error("Invalid database file");
@@ -56,6 +59,7 @@ export const getTableSchema = (database: Database, tableName: string) => {
     const tableInfoStmt = database.prepare(
       `PRAGMA table_info("${tableName}");`
     );
+
     while (tableInfoStmt.step()) {
       const row = tableInfoStmt.getAsObject();
       tableSchema[row.name as string] = {
@@ -67,17 +71,19 @@ export const getTableSchema = (database: Database, tableName: string) => {
         nullable: row.notnull === 0
       };
     }
+
     tableInfoStmt.free();
 
     const foreignKeyStmt = database.prepare(
       `PRAGMA foreign_key_list("${tableName}");`
     );
+
     while (foreignKeyStmt.step()) {
       const row = foreignKeyStmt.getAsObject();
-      if (tableSchema[row.from as string]) {
+      if (tableSchema[row.from as string])
         tableSchema[row.from as string].isForeignKey = true;
-      }
     }
+
     foreignKeyStmt.free();
 
     return tableSchema;
@@ -99,6 +105,7 @@ export const mapQueryResults = (
   const data = values.map((row) =>
     Object.fromEntries(columns.map((col, i) => [col, row[i]]))
   );
+
   return { data, columns };
 };
 
@@ -106,6 +113,7 @@ export const downloadDatabase = (database: Database): void => {
   try {
     const binaryArray = database.export();
     const blob = new Blob([binaryArray], { type: "application/x-sqlite3" });
+
     saveAs(blob, "database.sqlite");
   } catch (error) {
     console.error("Failed to export database:", error);
@@ -118,6 +126,7 @@ const arrayToCSV = (columns: string[], rows: any[]): string => {
   const csvRows = rows.map((row) =>
     columns.map((col) => `"${row[col] ?? ""}"`).join(",")
   );
+
   return [header, ...csvRows].join("\n");
 };
 
@@ -135,6 +144,7 @@ const exportFromQuery = (
       const row = stmt.getAsObject();
       data.push(row as TableRow);
     }
+
     stmt.free();
 
     if (data.length === 0) {
@@ -143,6 +153,7 @@ const exportFromQuery = (
 
     const csvContent = arrayToCSV(columns, data);
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
     saveAs(blob, `${tableName}.csv`);
   } catch (error) {
     console.error(`Failed to get CSV for query "${query}":`, error);
@@ -157,14 +168,17 @@ export const exportTableAsCSV = (
   const tableNames = getTableNames(database);
   const tableName = tableNames[tableIndex];
   const query = `SELECT * FROM "${tableName}"`;
+
   exportFromQuery(query, database, tableName);
 };
 
 export const exportAllTablesAsCSV = (database: Database): void => {
   const tableNames = getTableNames(database);
+
   for (const tableName of tableNames) {
     try {
       const query = `SELECT * FROM "${tableName}"`;
+
       exportFromQuery(query, database, tableName);
     } catch (error) {
       console.error(`Failed to get CSV for table "${tableName}":`, error);
