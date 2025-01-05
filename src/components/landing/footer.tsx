@@ -4,7 +4,7 @@ import ThemeModeToggle from "@/components/settings/theme-mode-toggle";
 
 import { GithubIcon } from "lucide-react";
 
-function Footer() {
+const Footer = memo(function Footer() {
   return (
     <footer className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -36,6 +36,6 @@ function Footer() {
       </div>
     </footer>
   );
-}
+});
 
 export default memo(Footer);

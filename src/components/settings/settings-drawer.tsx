@@ -1,5 +1,5 @@
 import useSQLiteStore from "@/store/useSQLiteStore";
-import { useEffect, useCallback, memo } from "react";
+import { useEffect, useCallback, memo, useMemo } from "react";
 import useLocalStorageState, {
   getLocalStorageItem,
   setLocalStorageItem
@@ -30,7 +30,7 @@ const DATE_FORMAT_KEY = "dateFormat";
 const THEME_COLOR_KEY = "theme-color";
 const THEME_COLORS = ["nord", "zinc"];
 
-function Settings() {
+const Settings = memo(function Settings() {
   const {
     setRowPerPageOrAuto,
     setIsCustomQuery,
@@ -96,11 +96,16 @@ function Settings() {
     [setThemeColor]
   );
 
+  const memoizedSettingsIcon = useMemo(
+    () => <SettingsIcon className="h-5 w-5" />,
+    []
+  );
+
   return (
     <Drawer key="settings-drawer">
       <DrawerTrigger asChild>
         <Button className="grow" title="Open settings drawer">
-          <SettingsIcon className="h-5 w-5" />
+          {memoizedSettingsIcon}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
@@ -131,6 +136,6 @@ function Settings() {
       </DrawerContent>
     </Drawer>
   );
-}
+});
 
 export default memo(Settings);

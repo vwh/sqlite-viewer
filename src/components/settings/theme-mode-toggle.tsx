@@ -8,7 +8,7 @@ const ANIMATION_CLASS = "animate-circular-reveal";
 
 type Theme = "light" | "dark";
 
-function ThemeModeToggle() {
+const ThemeModeToggle = memo(function ThemeModeToggle() {
   const [theme, setTheme] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem(THEME_KEY) as Theme | null;
     const prefersDark = window.matchMedia(
@@ -74,6 +74,6 @@ function ThemeModeToggle() {
   );
 
   return MemoizedThemeButton;
-}
+});
 
 export default memo(ThemeModeToggle);
