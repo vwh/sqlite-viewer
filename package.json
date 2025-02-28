@@ -58,7 +58,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/sql.js": "^1.4.9",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.19.0",
     "@vitejs/plugin-legacy": "^5.4.3",
     "@vitejs/plugin-react": "^4.3.4",
