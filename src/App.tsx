@@ -1,33 +1,13 @@
-import { memo } from "react";
-import useSQLiteStore from "@/store/useSQLiteStore";
+import { Button } from "@/components/ui/button";
 
-import DBTable from "@/components/database/upper-section";
-import UploadFile from "@/components/landing/dropzone";
-import Hero from "@/components/landing/hero";
-import Features from "@/components/landing/features";
-import UrlFetch from "@/components/landing/url-fetch";
-import Footer from "@/components/landing/footer";
-
-const MemoizedDBTable = memo(DBTable);
-const MemoizedUploadFile = memo(UploadFile);
-const MemoizedUrlFetch = memo(UrlFetch);
-
-export default function App() {
-  const { db, expandPage } = useSQLiteStore();
-
+function App() {
   return (
-    <main
-      className={`mx-auto flex h-screen flex-col ${db ? "gap-3" : "gap-4"} p-4 ${expandPage ? "w-full" : "container"}`}
-    >
-      {!db ? (
-        <>
-          <Hero /> <MemoizedUploadFile /> <MemoizedUrlFetch />
-          <Features />
-          <Footer />
-        </>
-      ) : (
-        <MemoizedDBTable />
-      )}
-    </main>
+    <>
+      <div className="flex flex-col items-center justify-center min-h-svh">
+        <Button>Click me</Button>
+      </div>
+    </>
   );
 }
+
+export default App;
