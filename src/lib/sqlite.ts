@@ -99,6 +99,11 @@ export default class Sqlite {
     this.tables = results[0].values.map((value) => value[0] as string);
   }
 
+  public getMaxSizeOfTable(tableName: string) {
+    const [results] = this.exec(`SELECT COUNT(*) FROM ${tableName}`);
+    return Math.ceil((results[0].values[0][0] as number) / 10);
+  }
+
   private getTableSchema(tableName: string) {
     const [results] = this.exec(`PRAGMA table_info(${tableName})`);
 

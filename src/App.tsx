@@ -9,16 +9,22 @@ function App() {
   const [data, setData] = useState<initSqlJs.QueryExecResult[]>([]);
 
   const [tables, setTables] = useState<string[]>([]);
-  const [currentTable, setCurrentTable] = useState<string | null>(null);
+  const [currentTable, setCurrentTable] = useState<{
+    name: string | null;
+    size: number;
+  }>({ name: null, size: 1 });
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     // Initialize the sqlite instance asynchronously.
     async function initDb() {
       const instance = await Sqlite.create();
+      const currentTable = instance.tables[0];
+      const maxSize = instance.getMaxSizeOfTable(currentTable);
+
       setSqlite(instance);
       setTables(instance.tables);
-      setCurrentTable(instance.tables[0]);
+      setCurrentTable({ name: currentTable, size: maxSize });
     }
     initDb();
   }, []);
@@ -27,7 +33,7 @@ function App() {
   useEffect(() => {
     if (!sqlite) return;
     if (!currentTable) return;
-    setData(sqlite.getTableData(currentTable, page));
+    setData(sqlite.getTableData(currentTable.name as string, page));
   }, [sqlite, currentTable, page]);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -39,9 +45,12 @@ function App() {
       const arrayBuffer = e.target?.result as ArrayBuffer;
       const uint8Array = new Uint8Array(arrayBuffer);
       const instance = await Sqlite.open(uint8Array);
+      const currentTable = instance.tables[0];
+      const maxSize = instance.getMaxSizeOfTable(currentTable);
+
       setData([]); // Reset data when a new file is selected.
       setTables(instance.tables);
-      setCurrentTable(instance.tables[0]);
+      setCurrentTable({ name: currentTable, size: maxSize });
       setPage(1);
       setSqlite(instance);
     };
@@ -79,8 +88,10 @@ function App() {
   const handleTableChange = useCallback(
     (selectedTable: string) => {
       if (!sqlite) return;
+      const maxSize = sqlite.getMaxSizeOfTable(selectedTable);
+
       setPage(1);
-      setCurrentTable(selectedTable);
+      setCurrentTable({ name: selectedTable, size: maxSize });
     },
     [sqlite]
   );
@@ -118,8 +129,12 @@ function App() {
       {tableButtons}
 
       <div>{JSON.stringify(data, null, 2)}</div>
-      <p>Page: {page}</p>
-      <Button onClick={handleNext}>Next</Button>
+      <p>
+        Page: {page} of {currentTable?.size}
+      </p>
+      <Button onClick={handleNext} disabled={page >= currentTable?.size}>
+        Next
+      </Button>
       <Button onClick={handlePrev} disabled={page === 1}>
         Prev
       </Button>
