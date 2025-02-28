@@ -70,6 +70,8 @@ export default class Sqlite {
   }
 
   public exec(sql: string) {
+    let doTablesChanged = false;
+
     const results = this.db.exec(sql);
     const upperSql = sql.toUpperCase();
 
@@ -77,6 +79,7 @@ export default class Sqlite {
     if (upperSql.includes("CREATE TABLE")) {
       this.getTableNames();
       this.getDatabaseSchema(); // Update schema after creating a new table.
+      doTablesChanged = true;
     }
 
     // Update schema if the SQL statement is ALTER TABLE || UPDATE statements.
@@ -84,12 +87,12 @@ export default class Sqlite {
       this.getDatabaseSchema();
     }
 
-    return results;
+    return [results, doTablesChanged] as const;
   }
 
   private getTableNames() {
-    const results = this.exec(
-      "SELECT name FROM sqlite_master WHERE type='table'"
+    const [results] = this.exec(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence'"
     );
 
     if (results.length === 0) return [];
@@ -97,7 +100,7 @@ export default class Sqlite {
   }
 
   private getTableSchema(tableName: string) {
-    const results = this.exec(`PRAGMA table_info(${tableName})`);
+    const [results] = this.exec(`PRAGMA table_info(${tableName})`);
 
     if (results.length === 0) throw new Error("Table not found");
 
@@ -129,5 +132,15 @@ export default class Sqlite {
     for (const table of tables) {
       this.getTableSchema(table);
     }
+  }
+
+  public getTableData(table: string, page: number) {
+    const [limit, offset] = [10, (page - 1) * 10];
+    const [results] = this.exec(
+      `SELECT * FROM ${table} LIMIT ${limit} OFFSET ${offset}`
+    );
+
+    if (results.length === 0) return [];
+    return results;
   }
 }
