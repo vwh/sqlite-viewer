@@ -1,5 +1,7 @@
 import initSqlJs from "sql.js";
+
 import type { Database, SqlJsStatic } from "sql.js";
+import type { Schema } from "@/types";
 
 export default class Sqlite {
   static debug = 0;
@@ -8,17 +10,7 @@ export default class Sqlite {
   private db: Database;
 
   public tables: string[] = [];
-  public schema: Map<
-    string,
-    {
-      name: string;
-      cid: number;
-      type: string;
-      notnull: number;
-      dflt_value: string;
-      pk: number;
-    }[]
-  > = new Map();
+  public schema: Schema = new Map();
 
   private constructor(db: Database, isFile = false) {
     this.db = db;

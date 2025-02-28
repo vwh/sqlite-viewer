@@ -1,12 +1,17 @@
-import { Button } from "@/components/ui/button";
-import Sqlite from "./lib/sqlite";
 import { useState, useEffect, useMemo, useCallback } from "react";
+
+import Sqlite from "./lib/sqlite";
+
+import type { Schema } from "./types";
+
+import { Button } from "@/components/ui/button";
 
 function App() {
   const [query, setQuery] = useState("");
   const [sqlite, setSqlite] = useState<Sqlite | null>(null);
+  const [schema, setSchema] = useState<Schema>(new Map());
 
-  const [data, setData] = useState<initSqlJs.QueryExecResult[]>([]);
+  const [data, setData] = useState<initSqlJs.QueryExecResult[] | null>();
 
   const [tables, setTables] = useState<string[]>([]);
   const [currentTable, setCurrentTable] = useState<{
@@ -22,19 +27,13 @@ function App() {
       const currentTable = instance.tables[0];
       const maxSize = instance.getMaxSizeOfTable(currentTable);
 
-      setSqlite(instance);
       setTables(instance.tables);
+      setSchema(instance.schema);
       setCurrentTable({ name: currentTable, size: maxSize });
+      setSqlite(instance);
     }
     initDb();
   }, []);
-
-  // Update data when changes occur.
-  useEffect(() => {
-    if (!sqlite) return;
-    if (!currentTable) return;
-    setData(sqlite.getTableData(currentTable.name as string, page));
-  }, [sqlite, currentTable, page]);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -49,13 +48,22 @@ function App() {
       const maxSize = instance.getMaxSizeOfTable(currentTable);
 
       setData([]); // Reset data when a new file is selected.
+
       setTables(instance.tables);
+      setSchema(instance.schema);
       setCurrentTable({ name: currentTable, size: maxSize });
       setPage(1);
       setSqlite(instance);
     };
     reader.readAsArrayBuffer(file);
   }
+
+  // Update data when changes occur.
+  useEffect(() => {
+    if (!sqlite) return;
+    if (!currentTable) return;
+    setData(sqlite.getTableData(currentTable.name as string, page));
+  }, [sqlite, currentTable, page]);
 
   function getTableNames() {
     if (!sqlite) return;
@@ -73,6 +81,7 @@ function App() {
     console.log(data);
 
     if (doTablesChanged) setTables(sqlite.tables); // Update tables after executing a new SQL statement.
+    //TODO if (doSchemaChanged) setSchema(sqlite.schema); // Update schema after executing a new SQL statement.
   }
 
   function handleNext() {
@@ -127,8 +136,25 @@ function App() {
       <input type="file" onChange={handleFileChange} />
 
       {tableButtons}
-
-      <div>{JSON.stringify(data, null, 2)}</div>
+      <div>
+        {schema.get(currentTable?.name as string)?.map((column) => (
+          <span className="p-2" key={column.name}>
+            {column.name}
+          </span>
+        ))}
+      </div>
+      {/* <div>{JSON.stringify(data, null, 2)}</div> */}
+      <div>
+        {data?.[0]?.values.map((row, i) => (
+          <div key={i}>
+            {row.map((value, j) => (
+              <span className="p-2" key={j}>
+                {value}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
       <p>
         Page: {page} of {currentTable?.size}
       </p>
