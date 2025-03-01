@@ -4,9 +4,7 @@ import type { Database, SqlJsStatic } from "sql.js";
 import type { Schema } from "@/types";
 
 export default class Sqlite {
-  static debug = 0;
   static sqlJsStatic?: SqlJsStatic;
-
   private db: Database;
 
   public tables: string[] = [];
@@ -40,10 +38,6 @@ export default class Sqlite {
 
   private static async initSQLjs(): Promise<SqlJsStatic> {
     if (Sqlite.sqlJsStatic) return Sqlite.sqlJsStatic;
-
-    Sqlite.debug += 1;
-    console.log("Initializing SQLite", Sqlite.debug);
-
     return await initSqlJs({
       locateFile: (file) => `https://sql.js.org/dist/${file}`,
     });
@@ -63,7 +57,6 @@ export default class Sqlite {
 
   public exec(sql: string) {
     let doTablesChanged = false;
-
     const results = this.db.exec(sql);
     const upperSql = sql.toUpperCase();
 

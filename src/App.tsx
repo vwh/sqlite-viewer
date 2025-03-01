@@ -6,7 +6,7 @@ import type { Schema } from "./types";
 
 import { Button } from "@/components/ui/button";
 
-function App() {
+export default function App() {
   const [query, setQuery] = useState("");
   const [sqlite, setSqlite] = useState<Sqlite | null>(null);
   const [schema, setSchema] = useState<Schema>(new Map());
@@ -21,8 +21,8 @@ function App() {
   }>({ name: null, size: 1 });
   const [page, setPage] = useState(1);
 
+  // Initialize the sqlite instance asynchronously.
   useEffect(() => {
-    // Initialize the sqlite instance asynchronously.
     async function initDb() {
       const instance = await Sqlite.create();
       const currentTable = instance.tables[0];
@@ -36,67 +36,52 @@ function App() {
     initDb();
   }, []);
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const arrayBuffer = e.target?.result as ArrayBuffer;
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const instance = await Sqlite.open(uint8Array);
-      const currentTable = instance.tables[0];
-      const maxSize = instance.getMaxSizeOfTable(currentTable);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target?.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
 
-      setData([]); // Reset data when a new file is selected.
+        const instance = await Sqlite.open(uint8Array);
+        const currentTable = instance.tables[0];
+        const maxSize = instance.getMaxSizeOfTable(currentTable);
 
-      setTables(instance.tables);
-      setSchema(instance.schema);
-      setCurrentTable({ name: currentTable, size: maxSize });
-      setPage(1);
-      setSqlite(instance);
-    };
-    reader.readAsArrayBuffer(file);
-  }
+        setData([]); // Reset data when a new file is selected.
+        setTables(instance.tables);
+        setSchema(instance.schema);
+        setCurrentTable({ name: currentTable, size: maxSize });
+        setPage(1);
+        setSqlite(instance);
+      };
+      reader.readAsArrayBuffer(file);
+    },
+    []
+  );
 
   // Update data when changes occur.
   useEffect(() => {
-    if (!sqlite) return;
-    if (!currentTable) return;
+    if (!sqlite || !currentTable) return;
     setData(sqlite.getTableData(currentTable.name as string, page));
   }, [sqlite, currentTable, page]);
 
-  function getTableNames() {
+  const handleQueryExecute = useCallback(() => {
     if (!sqlite) return;
-    console.log(sqlite.tables);
-  }
-
-  function getDatabaseSchema() {
-    if (!sqlite) return;
-    console.log(sqlite.schema);
-  }
-
-  function handleQueryExecute() {
-    if (!sqlite) return;
-
     // Remove SQL comments before processing
     const cleanedQuery = query
       .replace(/--.*$/gm, "")
       .replace(/\/\*[\s\S]*?\*\//g, "");
-
     // Split the query into multiple statements.
     const statments = cleanedQuery
       .split(";")
       .map((stmt) => stmt.trim())
       .filter((stmt) => stmt !== "");
 
-    console.log(statments);
-
     for (const stmt of statments) {
-      console.log(stmt);
       const [data, doTablesChanged] = sqlite.exec(stmt);
-      console.log(data);
-
       // If it is CREATE/DROP/ALTER statement, update tables and schema.
       if (doTablesChanged) {
         setTables(sqlite.tables);
@@ -117,17 +102,15 @@ function App() {
         }
       }
     }
-  }
+  }, [query, sqlite, currentTable, page]);
 
-  function handleNext() {
-    if (!sqlite) return;
-    setPage((prev) => prev + 1);
-  }
-
-  function handlePrev() {
-    if (!sqlite) return;
-    setPage((prev) => prev - 1);
-  }
+  const handlePageChange = useCallback((type: "next" | "prev") => {
+    if (type === "next") {
+      setPage((prev) => prev + 1);
+    } else {
+      setPage((prev) => prev - 1);
+    }
+  }, []);
 
   const handleTableChange = useCallback(
     (selectedTable: string) => {
@@ -162,14 +145,11 @@ function App() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-
       <Button onClick={handleQueryExecute}>Execute SQL</Button>
-      <Button onClick={getTableNames}>Get Table Names</Button>
-      <Button onClick={getDatabaseSchema}>Get Database Schema</Button>
-
       <input type="file" onChange={handleFileChange} />
 
       {tableButtons}
+
       {data?.[0] && "columns" in data[0] ? (
         <>
           <div>
@@ -179,7 +159,6 @@ function App() {
               </span>
             ))}
           </div>
-
           <div>
             {data[0]?.values.map((row, i) => (
               <div key={i}>
@@ -195,17 +174,19 @@ function App() {
       ) : (
         <p>No data</p>
       )}
+
       <p>
         Page: {page} of {currentTable?.size}
       </p>
-      <Button onClick={handleNext} disabled={page >= currentTable?.size}>
+      <Button
+        onClick={() => handlePageChange("next")}
+        disabled={page >= currentTable?.size}
+      >
         Next
       </Button>
-      <Button onClick={handlePrev} disabled={page === 1}>
+      <Button onClick={() => handlePageChange("prev")} disabled={page === 1}>
         Prev
       </Button>
     </div>
   );
 }
-
-export default App;
