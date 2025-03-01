@@ -1,20 +1,18 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-
-import Sqlite from "./lib/sqlite";
-
-import type { Schema } from "./types";
-
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
+
+import type { Schema } from "@/types";
+import type { QueryExecResult } from "sql.js";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [sqlite, setSqlite] = useState<Sqlite | null>(null);
-  const [schema, setSchema] = useState<Schema>(new Map());
-
-  const [data, setData] = useState<initSqlJs.QueryExecResult[] | null>();
   const [isUserCustomQuery, setIsUserCustomQuery] = useState(false);
 
+  const [data, setData] = useState<QueryExecResult[] | null>(null);
+
   const [filters, setFilters] = useState<Record<string, string> | null>(null);
+
+  const [schema, setSchema] = useState<Schema>(new Map());
 
   const [tables, setTables] = useState<string[]>([]);
   const [currentTable, setCurrentTable] = useState<string | null>(null);
@@ -22,105 +20,96 @@ export default function App() {
   const [maxSize, setMaxSize] = useState<number>(1);
   const [page, setPage] = useState(1);
 
-  // Initialize the sqlite instance asynchronously.
-  useEffect(() => {
-    async function initDb() {
-      const instance = await Sqlite.create();
-      const currentTable = instance.tables[0];
+  const workerRef = useRef<Worker | null>(null);
 
-      setFilters(null);
-      setTables(instance.tables);
-      setSchema(instance.schema);
-      setCurrentTable(currentTable);
-      setSqlite(instance);
-    }
-    initDb();
+  // Initialize worker and send initial "init" message.
+  useEffect(() => {
+    // Create a new worker.
+    workerRef.current = new Worker(new URL("./sqlWorker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    workerRef.current.onmessage = (event) => {
+      const { action, payload } = event.data;
+      if (action === "initComplete") {
+        // Update state with initial instance info.
+        setTables(payload.tables);
+        // Convert schema back to a Map if needed.
+        setSchema(new Map(payload.schema));
+        setCurrentTable(payload.currentTable);
+      } else if (action === "queryComplete") {
+        if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
+        setData(payload.results);
+      } else if (action === "updateInstance") {
+        setTables(payload.tables);
+        setSchema(new Map(payload.schema));
+      } else if (action === "queryError") {
+        console.error("Worker error:", payload.error);
+      }
+    };
+
+    // Start with a new database instance.
+    workerRef.current.postMessage({ action: "init" });
+
+    return () => {
+      workerRef.current?.terminate();
+    };
   }, []);
 
-  // Update data when changes occur.
+  // When changing page or filters, ask the worker for new data.
   useEffect(() => {
-    if (!sqlite || !currentTable) return;
-    const [data, maxSize] = sqlite.getTableData(currentTable, page, filters);
-    setMaxSize(maxSize);
-    setData(data);
-  }, [sqlite, currentTable, page, filters]);
+    if (!currentTable) return;
+    workerRef.current?.postMessage({
+      action: "getTableData",
+      payload: { currentTable, page, filters },
+    });
+  }, [currentTable, page, filters]);
 
-  // When user opens a file.
+  // Handle file upload by sending the file to the worker.
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = (e) => {
         const arrayBuffer = e.target?.result as ArrayBuffer;
-        const uint8Array = new Uint8Array(arrayBuffer);
-
-        const instance = await Sqlite.open(uint8Array);
-        const currentTable = instance.tables[0];
-
-        setFilters(null); // Reset filters when a new file is selected.
-        setData([]); // Reset data when a new file is selected.
-        setTables(instance.tables);
-        setSchema(instance.schema);
-        setCurrentTable(currentTable);
-        setMaxSize(1);
+        // Post file data to worker.
+        workerRef.current?.postMessage({
+          action: "openFile",
+          payload: { file: arrayBuffer },
+        });
+        // Reset page and filters.
+        setFilters(null);
         setPage(1);
-        setSqlite(instance);
       };
       reader.readAsArrayBuffer(file);
     },
     []
   );
 
-  // When user executes a new SQL statement.
+  // Execute a SQL statement by sending it to the worker.
   const handleQueryExecute = useCallback(() => {
-    if (!sqlite) return;
-    // Remove SQL comments before processing
+    // Remove SQL comments before processing.
     const cleanedQuery = query
       .replace(/--.*$/gm, "")
       .replace(/\/\*[\s\S]*?\*\//g, "");
     // Split the query into multiple statements.
-    const statments = cleanedQuery
+    const statements = cleanedQuery
       .split(";")
       .map((stmt) => stmt.trim())
       .filter((stmt) => stmt !== "");
-
-    for (const stmt of statments) {
-      const [data, doTablesChanged] = sqlite.exec(stmt);
-      // If it is CREATE/DROP/ALTER statement, update tables and schema.
-      if (doTablesChanged) {
-        setTables(sqlite.tables);
-        setSchema(sqlite.schema);
-      } else {
-        // Else if it is a SELECT statement, update data.
-        if (data.length > 0) {
-          setIsUserCustomQuery(true);
-          setData(data);
-        }
-        // Else if it is an INSERT/UPDATE/DELETE statement, update data.
-        else {
-          // Update data after executing a new SQL statement.
-          const [data, maxSize] = sqlite.getTableData(
-            currentTable as string,
-            page
-          );
-          setMaxSize(maxSize);
-          setData(data);
-          // Update current table after executing a new SQL statement.
-          // setCurrentTable(currentTable);
-        }
-      }
+    for (const stmt of statements) {
+      workerRef.current?.postMessage({
+        action: "exec",
+        payload: { query: stmt },
+      });
     }
-  }, [query, sqlite, currentTable, page]);
+  }, [query]);
 
   // When user changes the page.
   const handlePageChange = useCallback((type: "next" | "prev") => {
-    if (type === "next") {
-      setPage((prev) => prev + 1);
-    } else {
-      setPage((prev) => prev - 1);
-    }
+    setPage((prev) => (type === "next" ? prev + 1 : prev - 1));
   }, []);
 
   // When user updates the filter.
@@ -129,16 +118,11 @@ export default function App() {
   }, []);
 
   // When user changes the table.
-  const handleTableChange = useCallback(
-    (selectedTable: string) => {
-      if (!sqlite) return;
-
-      setFilters(null);
-      setPage(1);
-      setCurrentTable(selectedTable);
-    },
-    [sqlite]
-  );
+  const handleTableChange = useCallback((selectedTable: string) => {
+    setFilters(null);
+    setPage(1);
+    setCurrentTable(selectedTable);
+  }, []);
 
   const tableButtons = useMemo(
     () =>
@@ -150,8 +134,7 @@ export default function App() {
     [tables, handleTableChange]
   );
 
-  // If the sqlite instance is not initialized, return a loading state.
-  if (!sqlite) {
+  if (!currentTable) {
     return <div>Loading...</div>;
   }
 
@@ -174,7 +157,7 @@ export default function App() {
                 <span className="p-2">{column}</span>
                 <input
                   type="text"
-                  value={filters?.[column] || ""} // Set to an empty string when filters are null
+                  value={filters?.[column] || ""}
                   onChange={(e) => handleQueryFilter(column, e.target.value)}
                 />
               </section>
@@ -197,13 +180,7 @@ export default function App() {
           {filters ? (
             <div>
               <p>No data found for the current filters</p>
-              <Button
-                onClick={() => {
-                  setFilters(null);
-                }}
-              >
-                Clear filters
-              </Button>
+              <Button onClick={() => setFilters(null)}>Clear filters</Button>
             </div>
           ) : (
             <p>No data found</p>
