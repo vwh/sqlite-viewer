@@ -79,8 +79,14 @@ export default class Sqlite {
     this.tables = results[0].values.map((value) => value[0] as string);
   }
 
-  public getMaxSizeOfTable(tableName: string) {
-    const [results] = this.exec(`SELECT COUNT(*) FROM ${tableName}`);
+  private getMaxSizeOfTable(
+    tableName: string,
+    filters: Record<string, string> | null = null
+  ) {
+    const query = `SELECT COUNT(*) FROM ${tableName} ${this.buildWhereClause(
+      filters
+    )}`;
+    const [results] = this.exec(query);
     return Math.ceil((results[0].values[0][0] as number) / 10);
   }
 
@@ -119,14 +125,33 @@ export default class Sqlite {
     }
   }
 
-  public getTableData(table: string, page: number) {
+  public getTableData(
+    table: string,
+    page: number,
+    filters: Record<string, string> | null = null
+  ) {
+    console.log(filters);
     const [limit, offset] = [10, (page - 1) * 10];
-    const [results] = this.exec(
-      `SELECT * FROM ${table} LIMIT ${limit} OFFSET ${offset}`
-    );
+    const query = `SELECT * FROM ${table} ${this.buildWhereClause(
+      filters
+    )} LIMIT ${limit} OFFSET ${offset}`;
+    console.log(query);
+    const [results] = this.exec(query);
 
     if (results.length === 0) return [];
-    return results;
+
+    const maxSize = this.getMaxSizeOfTable(table, filters);
+    return [results, maxSize] as const;
+  }
+
+  private buildWhereClause(filters: Record<string, string> | null = null) {
+    if (!filters) return "";
+
+    const filtersArray = Object.entries(filters)
+      .map(([column, value]) => `${column} LIKE '%${value}%'`)
+      .join(" AND ");
+
+    return `WHERE ${filtersArray}`;
   }
 }
 

@@ -14,11 +14,12 @@ export default function App() {
   const [data, setData] = useState<initSqlJs.QueryExecResult[] | null>();
   const [isUserCustomQuery, setIsUserCustomQuery] = useState(false);
 
+  const [filters, setFilters] = useState<Record<string, string> | null>(null);
+
   const [tables, setTables] = useState<string[]>([]);
-  const [currentTable, setCurrentTable] = useState<{
-    name: string | null;
-    size: number;
-  }>({ name: null, size: 1 });
+  const [currentTable, setCurrentTable] = useState<string | null>(null);
+
+  const [maxSize, setMaxSize] = useState<number>(1);
   const [page, setPage] = useState(1);
 
   // Initialize the sqlite instance asynchronously.
@@ -26,16 +27,25 @@ export default function App() {
     async function initDb() {
       const instance = await Sqlite.create();
       const currentTable = instance.tables[0];
-      const maxSize = instance.getMaxSizeOfTable(currentTable);
 
+      setFilters(null);
       setTables(instance.tables);
       setSchema(instance.schema);
-      setCurrentTable({ name: currentTable, size: maxSize });
+      setCurrentTable(currentTable);
       setSqlite(instance);
     }
     initDb();
   }, []);
 
+  // Update data when changes occur.
+  useEffect(() => {
+    if (!sqlite || !currentTable) return;
+    const [data, maxSize] = sqlite.getTableData(currentTable, page, filters);
+    setMaxSize(maxSize);
+    setData(data);
+  }, [sqlite, currentTable, page, filters]);
+
+  // When user opens a file.
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -48,12 +58,13 @@ export default function App() {
 
         const instance = await Sqlite.open(uint8Array);
         const currentTable = instance.tables[0];
-        const maxSize = instance.getMaxSizeOfTable(currentTable);
 
+        setFilters(null); // Reset filters when a new file is selected.
         setData([]); // Reset data when a new file is selected.
         setTables(instance.tables);
         setSchema(instance.schema);
-        setCurrentTable({ name: currentTable, size: maxSize });
+        setCurrentTable(currentTable);
+        setMaxSize(1);
         setPage(1);
         setSqlite(instance);
       };
@@ -62,12 +73,7 @@ export default function App() {
     []
   );
 
-  // Update data when changes occur.
-  useEffect(() => {
-    if (!sqlite || !currentTable) return;
-    setData(sqlite.getTableData(currentTable.name as string, page));
-  }, [sqlite, currentTable, page]);
-
+  // When user executes a new SQL statement.
   const handleQueryExecute = useCallback(() => {
     if (!sqlite) return;
     // Remove SQL comments before processing
@@ -95,15 +101,20 @@ export default function App() {
         // Else if it is an INSERT/UPDATE/DELETE statement, update data.
         else {
           // Update data after executing a new SQL statement.
-          setData(sqlite.getTableData(currentTable.name as string, page));
-          const maxSize = sqlite.getMaxSizeOfTable(currentTable.name as string);
+          const [data, maxSize] = sqlite.getTableData(
+            currentTable as string,
+            page
+          );
+          setMaxSize(maxSize);
+          setData(data);
           // Update current table after executing a new SQL statement.
-          setCurrentTable({ name: currentTable.name, size: maxSize });
+          // setCurrentTable(currentTable);
         }
       }
     }
   }, [query, sqlite, currentTable, page]);
 
+  // When user changes the page.
   const handlePageChange = useCallback((type: "next" | "prev") => {
     if (type === "next") {
       setPage((prev) => prev + 1);
@@ -112,13 +123,19 @@ export default function App() {
     }
   }, []);
 
+  // When user updates the filter.
+  const handleQueryFilter = useCallback((column: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [column]: value }));
+  }, []);
+
+  // When user changes the table.
   const handleTableChange = useCallback(
     (selectedTable: string) => {
       if (!sqlite) return;
-      const maxSize = sqlite.getMaxSizeOfTable(selectedTable);
 
+      setFilters(null);
       setPage(1);
-      setCurrentTable({ name: selectedTable, size: maxSize });
+      setCurrentTable(selectedTable);
     },
     [sqlite]
   );
@@ -149,14 +166,18 @@ export default function App() {
       <input type="file" onChange={handleFileChange} />
 
       {tableButtons}
-
       {data?.[0] && "columns" in data[0] ? (
         <>
           <div>
             {data[0]?.columns.map((column) => (
-              <span className="p-2" key={column}>
-                {column}
-              </span>
+              <section key={column}>
+                <span className="p-2">{column}</span>
+                <input
+                  type="text"
+                  value={filters?.[column] || ""} // Set to an empty string when filters are null
+                  onChange={(e) => handleQueryFilter(column, e.target.value)}
+                />
+              </section>
             ))}
           </div>
           <div>
@@ -172,15 +193,30 @@ export default function App() {
           </div>
         </>
       ) : (
-        <p>No data</p>
+        <div>
+          {filters ? (
+            <div>
+              <p>No data found for the current filters</p>
+              <Button
+                onClick={() => {
+                  setFilters(null);
+                }}
+              >
+                Clear filters
+              </Button>
+            </div>
+          ) : (
+            <p>No data found</p>
+          )}
+        </div>
       )}
 
       <p>
-        Page: {page} of {currentTable?.size}
+        Page: {page} of {maxSize}
       </p>
       <Button
         onClick={() => handlePageChange("next")}
-        disabled={page >= currentTable?.size}
+        disabled={page >= maxSize}
       >
         Next
       </Button>
