@@ -4,12 +4,14 @@ import type { VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import buttonVariants from "./buttonVariants";
+import { useCallback, useMemo } from "react";
 
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  onClick,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -17,10 +19,25 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button";
 
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (onClick) {
+        onClick(event);
+      }
+    },
+    [onClick]
+  );
+
+  const computedClassName = useMemo(
+    () => cn(buttonVariants({ variant, size, className })),
+    [variant, size, className]
+  );
+
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={computedClassName}
+      onClick={handleClick}
       {...props}
     />
   );

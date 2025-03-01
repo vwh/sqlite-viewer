@@ -12,6 +12,7 @@ function App() {
   const [schema, setSchema] = useState<Schema>(new Map());
 
   const [data, setData] = useState<initSqlJs.QueryExecResult[] | null>();
+  const [isUserCustomQuery, setIsUserCustomQuery] = useState(false);
 
   const [tables, setTables] = useState<string[]>([]);
   const [currentTable, setCurrentTable] = useState<{
@@ -77,11 +78,45 @@ function App() {
 
   function handleQueryExecute() {
     if (!sqlite) return;
-    const [data, doTablesChanged] = sqlite.exec(query);
-    console.log(data);
 
-    if (doTablesChanged) setTables(sqlite.tables); // Update tables after executing a new SQL statement.
-    //TODO if (doSchemaChanged) setSchema(sqlite.schema); // Update schema after executing a new SQL statement.
+    // Remove SQL comments before processing
+    const cleanedQuery = query
+      .replace(/--.*$/gm, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+
+    // Split the query into multiple statements.
+    const statments = cleanedQuery
+      .split(";")
+      .map((stmt) => stmt.trim())
+      .filter((stmt) => stmt !== "");
+
+    console.log(statments);
+
+    for (const stmt of statments) {
+      console.log(stmt);
+      const [data, doTablesChanged] = sqlite.exec(stmt);
+      console.log(data);
+
+      // If it is CREATE/DROP/ALTER statement, update tables and schema.
+      if (doTablesChanged) {
+        setTables(sqlite.tables);
+        setSchema(sqlite.schema);
+      } else {
+        // Else if it is a SELECT statement, update data.
+        if (data.length > 0) {
+          setIsUserCustomQuery(true);
+          setData(data);
+        }
+        // Else if it is an INSERT/UPDATE/DELETE statement, update data.
+        else {
+          // Update data after executing a new SQL statement.
+          setData(sqlite.getTableData(currentTable.name as string, page));
+          const maxSize = sqlite.getMaxSizeOfTable(currentTable.name as string);
+          // Update current table after executing a new SQL statement.
+          setCurrentTable({ name: currentTable.name, size: maxSize });
+        }
+      }
+    }
   }
 
   function handleNext() {
@@ -122,8 +157,7 @@ function App() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-svh">
-      <input
-        type="text"
+      <textarea
         placeholder="Enter SQL"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -136,25 +170,31 @@ function App() {
       <input type="file" onChange={handleFileChange} />
 
       {tableButtons}
-      <div>
-        {schema.get(currentTable?.name as string)?.map((column) => (
-          <span className="p-2" key={column.name}>
-            {column.name}
-          </span>
-        ))}
-      </div>
-      {/* <div>{JSON.stringify(data, null, 2)}</div> */}
-      <div>
-        {data?.[0]?.values.map((row, i) => (
-          <div key={i}>
-            {row.map((value, j) => (
-              <span className="p-2" key={j}>
-                {value}
+      {data?.[0] && "columns" in data[0] ? (
+        <>
+          <div>
+            {data[0]?.columns.map((column) => (
+              <span className="p-2" key={column}>
+                {column}
               </span>
             ))}
           </div>
-        ))}
-      </div>
+
+          <div>
+            {data[0]?.values.map((row, i) => (
+              <div key={i}>
+                {row.map((value, j) => (
+                  <span className="p-2" key={j}>
+                    {value}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p>No data</p>
+      )}
       <p>
         Page: {page} of {currentTable?.size}
       </p>

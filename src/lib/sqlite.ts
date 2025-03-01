@@ -68,15 +68,10 @@ export default class Sqlite {
     const upperSql = sql.toUpperCase();
 
     // Update tables if the SQL statement is a CREATE TABLE statement.
-    if (upperSql.includes("CREATE TABLE")) {
+    if (isStructureChangeable(upperSql)) {
       this.getTableNames();
       this.getDatabaseSchema(); // Update schema after creating a new table.
       doTablesChanged = true;
-    }
-
-    // Update schema if the SQL statement is ALTER TABLE || UPDATE statements.
-    if (upperSql.includes("ALTER TABLE") || upperSql.includes("UPDATE")) {
-      this.getDatabaseSchema();
     }
 
     return [results, doTablesChanged] as const;
@@ -140,4 +135,9 @@ export default class Sqlite {
     if (results.length === 0) return [];
     return results;
   }
+}
+
+function isStructureChangeable(sql: string) {
+  const match = sql.match(/^\s*(CREATE|DROP|ALTER)\s/i);
+  return match !== null;
 }
