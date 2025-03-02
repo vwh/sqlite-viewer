@@ -11,6 +11,9 @@ export default function App() {
   const [data, setData] = useState<QueryExecResult[] | null>(null);
 
   const [filters, setFilters] = useState<Record<string, string> | null>(null);
+  const [sorters, setSorters] = useState<Record<string, "asc" | "desc"> | null>(
+    null
+  );
 
   const [schema, setSchema] = useState<Schema>(new Map());
 
@@ -61,9 +64,9 @@ export default function App() {
     if (!currentTable) return;
     workerRef.current?.postMessage({
       action: "getTableData",
-      payload: { currentTable, page, filters },
+      payload: { currentTable, page, filters, sorters },
     });
-  }, [currentTable, page, filters]);
+  }, [currentTable, page, filters, sorters]);
 
   // Handle file upload by sending the file to the worker.
   const handleFileChange = useCallback(
@@ -79,8 +82,9 @@ export default function App() {
           action: "openFile",
           payload: { file: arrayBuffer },
         });
-        // Reset page and filters.
+        // Reset.
         setFilters(null);
+        setSorters(null);
         setPage(1);
       };
       reader.readAsArrayBuffer(file);
@@ -117,9 +121,18 @@ export default function App() {
     setFilters((prev) => ({ ...prev, [column]: value }));
   }, []);
 
+  // When user updates the sorter.
+  const handleQuerySorter = useCallback((column: string) => {
+    setSorters((prev) => ({
+      ...prev,
+      [column]: prev?.[column] === "asc" ? "desc" : "asc",
+    }));
+  }, []);
+
   // When user changes the table.
   const handleTableChange = useCallback((selectedTable: string) => {
     setFilters(null);
+    setSorters(null);
     setPage(1);
     setCurrentTable(selectedTable);
   }, []);
@@ -134,9 +147,14 @@ export default function App() {
     [tables, handleTableChange]
   );
 
-  if (!currentTable) {
-    return <div>Loading...</div>;
-  }
+  const sorterButton = useCallback(
+    (column: string) => (
+      <Button onClick={() => handleQuerySorter(column)}>
+        {sorters?.[column] === "asc" ? "▲" : "▼"}
+      </Button>
+    ),
+    [sorters, handleQuerySorter]
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-svh">
@@ -160,6 +178,7 @@ export default function App() {
                   value={filters?.[column] || ""}
                   onChange={(e) => handleQueryFilter(column, e.target.value)}
                 />
+                {sorterButton(column)}
               </section>
             ))}
           </div>

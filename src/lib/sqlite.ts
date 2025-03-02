@@ -128,13 +128,14 @@ export default class Sqlite {
   public getTableData(
     table: string,
     page: number,
-    filters: Record<string, string> | null = null
+    filters: Record<string, string> | null = null,
+    sorters: Record<string, string> | null = null
   ) {
     console.log(filters);
     const [limit, offset] = [10, (page - 1) * 10];
     const query = `SELECT * FROM ${table} ${this.buildWhereClause(
       filters
-    )} LIMIT ${limit} OFFSET ${offset}`;
+    )} ${this.buildOrderByClause(sorters)} LIMIT ${limit} OFFSET ${offset}`;
     console.log(query);
     const [results] = this.exec(query);
 
@@ -152,6 +153,16 @@ export default class Sqlite {
       .join(" AND ");
 
     return `WHERE ${filtersArray}`;
+  }
+
+  private buildOrderByClause(sorters: Record<string, string> | null = null) {
+    if (!sorters) return "";
+
+    const sortersArray = Object.entries(sorters)
+      .map(([column, order]) => `${column} ${order}`)
+      .join(", ");
+
+    return `ORDER BY ${sortersArray}`;
   }
 }
 

@@ -60,11 +60,12 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
       case "getTableData": {
         // Retrieve paginated data for a table.
         if (instance) {
-          const { currentTable, page, filters } = payload;
+          const { currentTable, page, filters, sorters } = payload;
           const [results, maxSize] = instance.getTableData(
             currentTable,
             page,
-            filters
+            filters,
+            sorters
           );
           self.postMessage({
             action: "queryComplete",
