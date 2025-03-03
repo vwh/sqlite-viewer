@@ -131,7 +131,6 @@ export default class Sqlite {
     filters: Record<string, string> | null = null,
     sorters: Record<string, string> | null = null
   ) {
-    console.log(filters);
     const [limit, offset] = [10, (page - 1) * 10];
     const query = `SELECT * FROM ${table} ${this.buildWhereClause(
       filters

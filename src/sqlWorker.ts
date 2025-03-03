@@ -1,4 +1,3 @@
-// sqlWorker.ts
 import Sqlite from "./lib/sqlite";
 
 let instance: Sqlite | null = null;
@@ -14,7 +13,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
   try {
     switch (action) {
       case "init": {
-        // Create a new database instance.
+        // Create a new database instance
         instance = await Sqlite.create();
         self.postMessage({
           action: "initComplete",
@@ -27,7 +26,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         break;
       }
       case "openFile": {
-        // Open the database from the uploaded file.
+        // Open the database from the uploaded file
         instance = await Sqlite.open(new Uint8Array(payload.file));
         self.postMessage({
           action: "initComplete",
@@ -40,10 +39,10 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         break;
       }
       case "exec": {
-        // Execute a SQL query (could be multiple statements).
+        // Execute a SQL query (could be multiple statements)
         if (instance) {
           const [results, doTablesChanged] = instance.exec(payload.query);
-          // If the structure changed, update tables and schema.
+          // If the structure changed, update tables and schema
           if (doTablesChanged) {
             self.postMessage({
               action: "updateInstance",
@@ -52,13 +51,35 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
                 schema: Array.from(instance.schema.entries()),
               },
             });
+          } else {
+            // If it is a SELECT statement return the results
+            if (results.length > 0) {
+              // TODO: return isCustomQuery
+              self.postMessage({
+                action: "queryComplete",
+                payload: { results },
+              });
+            }
+            // If it is an INSERT/UPDATE/DELETE statement, return the updated data
+            else {
+              // Update data after executing a new SQL statement
+              const [results, maxSize] = instance.getTableData(
+                payload.currentTable,
+                payload.page,
+                payload.filters,
+                payload.sorters
+              );
+              self.postMessage({
+                action: "queryComplete",
+                payload: { results, maxSize },
+              });
+            }
           }
-          self.postMessage({ action: "queryComplete", payload: { results } });
         }
         break;
       }
       case "getTableData": {
-        // Retrieve paginated data for a table.
+        // Retrieve paginated data for a table
         if (instance) {
           const { currentTable, page, filters, sorters } = payload;
           const [results, maxSize] = instance.getTableData(

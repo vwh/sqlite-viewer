@@ -1,14 +1,61 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import type { Schema } from "@/types";
 import type { QueryExecResult } from "sql.js";
 
+const FilterInput = memo(
+  ({
+    column,
+    value,
+    onChange,
+  }: {
+    column: string;
+    value: string;
+    onChange: (column: string, value: string) => void;
+  }) => {
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) =>
+        onChange(column, e.target.value),
+      [column, onChange]
+    );
+
+    return (
+      <input
+        type="text"
+        className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+        value={value}
+        onChange={handleChange}
+      />
+    );
+  }
+);
+
 export default function App() {
+  const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
+
   const [query, setQuery] = useState("");
   const [isUserCustomQuery, setIsUserCustomQuery] = useState(false);
 
   const [data, setData] = useState<QueryExecResult[] | null>(null);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
   const [filters, setFilters] = useState<Record<string, string> | null>(null);
   const [sorters, setSorters] = useState<Record<string, "asc" | "desc"> | null>(
@@ -25,9 +72,9 @@ export default function App() {
 
   const workerRef = useRef<Worker | null>(null);
 
-  // Initialize worker and send initial "init" message.
+  // Initialize worker and send initial "init" message
   useEffect(() => {
-    // Create a new worker.
+    // Create a new worker
     workerRef.current = new Worker(new URL("./sqlWorker.ts", import.meta.url), {
       type: "module",
     });
@@ -35,23 +82,30 @@ export default function App() {
     workerRef.current.onmessage = (event) => {
       const { action, payload } = event.data;
       if (action === "initComplete") {
-        // Update state with initial instance info.
         setTables(payload.tables);
-        // Convert schema back to a Map if needed.
         setSchema(new Map(payload.schema));
         setCurrentTable(payload.currentTable);
+        // Reset
+        setFilters(null);
+        setSorters(null);
+        setPage(1);
+        setIsDatabaseLoading(false);
       } else if (action === "queryComplete") {
         if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
         setData(payload.results);
+        setIsDataLoading(false);
       } else if (action === "updateInstance") {
         setTables(payload.tables);
         setSchema(new Map(payload.schema));
+        setIsDataLoading(false);
       } else if (action === "queryError") {
         console.error("Worker error:", payload.error);
+        setIsDataLoading(false);
       }
     };
 
-    // Start with a new database instance.
+    setIsDatabaseLoading(true);
+    // Start with a new database instance
     workerRef.current.postMessage({ action: "init" });
 
     return () => {
@@ -59,69 +113,82 @@ export default function App() {
     };
   }, []);
 
-  // When changing page or filters, ask the worker for new data.
+  // When fetching data, ask the worker for new data
   useEffect(() => {
     if (!currentTable) return;
-    workerRef.current?.postMessage({
-      action: "getTableData",
-      payload: { currentTable, page, filters, sorters },
-    });
+    // Debounce to prevent too many requests when filters change rapidly
+    const handler = setTimeout(() => {
+      setIsDataLoading(true);
+      workerRef.current?.postMessage({
+        action: "getTableData",
+        payload: { currentTable, page, filters, sorters },
+      });
+    }, 100);
+
+    return () => clearTimeout(handler);
   }, [currentTable, page, filters, sorters]);
 
-  // Handle file upload by sending the file to the worker.
+  // Handle file upload by sending the file to the worker
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = (e) => {
+        setIsDatabaseLoading(true);
         const arrayBuffer = e.target?.result as ArrayBuffer;
-        // Post file data to worker.
         workerRef.current?.postMessage({
           action: "openFile",
           payload: { file: arrayBuffer },
         });
-        // Reset.
-        setFilters(null);
-        setSorters(null);
-        setPage(1);
       };
       reader.readAsArrayBuffer(file);
     },
     []
   );
 
-  // Execute a SQL statement by sending it to the worker.
+  // Execute a SQL statement by sending it to the worker
   const handleQueryExecute = useCallback(() => {
-    // Remove SQL comments before processing.
+    // Remove SQL comments before processing
     const cleanedQuery = query
       .replace(/--.*$/gm, "")
       .replace(/\/\*[\s\S]*?\*\//g, "");
-    // Split the query into multiple statements.
+    // Split the query into multiple statements
     const statements = cleanedQuery
       .split(";")
       .map((stmt) => stmt.trim())
       .filter((stmt) => stmt !== "");
     for (const stmt of statements) {
+      setIsDataLoading(true);
       workerRef.current?.postMessage({
         action: "exec",
-        payload: { query: stmt },
+        payload: { query: stmt, currentTable, page, filters, sorters },
       });
     }
-  }, [query]);
+  }, [query, currentTable, page, filters, sorters]);
 
-  // When user changes the page.
-  const handlePageChange = useCallback((type: "next" | "prev") => {
-    setPage((prev) => (type === "next" ? prev + 1 : prev - 1));
-  }, []);
+  // When user changes the page
+  const handlePageChange = useCallback(
+    (type: "next" | "prev" | "first" | "last") => {
+      setPage((prev) => {
+        if (type === "next") return prev + 1;
+        if (type === "prev") return prev - 1;
+        if (type === "first") return 1;
+        if (type === "last") return maxSize;
+        return prev;
+      });
+    },
+    [maxSize]
+  );
 
-  // When user updates the filter.
+  // When user updates the filter
   const handleQueryFilter = useCallback((column: string, value: string) => {
     setFilters((prev) => ({ ...prev, [column]: value }));
+    // Reset to first page when filtering
+    setPage(1);
   }, []);
 
-  // When user updates the sorter.
+  // When user updates the sorter
   const handleQuerySorter = useCallback((column: string) => {
     setSorters((prev) => ({
       ...prev,
@@ -129,7 +196,7 @@ export default function App() {
     }));
   }, []);
 
-  // When user changes the table.
+  // When user changes the table
   const handleTableChange = useCallback((selectedTable: string) => {
     setFilters(null);
     setSorters(null);
@@ -137,14 +204,25 @@ export default function App() {
     setCurrentTable(selectedTable);
   }, []);
 
-  const tableButtons = useMemo(
-    () =>
-      tables.map((table) => (
-        <Button key={table} onClick={() => handleTableChange(table)}>
-          {table}
-        </Button>
-      )),
-    [tables, handleTableChange]
+  const TableSelector = useMemo(
+    () => (
+      <Select
+        onValueChange={handleTableChange}
+        value={currentTable || undefined}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select Table" />
+        </SelectTrigger>
+        <SelectContent>
+          {tables.map((table) => (
+            <SelectItem key={table} value={table}>
+              {table}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    ),
+    [tables, currentTable, handleTableChange]
   );
 
   const sorterButton = useCallback(
@@ -156,44 +234,93 @@ export default function App() {
     [sorters, handleQuerySorter]
   );
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <textarea
-        placeholder="Enter SQL"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <Button onClick={handleQueryExecute}>Execute SQL</Button>
-      <input type="file" onChange={handleFileChange} />
+  const paginationControls = useMemo(
+    () => (
+      <section className="flex items-center gap-2">
+        <Button onClick={() => handlePageChange("first")} disabled={page === 1}>
+          First
+        </Button>
+        <Button onClick={() => handlePageChange("prev")} disabled={page === 1}>
+          Prev
+        </Button>
+        <span>
+          Page: {page} of {maxSize}
+        </span>
+        <Button
+          onClick={() => handlePageChange("next")}
+          disabled={page >= maxSize}
+        >
+          Next
+        </Button>
+        <Button
+          onClick={() => handlePageChange("last")}
+          disabled={page === maxSize}
+        >
+          Last
+        </Button>
+      </section>
+    ),
+    [page, maxSize, handlePageChange]
+  );
 
-      {tableButtons}
+  return (
+    <section className="flex flex-col gap-4 p-4">
+      <section className="flex flex-col gap-2">
+        <textarea
+          className="border p-2 rounded h-24"
+          placeholder="Enter SQL"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <Button onClick={handleQueryExecute}>Execute SQL</Button>
+      </section>
+
+      <section>
+        <Input
+          type="file"
+          className="cursor-pointer"
+          onChange={handleFileChange}
+        />
+      </section>
+
+      <section>
+        <div className="flex items-center gap-2">
+          <span>Table:</span>
+          {TableSelector}
+        </div>
+      </section>
+
+      <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
+      <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
       {data?.[0] && "columns" in data[0] ? (
-        <>
-          <div>
-            {data[0]?.columns.map((column) => (
-              <section key={column}>
-                <span className="p-2">{column}</span>
-                <input
-                  type="text"
-                  value={filters?.[column] || ""}
-                  onChange={(e) => handleQueryFilter(column, e.target.value)}
-                />
-                {sorterButton(column)}
-              </section>
-            ))}
-          </div>
-          <div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {data[0]?.columns.map((column) => (
+                <TableHead key={column}>
+                  {column}
+                  <div>
+                    <FilterInput
+                      column={column}
+                      value={filters?.[column] || ""}
+                      onChange={handleQueryFilter}
+                    />
+                  </div>
+                  {sorterButton(column)}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {data[0]?.values.map((row, i) => (
-              <div key={i}>
+              <TableRow key={i}>
                 {row.map((value, j) => (
-                  <span className="p-2" key={j}>
-                    {value}
-                  </span>
+                  <TableCell key={j}>{value}</TableCell>
                 ))}
-              </div>
+              </TableRow>
             ))}
-          </div>
-        </>
+          </TableBody>
+        </Table>
       ) : (
         <div>
           {filters ? (
@@ -202,23 +329,13 @@ export default function App() {
               <Button onClick={() => setFilters(null)}>Clear filters</Button>
             </div>
           ) : (
+            // When table is empty
             <p>No data found</p>
           )}
         </div>
       )}
 
-      <p>
-        Page: {page} of {maxSize}
-      </p>
-      <Button
-        onClick={() => handlePageChange("next")}
-        disabled={page >= maxSize}
-      >
-        Next
-      </Button>
-      <Button onClick={() => handlePageChange("prev")} disabled={page === 1}>
-        Prev
-      </Button>
-    </div>
+      {paginationControls}
+    </section>
   );
 }
