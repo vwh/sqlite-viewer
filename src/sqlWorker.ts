@@ -4,7 +4,7 @@ let instance: Sqlite | null = null;
 
 interface WorkerEvent {
   action: string;
-  payload?: any;
+  payload?: any; // TODO: Remove any
 }
 
 self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
@@ -19,7 +19,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           action: "initComplete",
           payload: {
             tables: instance.tables,
-            schema: Array.from(instance.schema.entries()),
+            tableSchema: instance.tablesSchema,
+            indexSchema: instance.indexesSchema,
             currentTable: instance.tables[0],
           },
         });
@@ -32,7 +33,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           action: "initComplete",
           payload: {
             tables: instance.tables,
-            schema: Array.from(instance.schema.entries()),
+            tableSchema: instance.tablesSchema,
+            indexSchema: instance.indexesSchema,
             currentTable: instance.tables[0],
           },
         });
@@ -48,7 +50,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               action: "updateInstance",
               payload: {
                 tables: instance.tables,
-                schema: Array.from(instance.schema.entries()),
+                tableSchema: instance.tablesSchema,
+                indexSchema: instance.indexesSchema,
               },
             });
           } else {
@@ -123,7 +126,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
     if (error instanceof Error)
       self.postMessage({
         action: "queryError",
-        payload: { error: error.message },
+        payload: { error: error },
       });
     else
       self.postMessage({

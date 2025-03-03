@@ -1,14 +1,15 @@
 import initSqlJs from "sql.js";
 
 import type { Database, SqlJsStatic } from "sql.js";
-import type { Schema } from "@/types";
+import type { IndexSchema, TableSchema, TableSchemaRow } from "@/types";
 
 export default class Sqlite {
   static sqlJsStatic?: SqlJsStatic;
   private db: Database;
 
   public tables: string[] = [];
-  public schema: Schema = new Map();
+  public tablesSchema: TableSchema = new Map();
+  public indexesSchema: IndexSchema[] = [];
 
   private constructor(db: Database, isFile = false) {
     this.db = db;
@@ -95,19 +96,12 @@ export default class Sqlite {
   }
 
   private getTableSchema(tableName: string) {
-    const [results] = this.exec(`PRAGMA table_info(${tableName})`);
+    const [pragmaResults] = this.exec(`PRAGMA table_info(${tableName})`);
 
-    if (results.length === 0) throw new Error("Table not found");
+    if (pragmaResults.length === 0) throw new Error("Table not found");
 
-    const tableSchema: {
-      name: string;
-      cid: number;
-      type: string;
-      notnull: number;
-      dflt_value: string;
-      pk: number;
-    }[] = [];
-    for (const row of results[0].values) {
+    const tableSchema: TableSchemaRow[] = [];
+    for (const row of pragmaResults[0].values) {
       const [cid, name, type, notnull, dflt_value, pk] = row;
       tableSchema.push({
         name: name as string,
@@ -119,14 +113,41 @@ export default class Sqlite {
       });
     }
 
-    this.schema.set(tableName, tableSchema);
+    // Get the SQL for the table
+    const [sqlResults] = this.exec(
+      `SELECT sql FROM sqlite_master WHERE type='table' AND name='${tableName}'`
+    );
+    const sql = sqlResults[0].values[0][0] as string;
+    console.log(sql);
+
+    this.tablesSchema.set(tableName, {
+      schema: tableSchema,
+      sql: sql,
+    });
+  }
+
+  private getIndexesSchema() {
+    const [results] = this.exec(
+      `SELECT name, tbl_name, sql FROM sqlite_master WHERE type='index'`
+    );
+
+    if (results.length === 0) return;
+
+    for (const row of results[0].values) {
+      const [name, tableName, sql] = row;
+      this.indexesSchema.push({
+        name: name as string,
+        sql: sql as string,
+        tableName: tableName as string,
+      });
+    }
   }
 
   private getDatabaseSchema() {
-    const tables = this.tables;
-    for (const table of tables) {
-      this.getTableSchema(table);
-    }
+    // Get the schema for all tables
+    for (const table of this.tables) this.getTableSchema(table);
+    // Get the schema for all indexes
+    this.getIndexesSchema();
   }
 
   public getTableData(

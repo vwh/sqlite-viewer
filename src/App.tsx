@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import type { Schema } from "@/types";
+import type { IndexSchema, TableSchema } from "@/types";
 import type { QueryExecResult } from "sql.js";
 
 const FilterInput = memo(
@@ -65,7 +65,8 @@ export default function App() {
     null
   );
 
-  const [schema, setSchema] = useState<Schema>(new Map());
+  const [tablesSchema, setTablesSchema] = useState<TableSchema>(new Map());
+  const [indexesSchema, setIndexesSchema] = useState<IndexSchema[]>([]);
 
   const [tables, setTables] = useState<string[]>([]);
   const [currentTable, setCurrentTable] = useState<string | null>(null);
@@ -86,7 +87,8 @@ export default function App() {
       const { action, payload } = event.data;
       if (action === "initComplete") {
         setTables(payload.tables);
-        setSchema(new Map(payload.schema));
+        setTablesSchema(new Map(payload.tableSchema));
+        setIndexesSchema(payload.indexSchema);
         setCurrentTable(payload.currentTable);
         // Reset
         setFilters(null);
@@ -99,7 +101,8 @@ export default function App() {
         setIsDataLoading(false);
       } else if (action === "updateInstance") {
         setTables(payload.tables);
-        setSchema(new Map(payload.schema));
+        setTablesSchema(new Map(payload.tableSchema));
+        setIndexesSchema(payload.indexSchema);
         setIsDataLoading(false);
       } else if (action === "downloadComplete") {
         const blob = new Blob([payload.bytes], {
@@ -307,11 +310,12 @@ export default function App() {
           </div>
         </section>
         <section>
-          {[...schema].map(([tableName, data]) => (
+          {[...tablesSchema].map(([tableName, tableData]) => (
             <div key={tableName} className="flex flex-col gap-2">
               <h3 className="text-lg font-bold">{tableName}</h3>
+              <span>{tableData.sql}</span>
               <ul>
-                {Object.entries(data).map(([index, column]) => (
+                {Object.entries(tableData.schema).map(([index, column]) => (
                   <li key={index} className="flex gap-2 items-center">
                     <span className="text-sm">
                       {column.name}, {column.type}
@@ -321,10 +325,17 @@ export default function App() {
               </ul>
             </div>
           ))}
+          {indexesSchema.map((index) => (
+            <div key={index.name} className="flex flex-col gap-2">
+              <h3 className="text-lg font-bold">{index.name}</h3>
+              <span>{index.sql}</span>
+              <span>{index.tableName}</span>
+            </div>
+          ))}
         </section>
       </>
     ),
-    [schema]
+    [tablesSchema, indexesSchema]
   );
 
   const executeTab = useMemo(
