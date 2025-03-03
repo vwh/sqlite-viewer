@@ -75,6 +75,11 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               });
             }
           }
+        } else {
+          self.postMessage({
+            action: "queryError",
+            payload: { error: "No database loaded" },
+          });
         }
         break;
       }
@@ -91,6 +96,22 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           self.postMessage({
             action: "queryComplete",
             payload: { results, maxSize },
+          });
+        } else {
+          self.postMessage({
+            action: "queryError",
+            payload: { error: "No database loaded" },
+          });
+        }
+        break;
+      }
+      case "download": {
+        // Download the database
+        if (instance) {
+          const bytes = instance.download();
+          self.postMessage({
+            action: "downloadComplete",
+            payload: { bytes },
           });
         }
         break;

@@ -70,6 +70,10 @@ export default class Sqlite {
     return [results, doTablesChanged] as const;
   }
 
+  public download() {
+    return this.db.export();
+  }
+
   private getTableNames() {
     const [results] = this.exec(
       "SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence'"

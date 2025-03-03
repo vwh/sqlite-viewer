@@ -101,6 +101,15 @@ export default function App() {
         setTables(payload.tables);
         setSchema(new Map(payload.schema));
         setIsDataLoading(false);
+      } else if (action === "downloadComplete") {
+        const blob = new Blob([payload.bytes], {
+          type: "application/octet-stream",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "database.sqlite";
+        link.click();
       } else if (action === "queryError") {
         console.error("Worker error:", payload.error);
         setIsDataLoading(false);
@@ -206,6 +215,11 @@ export default function App() {
     setSorters(null);
     setPage(1);
     setCurrentTable(selectedTable);
+  }, []);
+
+  // When user downloads the database
+  const handleDownload = useCallback(() => {
+    workerRef.current?.postMessage({ action: "download" });
   }, []);
 
   const TableSelector = useMemo(
@@ -421,12 +435,13 @@ export default function App() {
 
   return (
     <main className="flex flex-col gap-4 p-4">
-      <section>
+      <section className="flex gap-2">
         <Input
           type="file"
           className="cursor-pointer"
           onChange={handleFileChange}
         />
+        <Button onClick={handleDownload}>Download Database</Button>
       </section>
 
       <Tabs defaultValue="structure">
