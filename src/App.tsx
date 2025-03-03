@@ -14,9 +14,11 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableFooter,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { Schema } from "@/types";
 import type { QueryExecResult } from "sql.js";
@@ -38,11 +40,12 @@ const FilterInput = memo(
     );
 
     return (
-      <input
+      <Input
         type="text"
         className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
         value={value}
         onChange={handleChange}
+        placeholder="Filter"
       />
     );
   }
@@ -169,12 +172,13 @@ export default function App() {
 
   // When user changes the page
   const handlePageChange = useCallback(
-    (type: "next" | "prev" | "first" | "last") => {
+    (type: "next" | "prev" | "first" | "last" | number) => {
       setPage((prev) => {
         if (type === "next") return prev + 1;
         if (type === "prev") return prev - 1;
         if (type === "first") return 1;
         if (type === "last") return maxSize;
+        if (typeof type === "number") return type;
         return prev;
       });
     },
@@ -258,23 +262,165 @@ export default function App() {
         >
           Last
         </Button>
+        <span>
+          Page: {page} of {maxSize}
+        </span>
+        {/* TODO: Add a state for the input */}
+        <Input
+          className="w-36"
+          type="number"
+          defaultValue={page}
+          min={1}
+          max={maxSize}
+          onBlur={(e) => {
+            const page = Number.parseInt(e.target.value);
+            if (page > 0 && page <= maxSize) handlePageChange(page);
+          }}
+        />
       </section>
     ),
     [page, maxSize, handlePageChange]
   );
 
-  return (
-    <section className="flex flex-col gap-4 p-4">
-      <section className="flex flex-col gap-2">
-        <textarea
-          className="border p-2 rounded h-24"
-          placeholder="Enter SQL"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <Button onClick={handleQueryExecute}>Execute SQL</Button>
-      </section>
+  const schemaTab = useMemo(
+    () => (
+      <>
+        <section>
+          <div className="flex items-center gap-2">
+            <Button>Create Table</Button>
+            <Button>Create Index</Button>
+            <Button>Print Schema</Button>
+          </div>
+        </section>
+        <section>
+          {[...schema].map(([tableName, data]) => (
+            <div key={tableName} className="flex flex-col gap-2">
+              <h3 className="text-lg font-bold">{tableName}</h3>
+              <ul>
+                {Object.entries(data).map(([index, column]) => (
+                  <li key={index} className="flex gap-2 items-center">
+                    <span className="text-sm">
+                      {column.name}, {column.type}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      </>
+    ),
+    [schema]
+  );
 
+  const executeTab = useMemo(
+    () => (
+      <>
+        <section>
+          <div className="flex items-center gap-2">
+            <Button onClick={handleQueryExecute}>Execute SQL</Button>
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <textarea
+            className="border p-2 rounded h-24"
+            placeholder="Enter SQL"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </section>
+      </>
+    ),
+    [query, handleQueryExecute]
+  );
+
+  const dataTab = useMemo(
+    () => (
+      <>
+        <section>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <span>Table:</span>
+              {TableSelector}
+            </div>
+            <Button>Clear Filters</Button>
+            <Button>Reset Order</Button>
+            <Button>Export</Button>
+            <Button>Print Data</Button>
+            <Button>Insert Row</Button>
+            <Button>Update the current row</Button>
+            <Button>Delete the current row</Button>
+          </div>
+        </section>
+
+        <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
+        <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
+        {data?.[0] && "columns" in data[0] ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {data[0]?.columns.map((column) => (
+                  <TableHead key={column}>
+                    {column}
+                    <div>
+                      <FilterInput
+                        column={column}
+                        value={filters?.[column] || ""}
+                        onChange={handleQueryFilter}
+                      />
+                    </div>
+                    {sorterButton(column)}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data[0]?.values.map((row, i) => (
+                <TableRow key={i}>
+                  {row.map((value, j) => (
+                    <TableCell key={j}>{value}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={data[0]?.columns.length}>
+                  {paginationControls}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        ) : (
+          <div>
+            {filters ? (
+              <div>
+                <p>No data found for the current filters</p>
+                <Button onClick={() => setFilters(null)}>Clear filters</Button>
+              </div>
+            ) : (
+              // When table is empty
+              <p>No data found</p>
+            )}
+          </div>
+        )}
+      </>
+    ),
+    [
+      TableSelector,
+      data,
+      filters,
+      handleQueryFilter,
+      isDataLoading,
+      isDatabaseLoading,
+      paginationControls,
+      sorterButton,
+    ]
+  );
+
+  return (
+    <main className="flex flex-col gap-4 p-4">
       <section>
         <Input
           type="file"
@@ -283,59 +429,16 @@ export default function App() {
         />
       </section>
 
-      <section>
-        <div className="flex items-center gap-2">
-          <span>Table:</span>
-          {TableSelector}
-        </div>
-      </section>
-
-      <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
-      <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
-      {data?.[0] && "columns" in data[0] ? (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {data[0]?.columns.map((column) => (
-                <TableHead key={column}>
-                  {column}
-                  <div>
-                    <FilterInput
-                      column={column}
-                      value={filters?.[column] || ""}
-                      onChange={handleQueryFilter}
-                    />
-                  </div>
-                  {sorterButton(column)}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data[0]?.values.map((row, i) => (
-              <TableRow key={i}>
-                {row.map((value, j) => (
-                  <TableCell key={j}>{value}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      ) : (
-        <div>
-          {filters ? (
-            <div>
-              <p>No data found for the current filters</p>
-              <Button onClick={() => setFilters(null)}>Clear filters</Button>
-            </div>
-          ) : (
-            // When table is empty
-            <p>No data found</p>
-          )}
-        </div>
-      )}
-
-      {paginationControls}
-    </section>
+      <Tabs defaultValue="structure">
+        <TabsList>
+          <TabsTrigger value="structure">Database Structure</TabsTrigger>
+          <TabsTrigger value="data">Browse Data</TabsTrigger>
+          <TabsTrigger value="execute">Execute SQL</TabsTrigger>
+        </TabsList>
+        <TabsContent value="data">{dataTab}</TabsContent>
+        <TabsContent value="structure">{schemaTab}</TabsContent>
+        <TabsContent value="execute">{executeTab}</TabsContent>
+      </Tabs>
+    </main>
   );
 }
