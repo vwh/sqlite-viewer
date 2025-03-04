@@ -186,7 +186,7 @@ function buildWhereClause(filters: Record<string, string> | null = null) {
   if (!filters) return "";
 
   const filtersArray = Object.entries(filters)
-    .map(([column, value]) => `${column} LIKE '%${value}%'`)
+    .map(([column, value]) => `${column} LIKE '%${value}%' ESCAPE '\\'`)
     .join(" AND ");
   return `WHERE ${filtersArray}`;
 }

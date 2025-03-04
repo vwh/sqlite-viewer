@@ -14,14 +14,13 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableFooter,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { IndexSchema, TableSchema } from "@/types";
-import type { QueryExecResult } from "sql.js";
+import type { SqlValue } from "sql.js";
 
 const FilterInput = memo(
   ({
@@ -56,7 +55,8 @@ export default function App() {
 
   const [query, setQuery] = useState("");
 
-  const [data, setData] = useState<QueryExecResult[] | null>(null);
+  const [data, setData] = useState<SqlValue[][] | null>(null);
+  const [columns, setColumns] = useState<string[] | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
 
   const [filters, setFilters] = useState<Record<string, string> | null>(null);
@@ -95,7 +95,14 @@ export default function App() {
       } // When the query is executed and returns results
       else if (action === "queryComplete") {
         if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
-        setData(payload.results);
+        const data = payload.results?.[0]?.values || [];
+        // To be able to cache the columns
+        if (data.length !== 0) {
+          setData(payload.results?.[0]?.values || []);
+          setColumns(payload.results?.[0]?.columns || []);
+        } else {
+          setData(null);
+        }
         setIsDataLoading(false);
       } // When the database is updated and requires a new schema
       else if (action === "updateInstance") {
@@ -250,20 +257,29 @@ export default function App() {
 
   const sorterButton = useCallback(
     (column: string) => (
-      <Button onClick={() => handleQuerySorter(column)}>
+      <Button
+        onClick={() => handleQuerySorter(column)}
+        disabled={isDataLoading}
+      >
         {sorters?.[column] === "asc" ? "▲" : "▼"}
       </Button>
     ),
-    [sorters, handleQuerySorter]
+    [sorters, handleQuerySorter, isDataLoading]
   );
 
   const paginationControls = useMemo(
     () => (
       <section className="flex items-center gap-2">
-        <Button onClick={() => handlePageChange("first")} disabled={page === 1}>
+        <Button
+          onClick={() => handlePageChange("first")}
+          disabled={page === 1 || isDataLoading}
+        >
           First
         </Button>
-        <Button onClick={() => handlePageChange("prev")} disabled={page === 1}>
+        <Button
+          onClick={() => handlePageChange("prev")}
+          disabled={page === 1 || isDataLoading}
+        >
           Prev
         </Button>
         <span>
@@ -271,13 +287,13 @@ export default function App() {
         </span>
         <Button
           onClick={() => handlePageChange("next")}
-          disabled={page >= maxSize}
+          disabled={page >= maxSize || isDataLoading}
         >
           Next
         </Button>
         <Button
           onClick={() => handlePageChange("last")}
-          disabled={page === maxSize}
+          disabled={page === maxSize || isDataLoading}
         >
           Last
         </Button>
@@ -286,6 +302,7 @@ export default function App() {
           className="w-36"
           type="number"
           defaultValue={page}
+          disabled={isDataLoading}
           min={1}
           max={maxSize}
           onBlur={(e) => {
@@ -295,7 +312,7 @@ export default function App() {
         />
       </section>
     ),
-    [page, maxSize, handlePageChange]
+    [page, maxSize, handlePageChange, isDataLoading]
   );
 
   const schemaTab = useMemo(
@@ -380,11 +397,11 @@ export default function App() {
 
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
         <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
-        {data?.[0] && "columns" in data[0] ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {data[0]?.columns.map((column) => (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns ? (
+                columns.map((column) => (
                   <TableHead key={column}>
                     {column}
                     <div>
@@ -396,11 +413,15 @@ export default function App() {
                     </div>
                     {sorterButton(column)}
                   </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data[0]?.values.map((row, i) => (
+                ))
+              ) : (
+                <p>No columns found</p>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data ? (
+              data?.map((row, i) => (
                 <TableRow key={i}>
                   {row.map((value, j) => (
                     <TableCell key={j}>
@@ -410,29 +431,26 @@ export default function App() {
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={data[0]?.columns.length}>
-                  {paginationControls}
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        ) : (
-          <div>
-            {filters ? (
-              <div>
-                <p>No data found for the current filters</p>
-                <Button onClick={() => setFilters(null)}>Clear filters</Button>
-              </div>
+              ))
             ) : (
-              // When table is empty
-              <p>No data found</p>
+              <div>
+                {filters ? (
+                  <div>
+                    <p>No data found for the current filters</p>
+                    <Button onClick={() => setFilters(null)}>
+                      Clear filters
+                    </Button>
+                  </div>
+                ) : (
+                  // When table is empty
+                  <p>No data found</p>
+                )}
+              </div>
             )}
-          </div>
-        )}
+          </TableBody>
+        </Table>
+
+        {paginationControls}
       </>
     ),
     [
@@ -440,10 +458,11 @@ export default function App() {
       data,
       filters,
       handleQueryFilter,
+      paginationControls,
       isDataLoading,
       isDatabaseLoading,
-      paginationControls,
       sorterButton,
+      columns,
     ]
   );
 
@@ -464,7 +483,9 @@ export default function App() {
           <TabsTrigger value="data">Browse Data</TabsTrigger>
           <TabsTrigger value="execute">Execute SQL</TabsTrigger>
         </TabsList>
-        <TabsContent value="data">{dataTab}</TabsContent>
+        <TabsContent value="data">
+          {isDatabaseLoading ? <p>loading</p> : dataTab}
+        </TabsContent>
         <TabsContent value="structure">{schemaTab}</TabsContent>
         <TabsContent value="execute">{executeTab}</TabsContent>
       </Tabs>
