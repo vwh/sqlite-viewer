@@ -77,6 +77,11 @@ export default function App() {
   const [maxSize, setMaxSize] = useState<number>(1);
   const [page, setPage] = useState(1);
 
+  const [selectedRow, setSelectedRow] = useState<{
+    data: SqlValue[];
+    index: number;
+  } | null>();
+
   const workerRef = useRef<Worker | null>(null);
 
   // Initialize worker and send initial "init" message
@@ -96,6 +101,7 @@ export default function App() {
         // Reset
         setFilters(null);
         setSorters(null);
+        setSelectedRow(null);
         setPage(1);
         setIsDatabaseLoading(false);
       } // When the query is executed and returns results
@@ -198,6 +204,7 @@ export default function App() {
   // Handles when user changes the page
   const handlePageChange = useCallback(
     (type: "next" | "prev" | "first" | "last" | number) => {
+      setSelectedRow(null);
       setPage((prev) => {
         if (type === "next") return prev + 1;
         if (type === "prev") return prev - 1;
@@ -216,6 +223,7 @@ export default function App() {
     setFilters((prev) => ({ ...prev, [column]: value }));
     // Reset to first page when filtering
     setPage(1);
+    setSelectedRow(null);
   }, []);
 
   // Handle when user updates the sorter
@@ -225,6 +233,7 @@ export default function App() {
       ...prev,
       [column]: prev?.[column] === "asc" ? "desc" : "asc",
     }));
+    setSelectedRow(null);
   }, []);
 
   // Handle when user changes the table
@@ -232,6 +241,7 @@ export default function App() {
     setFilters(null);
     setSorters(null);
     setPage(1);
+    setSelectedRow(null);
     setCurrentTable(selectedTable);
   }, []);
 
@@ -420,8 +430,12 @@ export default function App() {
               <span>Table:</span>
               {TableSelector}
             </div>
-            <Button onClick={() => setFilters(null)}>Clear Filters</Button>
-            <Button onClick={() => setSorters(null)}>Reset Order</Button>
+            <Button onClick={() => setFilters(null)} disabled={filters == null}>
+              Clear Filters
+            </Button>
+            <Button onClick={() => setSorters(null)} disabled={sorters == null}>
+              Reset Order
+            </Button>
             <Button>Export</Button>
             <Button>Print Data</Button>
             <Button>Insert Row</Button>
@@ -432,6 +446,7 @@ export default function App() {
 
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
         <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
+        <p>{JSON.stringify(selectedRow)}</p>
         <Table>
           <TableHeader>
             <TableRow>
@@ -461,7 +476,11 @@ export default function App() {
           <TableBody>
             {data ? (
               data?.map((row, i) => (
-                <TableRow key={i}>
+                <TableRow
+                  key={i}
+                  onClick={() => setSelectedRow({ data: row, index: i })}
+                  className={selectedRow?.index === i ? "bg-blue-100" : ""}
+                >
                   {row.map((value, j) => (
                     <TableCell key={j}>
                       {value ?? (
@@ -496,7 +515,9 @@ export default function App() {
       TableSelector,
       data,
       filters,
+      sorters,
       handleQueryFilter,
+      selectedRow,
       paginationControls,
       isDataLoading,
       isDatabaseLoading,
