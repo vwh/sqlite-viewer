@@ -281,9 +281,6 @@ export default function App() {
         >
           Last
         </Button>
-        <span>
-          Page: {page} of {maxSize}
-        </span>
         {/* TODO: Add a state for the input */}
         <Input
           className="w-36"
@@ -406,7 +403,11 @@ export default function App() {
               {data[0]?.values.map((row, i) => (
                 <TableRow key={i}>
                   {row.map((value, j) => (
-                    <TableCell key={j}>{value}</TableCell>
+                    <TableCell key={j}>
+                      {value ?? (
+                        <span className="text-muted-foreground">NULL</span>
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
