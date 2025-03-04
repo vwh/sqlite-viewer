@@ -82,19 +82,36 @@ export default class Sqlite {
   // Get the information of a table
   // This includes the columns, primary key, default values, ...
   private getTableInfo(tableName: string) {
-    const [pragmaResults] = this.exec(`PRAGMA table_info(${tableName})`);
-    const tableSchema: TableSchemaRow[] = [];
+    const [pragmaTableInfoResults] = this.exec(
+      `PRAGMA table_info(${tableName})`
+    );
+    const [pragmaForeignKeysResults] = this.exec(
+      `PRAGMA foreign_key_list("${tableName}")`
+    );
 
-    for (const row of pragmaResults[0].values) {
-      const [cid, name, type, notnull, dflt_value, pk] = row;
-      tableSchema.push({
-        name: name as string,
-        cid: cid as number,
-        type: type as string,
-        notnull: notnull as number,
-        dflt_value: dflt_value as string,
-        pk: pk as number,
-      });
+    const foreignKeys: Record<string, boolean> = {};
+    if (pragmaForeignKeysResults.length > 0) {
+      for (const row of pragmaForeignKeysResults[0].values) {
+        foreignKeys[row[3] as string] = true; // Get the 'from'
+      }
+    }
+
+    const tableSchema: TableSchemaRow[] = [];
+    if (pragmaTableInfoResults.length > 0) {
+      for (const row of pragmaTableInfoResults[0].values) {
+        const [cid, name, type, notnull, dflt_value, pk] = row;
+        tableSchema.push({
+          name: (name as string) || "Unknown",
+          cid: cid as number,
+          type: (type as string) || "Unknown",
+          dflt_value: dflt_value as string,
+          IsNullable: (notnull as number) === 0,
+          isPrimaryKey: (pk as number) === 1,
+          isForeignKey: foreignKeys[name as string] ?? false,
+        });
+      }
+    } else {
+      console.error("No table info found");
     }
 
     return tableSchema;

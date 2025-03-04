@@ -16,7 +16,8 @@ export type TableSchemaRow = {
   name: string; // Column name
   cid: number;
   type: string;
-  notnull: number;
   dflt_value: string;
-  pk: number;
+  IsNullable: boolean;
+  isPrimaryKey: boolean;
+  isForeignKey: boolean;
 };

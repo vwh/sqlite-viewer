@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import type { IndexSchema, TableSchema } from "@/types";
 import type { SqlValue } from "sql.js";
+import { ColumnIcon } from "./components/ColumnIcon";
 
 const FilterInput = memo(
   ({
@@ -400,9 +401,12 @@ export default function App() {
         <Table>
           <TableHeader>
             <TableRow>
-              {columns ? (
-                columns.map((column) => (
+              {columns && currentTable ? (
+                columns.map((column, index) => (
                   <TableHead key={column}>
+                    <ColumnIcon
+                      columnSchema={tablesSchema[currentTable].schema[index]}
+                    />
                     {column}
                     <div>
                       <FilterInput
@@ -412,6 +416,7 @@ export default function App() {
                       />
                     </div>
                     {sorterButton(column)}
+                    {JSON.stringify(tablesSchema[currentTable].schema[index])}
                   </TableHead>
                 ))
               ) : (
@@ -463,6 +468,8 @@ export default function App() {
       isDatabaseLoading,
       sorterButton,
       columns,
+      currentTable,
+      tablesSchema,
     ]
   );
 
