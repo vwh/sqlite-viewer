@@ -22,6 +22,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { IndexSchema, TableSchema } from "@/types";
 import type { SqlValue } from "sql.js";
 import { ColumnIcon } from "./components/ColumnIcon";
+import {
+  ArrowDownNarrowWideIcon,
+  ArrowUpDownIcon,
+  ArrowUpNarrowWideIcon,
+} from "lucide-react";
 
 const FilterInput = memo(
   ({
@@ -247,7 +252,7 @@ export default function App() {
         <SelectContent>
           {Object.keys(tablesSchema).map((table) => (
             <SelectItem key={table} value={table}>
-              {table}
+              <span className="capitalize">{table}</span>
             </SelectItem>
           ))}
         </SelectContent>
@@ -258,12 +263,41 @@ export default function App() {
 
   const sorterButton = useCallback(
     (column: string) => (
-      <Button
-        onClick={() => handleQuerySorter(column)}
-        disabled={isDataLoading}
-      >
-        {sorters?.[column] === "asc" ? "▲" : "▼"}
-      </Button>
+      <>
+        {sorters?.[column] ? (
+          sorters?.[column] === "asc" ? (
+            <button
+              title="Descending"
+              type="button"
+              aria-label="Sort Descending"
+              disabled={isDataLoading}
+              onClick={() => handleQuerySorter(column)}
+            >
+              <ArrowDownNarrowWideIcon className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              title="Ascending"
+              type="button"
+              aria-label="Sort Ascending"
+              disabled={isDataLoading}
+              onClick={() => handleQuerySorter(column)}
+            >
+              <ArrowUpNarrowWideIcon className="h-4 w-4" />
+            </button>
+          )
+        ) : (
+          <button
+            title="Sort column"
+            type="button"
+            aria-label="Sort Column"
+            disabled={isDataLoading}
+            onClick={() => handleQuerySorter(column)}
+          >
+            <ArrowUpDownIcon className="h-4 w-4" />
+          </button>
+        )}
+      </>
     ),
     [sorters, handleQuerySorter, isDataLoading]
   );
@@ -386,8 +420,8 @@ export default function App() {
               <span>Table:</span>
               {TableSelector}
             </div>
-            <Button>Clear Filters</Button>
-            <Button>Reset Order</Button>
+            <Button onClick={() => setFilters(null)}>Clear Filters</Button>
+            <Button onClick={() => setSorters(null)}>Reset Order</Button>
             <Button>Export</Button>
             <Button>Print Data</Button>
             <Button>Insert Row</Button>
@@ -404,18 +438,18 @@ export default function App() {
               {columns && currentTable ? (
                 columns.map((column, index) => (
                   <TableHead key={column}>
-                    <ColumnIcon
-                      columnSchema={tablesSchema[currentTable].schema[index]}
-                    />
-                    {column}
-                    <div>
-                      <FilterInput
-                        column={column}
-                        value={filters?.[column] || ""}
-                        onChange={handleQueryFilter}
+                    <div className="flex items-center gap-1">
+                      <ColumnIcon
+                        columnSchema={tablesSchema[currentTable].schema[index]}
                       />
+                      <span className="capitalize font-bold">{column}</span>
+                      {sorterButton(column)}
                     </div>
-                    {sorterButton(column)}
+                    <FilterInput
+                      column={column}
+                      value={filters?.[column] || ""}
+                      onChange={handleQueryFilter}
+                    />
                     {JSON.stringify(tablesSchema[currentTable].schema[index])}
                   </TableHead>
                 ))

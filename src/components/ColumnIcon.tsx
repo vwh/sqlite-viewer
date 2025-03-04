@@ -41,7 +41,7 @@ export const ColumnIcon: React.FC<{ columnSchema: TableSchemaRow }> = memo(
     );
 
     return (
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-[2px]">
         {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
         {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
         {typeIcon}
