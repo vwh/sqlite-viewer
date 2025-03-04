@@ -9,7 +9,6 @@ interface WorkerEvent {
 
 self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
   const { action, payload } = event.data;
-
   try {
     switch (action) {
       case "init": {
@@ -18,24 +17,22 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         self.postMessage({
           action: "initComplete",
           payload: {
-            tables: instance.tables,
             tableSchema: instance.tablesSchema,
             indexSchema: instance.indexesSchema,
-            currentTable: instance.tables[0],
+            currentTable: instance.firstTable,
           },
         });
         break;
       }
       case "openFile": {
-        // Open the database from the uploaded file
+        // Create a new database instance from the uploaded file
         instance = await Sqlite.open(new Uint8Array(payload.file));
         self.postMessage({
           action: "initComplete",
           payload: {
-            tables: instance.tables,
             tableSchema: instance.tablesSchema,
             indexSchema: instance.indexesSchema,
-            currentTable: instance.tables[0],
+            currentTable: instance.firstTable,
           },
         });
         break;
@@ -49,7 +46,6 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
             self.postMessage({
               action: "updateInstance",
               payload: {
-                tables: instance.tables,
                 tableSchema: instance.tablesSchema,
                 indexSchema: instance.indexesSchema,
               },

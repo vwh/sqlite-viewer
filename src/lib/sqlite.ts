@@ -7,18 +7,15 @@ export default class Sqlite {
   static sqlJsStatic?: SqlJsStatic;
   private db: Database;
 
-  public tables: string[] = [];
-  public tablesSchema: TableSchema = new Map();
+  public firstTable: string | null = null;
+  public tablesSchema: TableSchema = {};
   public indexesSchema: IndexSchema[] = [];
 
   private constructor(db: Database, isFile = false) {
     this.db = db;
 
     // Check if user is opening a file or creating a new database.
-    if (isFile) {
-      this.getTableNames();
-      this.getDatabaseSchema();
-    } else {
+    if (!isFile) {
       this.exec(
         "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)"
       );
@@ -33,10 +30,12 @@ export default class Sqlite {
       this.exec(
         "INSERT INTO posts (user_id, title, content) VALUES (2, 'Hello', 'World')"
       );
-      this.getDatabaseSchema();
     }
+
+    this.getDatabaseSchema();
   }
 
+  // Initialize SQL.js
   private static async initSQLjs(): Promise<SqlJsStatic> {
     if (Sqlite.sqlJsStatic) return Sqlite.sqlJsStatic;
     return await initSqlJs({
@@ -44,26 +43,29 @@ export default class Sqlite {
     });
   }
 
+  // Initialize a new database
   public static async create(): Promise<Sqlite> {
     const SQL = await Sqlite.initSQLjs();
     const db = new SQL.Database();
     return new Sqlite(db, false);
   }
 
+  // Initialize a new database from a file
   public static async open(file: Uint8Array): Promise<Sqlite> {
     const SQL = await Sqlite.initSQLjs();
     const db = new SQL.Database(file);
     return new Sqlite(db, true);
   }
 
+  // Execute a SQL statement
   public exec(sql: string) {
-    let doTablesChanged = false;
     const results = this.db.exec(sql);
     const upperSql = sql.toUpperCase();
+    // If the statement requires schema updates
+    let doTablesChanged = false;
 
     // Update tables if the SQL statement is a CREATE TABLE statement.
     if (isStructureChangeable(upperSql)) {
-      this.getTableNames();
       this.getDatabaseSchema(); // Update schema after creating a new table.
       doTablesChanged = true;
     }
@@ -71,36 +73,18 @@ export default class Sqlite {
     return [results, doTablesChanged] as const;
   }
 
+  // Return the database as bytes
+  // Used for downloading the database
   public download() {
     return this.db.export();
   }
 
-  private getTableNames() {
-    const [results] = this.exec(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence'"
-    );
-
-    if (results.length === 0) return [];
-    this.tables = results[0].values.map((value) => value[0] as string);
-  }
-
-  private getMaxSizeOfTable(
-    tableName: string,
-    filters: Record<string, string> | null = null
-  ) {
-    const query = `SELECT COUNT(*) FROM ${tableName} ${this.buildWhereClause(
-      filters
-    )}`;
-    const [results] = this.exec(query);
-    return Math.ceil((results[0].values[0][0] as number) / 10);
-  }
-
-  private getTableSchema(tableName: string) {
+  // Get the information of a table
+  // This includes the columns, primary key, default values, ...
+  private getTableInfo(tableName: string) {
     const [pragmaResults] = this.exec(`PRAGMA table_info(${tableName})`);
-
-    if (pragmaResults.length === 0) throw new Error("Table not found");
-
     const tableSchema: TableSchemaRow[] = [];
+
     for (const row of pragmaResults[0].values) {
       const [cid, name, type, notnull, dflt_value, pk] = row;
       tableSchema.push({
@@ -113,43 +97,62 @@ export default class Sqlite {
       });
     }
 
-    // Get the SQL for the table
-    const [sqlResults] = this.exec(
-      `SELECT sql FROM sqlite_master WHERE type='table' AND name='${tableName}'`
-    );
-    const sql = sqlResults[0].values[0][0] as string;
-    console.log(sql);
-
-    this.tablesSchema.set(tableName, {
-      schema: tableSchema,
-      sql: sql,
-    });
+    return tableSchema;
   }
 
-  private getIndexesSchema() {
+  // Get the schema of the database
+  // This includes tables, indexes, and foreign keys
+  // TODO: Add foreign keys
+  private getDatabaseSchema() {
+    // Reset the schema
+    this.tablesSchema = {};
+    this.indexesSchema = [];
+    this.firstTable = null;
+
     const [results] = this.exec(
-      `SELECT name, tbl_name, sql FROM sqlite_master WHERE type='index'`
+      "SELECT type, name, sql, tbl_name FROM sqlite_master WHERE name != 'sqlite_sequence'"
     );
 
     if (results.length === 0) return;
 
     for (const row of results[0].values) {
-      const [name, tableName, sql] = row;
-      this.indexesSchema.push({
-        name: name as string,
-        sql: sql as string,
-        tableName: tableName as string,
-      });
+      const [type, name, sql, tableName] = row;
+      if (type === "table") {
+        const tableSchema = this.getTableInfo(tableName as string);
+        this.tablesSchema[tableName as string] = {
+          schema: tableSchema,
+          sql: sql as string,
+        };
+      } else if (type === "index") {
+        this.indexesSchema.push({
+          name: name as string,
+          sql: sql as string,
+          tableName: tableName as string,
+        });
+      }
     }
+
+    this.firstTable = Object.keys(this.tablesSchema)[0];
   }
 
-  private getDatabaseSchema() {
-    // Get the schema for all tables
-    for (const table of this.tables) this.getTableSchema(table);
-    // Get the schema for all indexes
-    this.getIndexesSchema();
+  // Get the max size of the requested table
+  // Used for pagination
+  private getMaxSizeOfTable(
+    tableName: string,
+    filters: Record<string, string> | null = null
+  ) {
+    const [results] = this.exec(`
+      SELECT COUNT(*) FROM ${tableName} 
+      ${buildWhereClause(filters)}
+    `);
+
+    if (results.length === 0) return 0;
+
+    return Math.ceil((results[0].values[0][0] as number) / 10);
   }
 
+  // Get the data for the requested table
+  // Applies filters and sorters to the data
   public getTableData(
     table: string,
     page: number,
@@ -157,40 +160,43 @@ export default class Sqlite {
     sorters: Record<string, string> | null = null
   ) {
     const [limit, offset] = [10, (page - 1) * 10];
-    const query = `SELECT * FROM ${table} ${this.buildWhereClause(
-      filters
-    )} ${this.buildOrderByClause(sorters)} LIMIT ${limit} OFFSET ${offset}`;
-    console.log(query);
-    const [results] = this.exec(query);
+    const [results] = this.exec(`
+      SELECT * FROM ${table} 
+      ${buildWhereClause(filters)} 
+      ${buildOrderByClause(sorters)} 
+      LIMIT ${limit} OFFSET ${offset}
+    `);
 
+    // If the table is empty return an empty array
     if (results.length === 0) return [];
 
     const maxSize = this.getMaxSizeOfTable(table, filters);
     return [results, maxSize] as const;
   }
-
-  private buildWhereClause(filters: Record<string, string> | null = null) {
-    if (!filters) return "";
-
-    const filtersArray = Object.entries(filters)
-      .map(([column, value]) => `${column} LIKE '%${value}%'`)
-      .join(" AND ");
-
-    return `WHERE ${filtersArray}`;
-  }
-
-  private buildOrderByClause(sorters: Record<string, string> | null = null) {
-    if (!sorters) return "";
-
-    const sortersArray = Object.entries(sorters)
-      .map(([column, order]) => `${column} ${order}`)
-      .join(", ");
-
-    return `ORDER BY ${sortersArray}`;
-  }
 }
 
+// Check if the SQL statement is a structure changeable statement
 function isStructureChangeable(sql: string) {
   const match = sql.match(/^\s*(CREATE|DROP|ALTER)\s/i);
   return match !== null;
+}
+
+// Build the WHERE clause for a SQL statement
+function buildWhereClause(filters: Record<string, string> | null = null) {
+  if (!filters) return "";
+
+  const filtersArray = Object.entries(filters)
+    .map(([column, value]) => `${column} LIKE '%${value}%'`)
+    .join(" AND ");
+  return `WHERE ${filtersArray}`;
+}
+
+// Build the ORDER BY clause for a SQL statement
+function buildOrderByClause(sorters: Record<string, string> | null = null) {
+  if (!sorters) return "";
+
+  const sortersArray = Object.entries(sorters)
+    .map(([column, order]) => `${column} ${order}`)
+    .join(", ");
+  return `ORDER BY ${sortersArray}`;
 }

@@ -1,5 +1,5 @@
-export type TableSchema = Map<
-  string, // Table name
+export type TableSchema = Record<
+  string,
   {
     sql: string;
     schema: TableSchemaRow[];

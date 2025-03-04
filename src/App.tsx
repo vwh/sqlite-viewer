@@ -55,7 +55,6 @@ export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
 
   const [query, setQuery] = useState("");
-  const [isUserCustomQuery, setIsUserCustomQuery] = useState(false);
 
   const [data, setData] = useState<QueryExecResult[] | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
@@ -65,10 +64,8 @@ export default function App() {
     null
   );
 
-  const [tablesSchema, setTablesSchema] = useState<TableSchema>(new Map());
+  const [tablesSchema, setTablesSchema] = useState<TableSchema>({});
   const [indexesSchema, setIndexesSchema] = useState<IndexSchema[]>([]);
-
-  const [tables, setTables] = useState<string[]>([]);
   const [currentTable, setCurrentTable] = useState<string | null>(null);
 
   const [maxSize, setMaxSize] = useState<number>(1);
@@ -82,12 +79,12 @@ export default function App() {
     workerRef.current = new Worker(new URL("./sqlWorker.ts", import.meta.url), {
       type: "module",
     });
-
+    // Listen for messages from the worker
     workerRef.current.onmessage = (event) => {
       const { action, payload } = event.data;
+      // When the worker is initialized
       if (action === "initComplete") {
-        setTables(payload.tables);
-        setTablesSchema(new Map(payload.tableSchema));
+        setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
         setCurrentTable(payload.currentTable);
         // Reset
@@ -95,16 +92,18 @@ export default function App() {
         setSorters(null);
         setPage(1);
         setIsDatabaseLoading(false);
-      } else if (action === "queryComplete") {
+      } // When the query is executed and returns results
+      else if (action === "queryComplete") {
         if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
         setData(payload.results);
         setIsDataLoading(false);
-      } else if (action === "updateInstance") {
-        setTables(payload.tables);
-        setTablesSchema(new Map(payload.tableSchema));
+      } // When the database is updated and requires a new schema
+      else if (action === "updateInstance") {
+        setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
         setIsDataLoading(false);
-      } else if (action === "downloadComplete") {
+      } // When the database is downloaded
+      else if (action === "downloadComplete") {
         const blob = new Blob([payload.bytes], {
           type: "application/octet-stream",
         });
@@ -113,7 +112,8 @@ export default function App() {
         link.href = url;
         link.download = "database.sqlite";
         link.click();
-      } else if (action === "queryError") {
+      } // When the worker encounters an error
+      else if (action === "queryError") {
         console.error("Worker error:", payload.error);
         setIsDataLoading(false);
       }
@@ -162,7 +162,7 @@ export default function App() {
     []
   );
 
-  // Execute a SQL statement by sending it to the worker
+  // Handle SQL statement execution by sending it to the worker
   const handleQueryExecute = useCallback(() => {
     // Remove SQL comments before processing
     const cleanedQuery = query
@@ -182,7 +182,7 @@ export default function App() {
     }
   }, [query, currentTable, page, filters, sorters]);
 
-  // When user changes the page
+  // Handles when user changes the page
   const handlePageChange = useCallback(
     (type: "next" | "prev" | "first" | "last" | number) => {
       setPage((prev) => {
@@ -197,14 +197,16 @@ export default function App() {
     [maxSize]
   );
 
-  // When user updates the filter
+  // Handle when user updates the filter
+  // Filters the data by searching for a value in a column using LIKE
   const handleQueryFilter = useCallback((column: string, value: string) => {
     setFilters((prev) => ({ ...prev, [column]: value }));
     // Reset to first page when filtering
     setPage(1);
   }, []);
 
-  // When user updates the sorter
+  // Handle when user updates the sorter
+  // Sorts the data order by the selected column
   const handleQuerySorter = useCallback((column: string) => {
     setSorters((prev) => ({
       ...prev,
@@ -212,7 +214,7 @@ export default function App() {
     }));
   }, []);
 
-  // When user changes the table
+  // Handle when user changes the table
   const handleTableChange = useCallback((selectedTable: string) => {
     setFilters(null);
     setSorters(null);
@@ -220,7 +222,7 @@ export default function App() {
     setCurrentTable(selectedTable);
   }, []);
 
-  // When user downloads the database
+  // Handle when user downloads the database
   const handleDownload = useCallback(() => {
     workerRef.current?.postMessage({ action: "download" });
   }, []);
@@ -235,7 +237,7 @@ export default function App() {
           <SelectValue placeholder="Select Table" />
         </SelectTrigger>
         <SelectContent>
-          {tables.map((table) => (
+          {Object.keys(tablesSchema).map((table) => (
             <SelectItem key={table} value={table}>
               {table}
             </SelectItem>
@@ -243,7 +245,7 @@ export default function App() {
         </SelectContent>
       </Select>
     ),
-    [tables, currentTable, handleTableChange]
+    [tablesSchema, currentTable, handleTableChange]
   );
 
   const sorterButton = useCallback(
@@ -310,7 +312,7 @@ export default function App() {
           </div>
         </section>
         <section>
-          {[...tablesSchema].map(([tableName, tableData]) => (
+          {Object.entries(tablesSchema).map(([tableName, tableData]) => (
             <div key={tableName} className="flex flex-col gap-2">
               <h3 className="text-lg font-bold">{tableName}</h3>
               <span>{tableData.sql}</span>
