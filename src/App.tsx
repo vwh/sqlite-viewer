@@ -26,6 +26,15 @@ import {
   ArrowDownNarrowWideIcon,
   ArrowUpDownIcon,
   ArrowUpNarrowWideIcon,
+  ChevronRightIcon,
+  ChevronLastIcon,
+  ChevronLeftIcon,
+  ChevronFirstIcon,
+  FilterXIcon,
+  ListRestartIcon,
+  SaveIcon,
+  PlayIcon,
+  Table2Icon,
 } from "lucide-react";
 
 const FilterInput = memo(
@@ -280,7 +289,7 @@ export default function App() {
         {sorters?.[column] ? (
           sorters?.[column] === "asc" ? (
             <button
-              title="Descending"
+              title="Sort column in descending order"
               type="button"
               aria-label="Sort Descending"
               disabled={isDataLoading}
@@ -290,7 +299,7 @@ export default function App() {
             </button>
           ) : (
             <button
-              title="Ascending"
+              title="Sort column in ascending order"
               type="button"
               aria-label="Sort Ascending"
               disabled={isDataLoading}
@@ -301,7 +310,7 @@ export default function App() {
           )
         ) : (
           <button
-            title="Sort column"
+            title="Sort column in ascending order"
             type="button"
             aria-label="Sort Column"
             disabled={isDataLoading}
@@ -317,33 +326,41 @@ export default function App() {
 
   const paginationControls = useMemo(
     () => (
-      <section className="flex items-center gap-2">
+      <section className="flex items-center gap-1">
         <Button
           onClick={() => handlePageChange("first")}
           disabled={page === 1 || isDataLoading}
+          size="icon"
+          title="Go to the first page"
         >
-          First
+          <ChevronFirstIcon className="h-6 w-6" />
         </Button>
         <Button
           onClick={() => handlePageChange("prev")}
           disabled={page === 1 || isDataLoading}
+          size="icon"
+          title="Go to the previous page"
         >
-          Prev
+          <ChevronLeftIcon className="h-6 w-6" />
         </Button>
-        <span>
+        <span className="px-2">
           Page: {page} of {maxSize}
         </span>
         <Button
           onClick={() => handlePageChange("next")}
           disabled={page >= maxSize || isDataLoading}
+          size="icon"
+          title="Go to the next page"
         >
-          Next
+          <ChevronRightIcon className="h-6 w-6" />
         </Button>
         <Button
           onClick={() => handlePageChange("last")}
           disabled={page === maxSize || isDataLoading}
+          size="icon"
+          title="Go to the last page"
         >
-          Last
+          <ChevronLastIcon className="h-6 w-6" />
         </Button>
         {/* TODO: Add a state for the input */}
         <Input
@@ -366,12 +383,10 @@ export default function App() {
   const schemaTab = useMemo(
     () => (
       <>
-        <section>
-          <div className="flex items-center gap-2">
-            <Button>Create Table</Button>
-            <Button>Create Index</Button>
-            <Button>Print Schema</Button>
-          </div>
+        <section className="flex items-center gap-1">
+          <Button>Create Table</Button>
+          <Button>Create Index</Button>
+          <Button>Print Schema</Button>
         </section>
         <section>
           {Object.entries(tablesSchema).map(([tableName, tableData]) => (
@@ -405,10 +420,10 @@ export default function App() {
   const executeTab = useMemo(
     () => (
       <>
-        <section>
-          <div className="flex items-center gap-2">
-            <Button onClick={handleQueryExecute}>Execute SQL</Button>
-          </div>
+        <section className="flex items-center gap-1">
+          <Button onClick={handleQueryExecute} size="icon" title="Execute SQL">
+            <PlayIcon className="h-6 w-6" />
+          </Button>
         </section>
 
         <section className="flex flex-col gap-2">
@@ -427,24 +442,32 @@ export default function App() {
   const dataTab = useMemo(
     () => (
       <>
-        <section>
+        <section className="flex items-center gap-1">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <span>Table:</span>
-              {TableSelector}
-            </div>
-            <Button onClick={() => setFilters(null)} disabled={filters == null}>
-              Clear Filters
-            </Button>
-            <Button onClick={() => setSorters(null)} disabled={sorters == null}>
-              Reset Order
-            </Button>
-            <Button>Export</Button>
-            <Button>Print Data</Button>
-            <Button>Insert Row</Button>
-            <Button>Update the current row</Button>
-            <Button>Delete the current row</Button>
+            <span>Table:</span>
+            {TableSelector}
           </div>
+          <Button
+            onClick={() => setFilters(null)}
+            disabled={filters == null}
+            size="icon"
+            title="Clear applied filters"
+          >
+            <FilterXIcon className="h-6 w-6" />
+          </Button>
+          <Button
+            onClick={() => setSorters(null)}
+            disabled={sorters == null}
+            size="icon"
+            title="Reset sorting"
+          >
+            <ListRestartIcon className="h-6 w-6" />
+          </Button>
+          <Button>Export</Button>
+          <Button>Print Data</Button>
+          <Button>Insert Row</Button>
+          <Button>Update the current row</Button>
+          <Button>Delete the current row</Button>
         </section>
 
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
@@ -541,11 +564,13 @@ export default function App() {
           className="cursor-pointer"
           onChange={handleFileChange}
         />
-        <Button onClick={handleDownload}>Download Database</Button>
+        <Button onClick={handleDownload} size="icon" title="Save the database">
+          <SaveIcon className="h-6 w-6" />
+        </Button>
       </section>
 
       <Tabs defaultValue="structure">
-        <TabsList>
+        <TabsList className="w-full">
           <TabsTrigger value="structure">Database Structure</TabsTrigger>
           <TabsTrigger value="data">Browse Data</TabsTrigger>
           <TabsTrigger value="execute">Execute SQL</TabsTrigger>
