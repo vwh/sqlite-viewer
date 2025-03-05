@@ -60,6 +60,7 @@ export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
 
   const [query, setQuery] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [data, setData] = useState<SqlValue[][] | null>(null);
   const [columns, setColumns] = useState<string[] | null>(null);
@@ -116,6 +117,7 @@ export default function App() {
           setData(null);
         }
         setIsDataLoading(false);
+        setErrorMessage(null);
       } // When the database is updated and requires a new schema
       else if (action === "updateInstance") {
         setTablesSchema(payload.tableSchema);
@@ -134,6 +136,7 @@ export default function App() {
       } // When the worker encounters an error
       else if (action === "queryError") {
         console.error("Worker error:", payload.error);
+        setErrorMessage(payload.error.message);
         setIsDataLoading(false);
       }
     };
@@ -447,6 +450,7 @@ export default function App() {
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
         <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
         <p>{JSON.stringify(selectedRow)}</p>
+        <p>{errorMessage}</p>
         <Table>
           <TableHeader>
             <TableRow>
@@ -525,6 +529,7 @@ export default function App() {
       columns,
       currentTable,
       tablesSchema,
+      errorMessage,
     ]
   );
 
