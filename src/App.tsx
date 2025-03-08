@@ -61,7 +61,7 @@ const FilterInput = memo(
     return (
       <Input
         type="text"
-        className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+        className="border border-primary/20 rounded px-2 py-1 max-h-7 w-full text-xs"
         value={value}
         onChange={handleChange}
         placeholder="Filter"
@@ -399,14 +399,14 @@ export default function App() {
 
   const schemaTab = useMemo(
     () => (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 h-full">
         <section className="flex items-center gap-1">
           <Button>Create Table</Button>
           <Button>Create Index</Button>
           <Button>Print Schema</Button>
         </section>
 
-        <section className="flex flex-col gap-2 mb-20">{schemaSection}</section>
+        {schemaSection}
       </div>
     ),
     [schemaSection]
@@ -438,15 +438,17 @@ export default function App() {
     () => (
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-primary/10">
             {columns && currentTable ? (
               columns.map((column, index) => (
-                <TableHead key={column} className="py-1">
-                  <div className="flex items-center gap-1">
+                <TableHead key={column} className="p-2">
+                  <div className="flex items-center gap-1 pb-1">
                     <ColumnIcon
                       columnSchema={tablesSchema[currentTable].schema[index]}
                     />
-                    <span className="capitalize font-bold pb-1">{column}</span>
+                    <span className="capitalize font-bold text-foreground">
+                      {column}
+                    </span>
                     {sorterButton(column)}
                   </div>
                   <FilterInput
@@ -457,17 +459,19 @@ export default function App() {
                 </TableHead>
               ))
             ) : (
-              <p>No columns found</p>
+              <TableHead>
+                <p>No columns found</p>
+              </TableHead>
             )}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data ? (
-            data?.map((row, i) => (
+          {data && data.length > 0 ? (
+            data.map((row, i) => (
               <TableRow
                 key={i}
                 onClick={() => setSelectedRow({ data: row, index: i })}
-                className={selectedRow?.index === i ? "bg-primary/20" : ""}
+                className={selectedRow?.index === i ? "bg-primary/10" : ""}
               >
                 {row.map((value, j) => (
                   <TableCell key={j}>
@@ -479,19 +483,25 @@ export default function App() {
               </TableRow>
             ))
           ) : (
-            <div>
-              {filters ? (
-                <div>
-                  <p>No data found for the current filters</p>
-                  <Button onClick={() => setFilters(null)}>
-                    Clear filters
-                  </Button>
+            <TableRow>
+              <TableCell
+                colSpan={columns?.length || 1}
+                className="h-32 text-center"
+              >
+                <div className="flex flex-col items-center justify-center gap-2">
+                  {filters ? (
+                    <>
+                      <p>No data found for the current filters</p>
+                      <Button onClick={() => setFilters(null)}>
+                        Clear filters
+                      </Button>
+                    </>
+                  ) : (
+                    <p>No data found in the current table</p>
+                  )}
                 </div>
-              ) : (
-                // When table is empty
-                <p>No data found</p>
-              )}
-            </div>
+              </TableCell>
+            </TableRow>
           )}
         </TableBody>
       </Table>
@@ -546,11 +556,11 @@ export default function App() {
 
         <ResizablePanelGroup
           direction="horizontal"
-          className="rounded-lg border h-screen overflow-auto min-h-[calc(100vh-14rem)]"
+          className="rounded-lg border h-screen overflow-auto min-h-[calc(100vh-15rem)]"
         >
           {/* Left Panel */}
           <ResizablePanel defaultSize={50}>
-            <div className="flex h-full flex-col gap-2">
+            <div className="flex h-full flex-col">
               <div className="flex-1 max-h-[620px] overflow-auto">
                 {dataTable}
               </div>

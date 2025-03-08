@@ -121,6 +121,77 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Base scrollbar styling */
+  * {
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  /* Webkit scrollbar styling (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: var(--radius-sm);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--muted);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ring);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: var(--muted);
+  }
+
+  /* Firefox specific styling */
+  * {
+    scrollbar-color: var(--muted-foreground) var(--muted);
+  }
+
+  /* You might need to add this to elements that should have scrolling */
+  .scrollable {
+    overflow: auto;
+    height: 100%;
+    padding-right: 2px; /* Prevent content from bumping against scrollbar */
+  }
+
+  /* Your current theme prevents scrolling on body, if you want to enable it: */
+  html,
+  body {
+    height: 100%;
+    /* Change this if you want to allow page scrolling */
+    /* overflow: auto; */
+  }
+
+  /* Some elements might need specific scroll behavior */
+  .scroll-y {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .scroll-x {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* No scrollbar visibility but still scrollable */
+  .scroll-hidden {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scroll-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 
 html,

@@ -11,18 +11,6 @@ import {
   TableIcon,
 } from "lucide-react";
 
-const ColumnItem = ({ columnSchema }: { columnSchema: TableSchemaRow }) => {
-  return (
-    <div className="flex items-center pl-8 py-1 hover:bg-primary/20">
-      <ColumnIcon columnSchema={columnSchema} />
-      <span className="ml-2 font-mono text-sm">{columnSchema.name}</span>
-      <span className="ml-auto text-xs text-gray-500 mr-4">
-        {columnSchema.type}
-      </span>
-    </div>
-  );
-};
-
 const TableItem = ({
   name,
   table,
@@ -40,7 +28,7 @@ const TableItem = ({
   return (
     <div>
       <div
-        className="flex items-center py-1 cursor-pointer hover:bg-primary/20"
+        className="flex items-center py-1 cursor-pointer hover:bg-primary/5 rounded-b-sm"
         onClick={toggleExpanded}
       >
         {expanded ? (
@@ -52,9 +40,18 @@ const TableItem = ({
       </div>
 
       {expanded && (
-        <div className="border-l-2 border-gray-200 ml-2">
-          {table.schema.map((column, idx) => (
-            <ColumnItem key={idx} columnSchema={column} />
+        <div className="border-l-2 border-primary/20 ml-2">
+          {table.schema.map((columnSchema, idx) => (
+            <div
+              key={idx}
+              className="flex items-center pl-8 py-1 hover:bg-primary/5 rounded-tr-sm rounded-br-sm"
+            >
+              <ColumnIcon columnSchema={columnSchema} />
+              <span className="ml-2 font-mono text-sm">
+                {columnSchema.name}
+              </span>
+              <span className="ml-auto text-xs mr-4">{columnSchema.type}</span>
+            </div>
           ))}
         </div>
       )}
@@ -62,7 +59,6 @@ const TableItem = ({
   );
 };
 
-// Component for the tables section
 const TablesSection = ({
   tablesSchema,
   expandedTables,
@@ -86,7 +82,7 @@ const TablesSection = ({
   return (
     <div className="mb-2">
       <div
-        className="flex items-center py-2 cursor-pointer hover:bg-primary/20 bg-primary/10 rounded-sm"
+        className="flex items-center py-2 cursor-pointer hover:bg-primary/5 bg-primary/10"
         onClick={toggleSection}
       >
         {sectionExpanded ? (
@@ -100,7 +96,7 @@ const TablesSection = ({
         {sectionExpanded && (
           <div className="ml-auto flex space-x-2 pr-2">
             <button
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-primary/50 hover:text-primary/800"
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -110,7 +106,7 @@ const TablesSection = ({
               Expand All
             </button>
             <button
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-primary/50 hover:text-primary/800"
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -140,7 +136,6 @@ const TablesSection = ({
   );
 };
 
-// Component for the index section
 const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
   const [sectionExpanded, setSectionExpanded] = useState(true);
   const [expandedIndexes, setExpandedIndexes] = useState<string[]>([]);
@@ -168,7 +163,7 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
   return (
     <div>
       <div
-        className="flex items-center py-2 cursor-pointer hover:bg-primary/20 bg-primary/10 rounded-sm"
+        className="flex items-center py-2 cursor-pointer hover:bg-primary/5 bg-primary/10"
         onClick={toggleSection}
       >
         {sectionExpanded ? (
@@ -182,7 +177,7 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
         {sectionExpanded && indexes.length > 0 && (
           <div className="ml-auto flex space-x-2  pr-2">
             <button
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-primary/50 hover:text-primary/800"
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -192,7 +187,7 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
               Expand All
             </button>
             <button
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-primary/50 hover:text-primary/800"
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -210,7 +205,7 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
           {indexes.map((index, idx) => (
             <div key={idx}>
               <div
-                className="flex items-center py-1 cursor-pointer hover:bg-primary/20"
+                className="flex items-center py-1 cursor-pointer hover:bg-primary/5 rounded-b-sm"
                 onClick={() => toggleIndex(index.name)}
               >
                 {expandedIndexes.includes(index.name) ? (
@@ -219,13 +214,13 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
                   <ChevronRightIcon className="h-4 w-4 mr-1" />
                 )}
                 <span className="ml-1 font-medium">{index.name}</span>
-                <span className="ml-2 text-xs text-gray-500">
+                <span className="ml-2 text-xs text-primary/50">
                   on {index.tableName}
                 </span>
               </div>
 
               {expandedIndexes.includes(index.name) && (
-                <div className="pl-8 py-1 text-xs text-gray-600 border-l-2 border-gray-200 ml-2">
+                <div className="pl-8 py-1 text-xs text-primary/50 border-l-2 border-primary/20 ml-2">
                   {index.sql}
                 </div>
               )}
@@ -240,9 +235,11 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
 const DBSchemaTree = ({
   tablesSchema,
   indexesSchema,
+  includeTitle = true,
 }: {
   tablesSchema: TableSchema;
   indexesSchema: IndexSchema[];
+  includeTitle?: boolean;
 }) => {
   // Use localStorage to persist expanded state
   const [expandedTables, setExpandedTables] = useState<string[]>([]);
@@ -270,10 +267,7 @@ const DBSchemaTree = ({
 
   return (
     <div className="shadow-sm w-full h-full flex flex-col">
-      <div className="p-2 border-b bg-primary/10 flex justify-between items-center">
-        <h3 className="text-sm font-medium">Database Schema</h3>
-      </div>
-      <div className="p-2 flex-1 overflow-auto max-h-[calc(100vh-14rem)]">
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-14rem)]">
         <TablesSection
           tablesSchema={tablesSchema}
           expandedTables={expandedTables}
