@@ -446,7 +446,7 @@ export default function App() {
                     <ColumnIcon
                       columnSchema={tablesSchema[currentTable].schema[index]}
                     />
-                    <span className="capitalize font-bold">{column}</span>
+                    <span className="capitalize font-bold pb-1">{column}</span>
                     {sorterButton(column)}
                   </div>
                   <FilterInput
@@ -467,7 +467,7 @@ export default function App() {
               <TableRow
                 key={i}
                 onClick={() => setSelectedRow({ data: row, index: i })}
-                className={selectedRow?.index === i ? "bg-blue-100" : ""}
+                className={selectedRow?.index === i ? "bg-primary/20" : ""}
               >
                 {row.map((value, j) => (
                   <TableCell key={j}>

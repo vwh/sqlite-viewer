@@ -5,6 +5,25 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rewrite</title>
+    <!-- Fonts -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
+    /></noscript>
+    <!-- Critical CSS -->
+    <style>
+      body {
+        font-family: "Lexend", sans-serif;
+        font-display: swap;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
