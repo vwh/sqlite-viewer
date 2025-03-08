@@ -7,6 +7,7 @@ export default class Sqlite {
   static sqlJsStatic?: SqlJsStatic;
   private db: Database;
 
+  private limit: number = 50;
   public firstTable: string | null = null;
   public tablesSchema: TableSchema = {};
   public indexesSchema: IndexSchema[] = [];
@@ -176,7 +177,7 @@ export default class Sqlite {
     filters: Record<string, string> | null = null,
     sorters: Record<string, string> | null = null
   ) {
-    const [limit, offset] = [10, (page - 1) * 10];
+    const [limit, offset] = [this.limit, (page - 1) * this.limit];
     const [results] = this.exec(`
       SELECT * FROM ${table} 
       ${buildWhereClause(filters)} 

@@ -36,6 +36,11 @@ import {
   PlayIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 const FilterInput = memo(
   ({
@@ -380,6 +385,18 @@ export default function App() {
     [page, maxSize, handlePageChange, isDataLoading]
   );
 
+  const schemaSection = useMemo(
+    () => (
+      <section className="flex flex-col gap-2 h-full">
+        <DBSchemaTree
+          tablesSchema={tablesSchema}
+          indexesSchema={indexesSchema}
+        />
+      </section>
+    ),
+    [tablesSchema, indexesSchema]
+  );
+
   const schemaTab = useMemo(
     () => (
       <div className="flex flex-col gap-4">
@@ -389,15 +406,10 @@ export default function App() {
           <Button>Print Schema</Button>
         </section>
 
-        <section className="flex flex-col gap-2 mb-20">
-          <DBSchemaTree
-            tablesSchema={tablesSchema}
-            indexesSchema={indexesSchema}
-          />
-        </section>
+        <section className="flex flex-col gap-2 mb-20">{schemaSection}</section>
       </div>
     ),
-    [tablesSchema, indexesSchema]
+    [schemaSection]
   );
 
   const executeTab = useMemo(
@@ -420,6 +432,80 @@ export default function App() {
       </>
     ),
     [query, handleQueryExecute]
+  );
+
+  const dataTable = useMemo(
+    () => (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns && currentTable ? (
+              columns.map((column, index) => (
+                <TableHead key={column} className="py-1">
+                  <div className="flex items-center gap-1">
+                    <ColumnIcon
+                      columnSchema={tablesSchema[currentTable].schema[index]}
+                    />
+                    <span className="capitalize font-bold">{column}</span>
+                    {sorterButton(column)}
+                  </div>
+                  <FilterInput
+                    column={column}
+                    value={filters?.[column] || ""}
+                    onChange={handleQueryFilter}
+                  />
+                </TableHead>
+              ))
+            ) : (
+              <p>No columns found</p>
+            )}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data ? (
+            data?.map((row, i) => (
+              <TableRow
+                key={i}
+                onClick={() => setSelectedRow({ data: row, index: i })}
+                className={selectedRow?.index === i ? "bg-blue-100" : ""}
+              >
+                {row.map((value, j) => (
+                  <TableCell key={j}>
+                    {value ?? (
+                      <span className="text-muted-foreground">NULL</span>
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <div>
+              {filters ? (
+                <div>
+                  <p>No data found for the current filters</p>
+                  <Button onClick={() => setFilters(null)}>
+                    Clear filters
+                  </Button>
+                </div>
+              ) : (
+                // When table is empty
+                <p>No data found</p>
+              )}
+            </div>
+          )}
+        </TableBody>
+      </Table>
+    ),
+    [
+      data,
+      filters,
+      handleQueryFilter,
+      selectedRow,
+      sorterButton,
+      columns,
+      currentTable,
+      tablesSchema,
+    ]
   );
 
   const dataTab = useMemo(
@@ -457,85 +543,56 @@ export default function App() {
         <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
         <p>{JSON.stringify(selectedRow)}</p>
         <p>{errorMessage}</p>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns && currentTable ? (
-                columns.map((column, index) => (
-                  <TableHead key={column}>
-                    <div className="flex items-center gap-1">
-                      <ColumnIcon
-                        columnSchema={tablesSchema[currentTable].schema[index]}
-                      />
-                      <span className="capitalize font-bold">{column}</span>
-                      {sorterButton(column)}
-                    </div>
-                    <FilterInput
-                      column={column}
-                      value={filters?.[column] || ""}
-                      onChange={handleQueryFilter}
-                    />
-                    {JSON.stringify(tablesSchema[currentTable].schema[index])}
-                  </TableHead>
-                ))
-              ) : (
-                <p>No columns found</p>
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data ? (
-              data?.map((row, i) => (
-                <TableRow
-                  key={i}
-                  onClick={() => setSelectedRow({ data: row, index: i })}
-                  className={selectedRow?.index === i ? "bg-blue-100" : ""}
-                >
-                  {row.map((value, j) => (
-                    <TableCell key={j}>
-                      {value ?? (
-                        <span className="text-muted-foreground">NULL</span>
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <div>
-                {filters ? (
-                  <div>
-                    <p>No data found for the current filters</p>
-                    <Button onClick={() => setFilters(null)}>
-                      Clear filters
-                    </Button>
-                  </div>
-                ) : (
-                  // When table is empty
-                  <p>No data found</p>
-                )}
-              </div>
-            )}
-          </TableBody>
-        </Table>
 
-        {paginationControls}
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="rounded-lg border h-screen overflow-auto min-h-[calc(100vh-14rem)]"
+        >
+          {/* Left Panel */}
+          <ResizablePanel defaultSize={50}>
+            <div className="flex h-full flex-col gap-2">
+              <div className="flex-1 max-h-[620px] overflow-auto">
+                {dataTable}
+              </div>
+              <div className="p-2 border-t">{paginationControls}</div>
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+          {/* Right Panel */}
+          <ResizablePanel defaultSize={50}>
+            <ResizablePanelGroup direction="vertical">
+              {/* Top Panel */}
+              <ResizablePanel defaultSize={25}>
+                <div className="flex h-full items-center justify-center p-6">
+                  <span className="font-semibold">Soon</span>
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Bottom Panel */}
+              <ResizablePanel defaultSize={75}>
+                <div className="flex-1 overflow-auto h-full">
+                  {schemaSection}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </>
     ),
     [
       TableSelector,
-      data,
+      dataTable,
       filters,
       sorters,
-      handleQueryFilter,
       selectedRow,
       paginationControls,
       isDataLoading,
       isDatabaseLoading,
-      sorterButton,
-      columns,
-      currentTable,
-      tablesSchema,
       errorMessage,
+      schemaSection,
     ]
   );
 
