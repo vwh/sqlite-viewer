@@ -40,12 +40,18 @@ export const ColumnIcon: React.FC<{ columnSchema: TableSchemaRow }> = memo(
       <HelpCircleIcon className="h-4 w-4 text-gray-500" />
     );
 
-    return (
-      <div className="flex items-center gap-[2px]">
-        {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
-        {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
-        {typeIcon}
-      </div>
-    );
+    if (isPrimaryKey)
+      return <KeyRoundIcon className="h-4 w-4 text-yellow-500" />;
+    if (isForeignKey)
+      return <KeySquareIcon className="h-4 w-4 text-purple-500" />;
+    return typeIcon;
+
+    // return (
+    //   <div className="flex items-center gap-[2px]">
+    //     {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
+    //     {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
+    //     {typeIcon}
+    //   </div>
+    // );
   }
 );

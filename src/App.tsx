@@ -34,8 +34,8 @@ import {
   ListRestartIcon,
   SaveIcon,
   PlayIcon,
-  Table2Icon,
 } from "lucide-react";
+import DBSchemaTree from "./components/DBSchemaTree";
 
 const FilterInput = memo(
   ({
@@ -382,37 +382,20 @@ export default function App() {
 
   const schemaTab = useMemo(
     () => (
-      <>
+      <div className="flex flex-col gap-4">
         <section className="flex items-center gap-1">
           <Button>Create Table</Button>
           <Button>Create Index</Button>
           <Button>Print Schema</Button>
         </section>
-        <section>
-          {Object.entries(tablesSchema).map(([tableName, tableData]) => (
-            <div key={tableName} className="flex flex-col gap-2">
-              <h3 className="text-lg font-bold">{tableName}</h3>
-              <span>{tableData.sql}</span>
-              <ul>
-                {Object.entries(tableData.schema).map(([index, column]) => (
-                  <li key={index} className="flex gap-2 items-center">
-                    <span className="text-sm">
-                      {column.name}, {column.type}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {indexesSchema.map((index) => (
-            <div key={index.name} className="flex flex-col gap-2">
-              <h3 className="text-lg font-bold">{index.name}</h3>
-              <span>{index.sql}</span>
-              <span>{index.tableName}</span>
-            </div>
-          ))}
+
+        <section className="flex flex-col gap-2 mb-20">
+          <DBSchemaTree
+            tablesSchema={tablesSchema}
+            indexesSchema={indexesSchema}
+          />
         </section>
-      </>
+      </div>
     ),
     [tablesSchema, indexesSchema]
   );
