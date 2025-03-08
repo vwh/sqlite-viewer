@@ -166,7 +166,7 @@ export default class Sqlite {
 
     if (results.length === 0) return 0;
 
-    return Math.ceil((results[0].values[0][0] as number) / 10);
+    return Math.ceil((results[0].values[0][0] as number) / this.limit);
   }
 
   // Get the data for the requested table
