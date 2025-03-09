@@ -34,6 +34,7 @@ import {
   ListRestartIcon,
   SaveIcon,
   PlayIcon,
+  FolderOutputIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -138,7 +139,12 @@ export default function App() {
         setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
         setIsDataLoading(false);
-      } // When the database is downloaded
+      } else if (action === "updateComplete") {
+        // TODO setIsUpdating(false);
+        // TODO Toast notification
+        console.log("Update complete");
+      }
+      // When the database is downloaded
       else if (action === "downloadComplete") {
         const blob = new Blob([payload.bytes], {
           type: "application/octet-stream",
@@ -148,11 +154,26 @@ export default function App() {
         link.href = url;
         link.download = "database.sqlite";
         link.click();
-      } // When the worker encounters an error
+      } else if (action === "exportComplete") {
+        // TODO setIsExporting(false);
+        console.log(payload.results);
+        const blob = new Blob([payload.results], {
+          type: "text/csv",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "export.csv";
+        link.click();
+      }
+      // When the worker encounters an error
       else if (action === "queryError") {
         console.error("Worker error:", payload.error);
+        // TODO setErrorMessage(payload.error.message); on when we do user custom queries
         setErrorMessage(payload.error.message);
         setIsDataLoading(false);
+      } else {
+        console.warn("Unknown action:", action);
       }
     };
 
@@ -272,6 +293,24 @@ export default function App() {
     setCurrentTable(selectedTable);
   }, []);
 
+  // Handle when user exports the data
+  const handleExport = useCallback(
+    (exportType: "table" | "all" | "current") => {
+      console.log("Exporting", exportType);
+      workerRef.current?.postMessage({
+        action: "export",
+        payload: {
+          table: currentTable!,
+          filters,
+          sorters,
+          page,
+          exportType: exportType,
+        },
+      });
+    },
+    [currentTable, filters, sorters, page]
+  );
+
   // Handle when user downloads the database
   const handleDownload = useCallback(() => {
     workerRef.current?.postMessage({ action: "download" });
@@ -378,58 +417,57 @@ export default function App() {
 
   const paginationControls = useMemo(
     () => (
-      <section className="flex items-center gap-1">
-        <Button
-          onClick={() => handlePageChange("first")}
-          disabled={page === 1 || isDataLoading}
-          size="icon"
-          title="Go to the first page"
-        >
-          <ChevronFirstIcon className="h-6 w-6" />
-        </Button>
-        <Button
-          onClick={() => handlePageChange("prev")}
-          disabled={page === 1 || isDataLoading}
-          size="icon"
-          title="Go to the previous page"
-        >
-          <ChevronLeftIcon className="h-6 w-6" />
-        </Button>
-        <span className="px-2">
-          Page: {page} of {maxSize}
-        </span>
-        <Button
-          onClick={() => handlePageChange("next")}
-          disabled={page >= maxSize || isDataLoading}
-          size="icon"
-          title="Go to the next page"
-        >
-          <ChevronRightIcon className="h-6 w-6" />
-        </Button>
-        <Button
-          onClick={() => handlePageChange("last")}
-          disabled={page === maxSize || isDataLoading}
-          size="icon"
-          title="Go to the last page"
-        >
-          <ChevronLastIcon className="h-6 w-6" />
-        </Button>
-        {/* TODO: Add a state for the input */}
-        <Input
-          className="w-36"
-          type="number"
-          defaultValue={page}
-          disabled={isDataLoading}
-          min={1}
-          max={maxSize}
-          onBlur={(e) => {
-            const page = Number.parseInt(e.target.value);
-            if (page > 0 && page <= maxSize) handlePageChange(page);
-          }}
-        />
+      <section className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Button
+            onClick={() => handlePageChange("first")}
+            disabled={page === 1 || isDataLoading}
+            size="icon"
+            title="Go to the first page"
+          >
+            <ChevronFirstIcon className="h-6 w-6" />
+          </Button>
+          <Button
+            onClick={() => handlePageChange("prev")}
+            disabled={page === 1 || isDataLoading}
+            size="icon"
+            title="Go to the previous page"
+          >
+            <ChevronLeftIcon className="h-6 w-6" />
+          </Button>
+          <span className="px-2">
+            Page: {page} of {maxSize}
+          </span>
+          <Button
+            onClick={() => handlePageChange("next")}
+            disabled={page >= maxSize || isDataLoading}
+            size="icon"
+            title="Go to the next page"
+          >
+            <ChevronRightIcon className="h-6 w-6" />
+          </Button>
+          <Button
+            onClick={() => handlePageChange("last")}
+            disabled={page === maxSize || isDataLoading}
+            size="icon"
+            title="Go to the last page"
+          >
+            <ChevronLastIcon className="h-6 w-6" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button>Insert new row</Button>
+          <Button
+            onClick={() => handleExport("current")}
+            title="Export current data as CSV"
+          >
+            <FolderOutputIcon className="h-6 w-6" />
+            Export current data
+          </Button>
+        </div>
       </section>
     ),
-    [page, maxSize, handlePageChange, isDataLoading]
+    [page, maxSize, handlePageChange, isDataLoading, handleExport]
   );
 
   const schemaSection = useMemo(
@@ -649,28 +687,31 @@ export default function App() {
           <Button
             onClick={() => setFilters(null)}
             disabled={filters == null}
-            size="icon"
             title="Clear applied filters"
           >
             <FilterXIcon className="h-6 w-6" />
+            Clear filters
           </Button>
           <Button
             onClick={() => setSorters(null)}
             disabled={sorters == null}
-            size="icon"
             title="Reset sorting"
           >
             <ListRestartIcon className="h-6 w-6" />
+            Reset sorting
           </Button>
-          <Button>Export</Button>
-          <Button>Print Data</Button>
-          <Button>Insert Row</Button>
+          {/* TODO: maybe memo this button later on */}
+          <Button
+            onClick={() => handleExport("table")}
+            title="Export the current table as CSV"
+          >
+            <FolderOutputIcon className="h-6 w-6" />
+            Export table
+          </Button>
         </section>
 
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
         <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
-        <p>{JSON.stringify(selectedRow)}</p>
-        <p>{errorMessage}</p>
 
         <ResizablePanelGroup
           direction="horizontal"
@@ -713,13 +754,12 @@ export default function App() {
       dataTable,
       filters,
       sorters,
-      selectedRow,
       paginationControls,
       isDataLoading,
       isDatabaseLoading,
-      errorMessage,
       schemaSection,
       editSection,
+      handleExport,
     ]
   );
 

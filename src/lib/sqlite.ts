@@ -1,7 +1,7 @@
 import initSqlJs from "sql.js";
 import DEMO_DB from "./demo-db";
 
-import type { Database, SqlJsStatic } from "sql.js";
+import type { Database, SqlJsStatic, SqlValue } from "sql.js";
 import type { IndexSchema, TableSchema, TableSchemaRow } from "@/types";
 
 export default class Sqlite {
@@ -217,6 +217,45 @@ export default class Sqlite {
       throw new Error(`Error while deleting from table ${table}: ${error}`);
     }
   }
+
+  // Used for exporting data as CSV
+  private export({
+    table,
+    filters,
+    sorters,
+    page,
+  }: {
+    table: string;
+    filters?: Record<string, string>;
+    sorters?: Record<string, string>;
+    page?: number;
+  }) {
+    let query = `SELECT * FROM ${table} ${buildWhereClause(
+      filters
+    )} ${buildOrderByClause(sorters)}`;
+    if (page) query += ` LIMIT ${this.limit} OFFSET ${(page - 1) * this.limit}`;
+
+    const [results] = this.exec(query);
+    return results;
+  }
+
+  // Used for exporting a selected table as CSV
+  public getTableAsCsv(table: string) {
+    const results = this.export({ table });
+    console.log(results);
+    return arrayToCSV(results[0].columns, results[0].values);
+  }
+
+  // Used for exporting the current page of data as CSV
+  public getCurrentDataAsCsv(
+    table: string,
+    page: number,
+    filters: Record<string, string>,
+    sorters: Record<string, string>
+  ) {
+    const results = this.export({ table, filters, sorters, page });
+    return arrayToCSV(results[0].columns, results[0].values);
+  }
 }
 
 // Check if the SQL statement is a structure changeable statement
@@ -243,4 +282,13 @@ function buildOrderByClause(sorters: Record<string, string> | null = null) {
     .map(([column, order]) => `${column} ${order}`)
     .join(", ");
   return `ORDER BY ${sortersArray}`;
+}
+
+// Convert an array of objects to a CSV string
+function arrayToCSV(columns: string[], rows: SqlValue[][]) {
+  const header = columns.map((col) => `"${col}"`).join(",");
+  const csvRows = rows.map((row) =>
+    columns.map((col) => `"${row[columns.indexOf(col)]}"`).join(",")
+  );
+  return [header, ...csvRows].join("\n");
 }

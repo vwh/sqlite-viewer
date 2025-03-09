@@ -158,6 +158,26 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         }
         break;
       }
+      case "export": {
+        // Export the data of a table as CSV
+        if (instance) {
+          const { table, filters, sorters, page, exportType } = payload;
+          let results: string;
+          if (exportType === "table") results = instance.getTableAsCsv(table);
+          else
+            results = instance.getCurrentDataAsCsv(
+              table,
+              page,
+              filters,
+              sorters
+            );
+          self.postMessage({
+            action: "exportComplete",
+            payload: { results },
+          });
+        }
+        break;
+      }
       default:
         console.warn("Unknown worker action:", action);
     }
