@@ -34,7 +34,6 @@ import {
   ListRestartIcon,
   SaveIcon,
   PlayIcon,
-  TrashIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -96,6 +95,7 @@ export default function App() {
   const [editValues, setEditValues] = useState<string[]>([]);
   const [selectedRow, setSelectedRow] = useState<{
     data: SqlValue[];
+    index: number;
   } | null>(null);
 
   const workerRef = useRef<Worker | null>(null);

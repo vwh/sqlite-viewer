@@ -235,7 +235,6 @@ const IndexesSection = ({ indexes }: { indexes: IndexSchema[] }) => {
 const DBSchemaTree = ({
   tablesSchema,
   indexesSchema,
-  includeTitle = true,
 }: {
   tablesSchema: TableSchema;
   indexesSchema: IndexSchema[];
