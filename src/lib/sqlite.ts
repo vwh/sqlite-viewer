@@ -1,4 +1,5 @@
 import initSqlJs from "sql.js";
+import DEMO_DB from "./demo-db";
 
 import type { Database, SqlJsStatic } from "sql.js";
 import type { IndexSchema, TableSchema, TableSchemaRow } from "@/types";
@@ -17,20 +18,8 @@ export default class Sqlite {
 
     // Check if user is opening a file or creating a new database.
     if (!isFile) {
-      this.exec(
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)"
-      );
-      this.exec(
-        "CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, content TEXT)"
-      );
-      this.exec("INSERT INTO users (name) VALUES ('John')");
-      this.exec("INSERT INTO users (name) VALUES ('Jane')");
-      this.exec(
-        "INSERT INTO posts (user_id, title, content) VALUES (1, 'Hello', 'World')"
-      );
-      this.exec(
-        "INSERT INTO posts (user_id, title, content) VALUES (2, 'Hello', 'World')"
-      );
+      // The demo database
+      this.db.exec(DEMO_DB);
     }
 
     this.getDatabaseSchema();
