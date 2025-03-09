@@ -37,6 +37,27 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         });
         break;
       }
+      case "refresh": {
+        // Refresh the data of the current table
+        if (instance) {
+          const [results, maxSize] = instance.getTableData(
+            payload.currentTable,
+            payload.page,
+            payload.filters,
+            payload.sorters
+          );
+          self.postMessage({
+            action: "queryComplete",
+            payload: { results, maxSize },
+          });
+        } else {
+          self.postMessage({
+            action: "queryError",
+            payload: { error: "No database loaded" },
+          });
+        }
+        break;
+      }
       case "exec": {
         // Execute a SQL query (could be multiple statements)
         if (instance) {
@@ -111,6 +132,28 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           self.postMessage({
             action: "downloadComplete",
             payload: { bytes },
+          });
+        }
+        break;
+      }
+      case "update": {
+        // Update the values of a row in a table
+        if (instance) {
+          const { table, columns, values, whereValues } = payload;
+          instance.update(table, columns, values, whereValues);
+          self.postMessage({
+            action: "updateComplete",
+          });
+        }
+        break;
+      }
+      case "delete": {
+        // Delete a row from a table
+        if (instance) {
+          const { table, columns, values } = payload;
+          instance.delete(table, columns, values);
+          self.postMessage({
+            action: "updateComplete",
           });
         }
         break;

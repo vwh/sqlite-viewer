@@ -34,6 +34,7 @@ import {
   ListRestartIcon,
   SaveIcon,
   PlayIcon,
+  TrashIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -92,10 +93,10 @@ export default function App() {
   const [maxSize, setMaxSize] = useState<number>(1);
   const [page, setPage] = useState(1);
 
+  const [editValues, setEditValues] = useState<string[]>([]);
   const [selectedRow, setSelectedRow] = useState<{
     data: SqlValue[];
-    index: number;
-  } | null>();
+  } | null>(null);
 
   const workerRef = useRef<Worker | null>(null);
 
@@ -178,6 +179,15 @@ export default function App() {
 
     return () => clearTimeout(handler);
   }, [currentTable, page, filters, sorters]);
+
+  // Update formValues when selectedRow changes
+  useEffect(() => {
+    if (selectedRow?.data) {
+      setEditValues(
+        selectedRow.data.map((value) => value?.toString() ?? "null")
+      );
+    }
+  }, [selectedRow]);
 
   // Handle file upload by sending the file to the worker
   const handleFileChange = useCallback(
@@ -266,6 +276,43 @@ export default function App() {
   const handleDownload = useCallback(() => {
     workerRef.current?.postMessage({ action: "download" });
   }, []);
+
+  // Handle when user updates the edit inputs
+  const handlEditInputChange = useCallback(
+    (index: number, newValue: string) => {
+      const newEditValues = [...editValues];
+      newEditValues[index] = newValue;
+      setEditValues(newEditValues);
+    },
+    [editValues]
+  );
+
+  // Handle when user submits the edit form
+  const handleEditSubmit = useCallback(
+    (type: "insert" | "update" | "delete") => {
+      setIsDataLoading(true);
+      workerRef.current?.postMessage({
+        action: type,
+        payload: {
+          table: currentTable!,
+          columns,
+          values: editValues,
+          whereValues: selectedRow?.data,
+        },
+      });
+      // Refresh the data
+      workerRef.current?.postMessage({
+        action: "refresh",
+        payload: {
+          currentTable: currentTable!,
+          page,
+          filters,
+          sorters,
+        },
+      });
+    },
+    [currentTable, columns, editValues, selectedRow, page, filters, sorters]
+  );
 
   const TableSelector = useMemo(
     () => (
@@ -412,6 +459,79 @@ export default function App() {
     [schemaSection]
   );
 
+  const editSection = useMemo(
+    () => (
+      <div className="flex flex-col gap-4 h-full items-center justify-center">
+        {selectedRow?.data ? (
+          <div className="flex flex-col gap-2 w-full items-center justify-between h-full">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-primary/10">
+                  {columns!.map((column, index) => (
+                    <TableHead key={column} className="p-2">
+                      <div className="flex items-center gap-1 pb-1">
+                        <ColumnIcon
+                          columnSchema={
+                            tablesSchema[currentTable!].schema[index]
+                          }
+                        />
+                        <span className="capitalize font-bold text-foreground">
+                          {column}
+                        </span>
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  {editValues.map((value, i) => (
+                    <TableCell key={i}>
+                      <Input
+                        name={columns![i]}
+                        className="border p-2 rounded"
+                        value={value}
+                        onChange={(e) =>
+                          handlEditInputChange(i, e.target.value)
+                        }
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableBody>
+            </Table>
+            <div className="flex justify-end w-full flex-wrap">
+              <Button
+                className="rounded-none grow"
+                onClick={() => handleEditSubmit("update")}
+              >
+                Apply Changes
+              </Button>
+              <Button
+                className="rounded-none grow"
+                variant="destructive"
+                onClick={() => handleEditSubmit("delete")}
+              >
+                Delete This Row
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p>Select a row to edit</p>
+        )}
+      </div>
+    ),
+    [
+      selectedRow,
+      currentTable,
+      tablesSchema,
+      columns,
+      editValues,
+      handlEditInputChange,
+      handleEditSubmit,
+    ]
+  );
+
   const executeTab = useMemo(
     () => (
       <>
@@ -545,8 +665,6 @@ export default function App() {
           <Button>Export</Button>
           <Button>Print Data</Button>
           <Button>Insert Row</Button>
-          <Button>Update the current row</Button>
-          <Button>Delete the current row</Button>
         </section>
 
         <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
@@ -570,13 +688,11 @@ export default function App() {
 
           <ResizableHandle withHandle />
           {/* Right Panel */}
-          <ResizablePanel defaultSize={50}>
+          <ResizablePanel defaultSize={20}>
             <ResizablePanelGroup direction="vertical">
               {/* Top Panel */}
-              <ResizablePanel defaultSize={25}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Soon</span>
-                </div>
+              <ResizablePanel defaultSize={20}>
+                <div className="flex-1 overflow-auto h-full">{editSection}</div>
               </ResizablePanel>
 
               <ResizableHandle withHandle />
@@ -603,6 +719,7 @@ export default function App() {
       isDatabaseLoading,
       errorMessage,
       schemaSection,
+      editSection,
     ]
   );
 

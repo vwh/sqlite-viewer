@@ -191,6 +191,43 @@ export default class Sqlite {
     const maxSize = this.getMaxSizeOfTable(table, filters);
     return [results, maxSize] as const;
   }
+
+  // Update the values of a row in a table
+  public update(
+    table: string,
+    columns: string[],
+    values: string[],
+    whereValues: string[]
+  ) {
+    try {
+      const setClause = columns.map((column) => `${column} = ?`).join(", ");
+      const whereClause = columns
+        .map((column) => `${column} = ?`)
+        .join(" AND ");
+      const query = `UPDATE ${table} SET ${setClause} WHERE ${whereClause}`;
+      const stmt = this.db.prepare(query);
+
+      stmt.run([...values, ...whereValues]);
+      stmt.free();
+    } catch (error) {
+      throw new Error(`Error while updating table ${table}: ${error}`);
+    }
+  }
+
+  // Delete a row from a table
+  public delete(table: string, columns: string[], values: string[]) {
+    try {
+      const whereClause = columns
+        .map((column) => `${column} = ?`)
+        .join(" AND ");
+      const query = `DELETE FROM ${table} WHERE ${whereClause}`;
+      const stmt = this.db.prepare(query);
+      stmt.run([...values]);
+      stmt.free();
+    } catch (error) {
+      throw new Error(`Error while deleting from table ${table}: ${error}`);
+    }
+  }
 }
 
 // Check if the SQL statement is a structure changeable statement
