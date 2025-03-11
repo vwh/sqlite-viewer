@@ -35,6 +35,8 @@ import {
   SaveIcon,
   PlayIcon,
   FolderOutputIcon,
+  PlusIcon,
+  DatabaseIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -359,7 +361,7 @@ export default function App() {
         onValueChange={handleTableChange}
         value={currentTable || undefined}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-48 h-8 text-sm">
           <SelectValue placeholder="Select Table" />
         </SelectTrigger>
         <SelectContent>
@@ -385,8 +387,9 @@ export default function App() {
               aria-label="Sort Descending"
               disabled={isDataLoading}
               onClick={() => handleQuerySorter(column)}
+              className="p-1 hover:bg-primary/10 rounded"
             >
-              <ArrowDownNarrowWideIcon className="h-4 w-4" />
+              <ArrowDownNarrowWideIcon className="h-3 w-3" />
             </button>
           ) : (
             <button
@@ -395,8 +398,9 @@ export default function App() {
               aria-label="Sort Ascending"
               disabled={isDataLoading}
               onClick={() => handleQuerySorter(column)}
+              className="p-1 hover:bg-primary/10 rounded"
             >
-              <ArrowUpNarrowWideIcon className="h-4 w-4" />
+              <ArrowUpNarrowWideIcon className="h-3 w-3" />
             </button>
           )
         ) : (
@@ -406,8 +410,9 @@ export default function App() {
             aria-label="Sort Column"
             disabled={isDataLoading}
             onClick={() => handleQuerySorter(column)}
+            className="p-1 hover:bg-primary/10 rounded"
           >
-            <ArrowUpDownIcon className="h-4 w-4" />
+            <ArrowUpDownIcon className="h-3 w-3" />
           </button>
         )}
       </>
@@ -417,81 +422,101 @@ export default function App() {
 
   const paginationControls = useMemo(
     () => (
-      <section className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-primary/5 p-2 border-t">
         <div className="flex items-center gap-1">
           <Button
             onClick={() => handlePageChange("first")}
             disabled={page === 1 || isDataLoading}
             size="icon"
+            variant="outline"
+            className="h-7 w-7"
             title="Go to the first page"
           >
-            <ChevronFirstIcon className="h-6 w-6" />
+            <ChevronFirstIcon className="h-4 w-4" />
           </Button>
           <Button
             onClick={() => handlePageChange("prev")}
             disabled={page === 1 || isDataLoading}
             size="icon"
+            variant="outline"
+            className="h-7 w-7"
             title="Go to the previous page"
           >
-            <ChevronLeftIcon className="h-6 w-6" />
+            <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          <span className="px-2">
+          <span className="text-xs px-2">
             Page: {page} of {maxSize}
           </span>
           <Button
             onClick={() => handlePageChange("next")}
             disabled={page >= maxSize || isDataLoading}
             size="icon"
+            variant="outline"
+            className="h-7 w-7"
             title="Go to the next page"
           >
-            <ChevronRightIcon className="h-6 w-6" />
+            <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
             onClick={() => handlePageChange("last")}
             disabled={page === maxSize || isDataLoading}
             size="icon"
+            variant="outline"
+            className="h-7 w-7"
             title="Go to the last page"
           >
-            <ChevronLastIcon className="h-6 w-6" />
+            <ChevronLastIcon className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex items-center gap-1">
-          <Button>Insert new row</Button>
+          <Button size="sm" variant="outline" className="h-7 text-xs">
+            <PlusIcon className="h-3 w-3 mr-1" />
+            Insert Row
+          </Button>
           <Button
             onClick={() => handleExport("current")}
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
             title="Export current data as CSV"
           >
-            <FolderOutputIcon className="h-6 w-6" />
-            Export current data
+            <FolderOutputIcon className="h-3 w-3 mr-1" />
+            Export
           </Button>
         </div>
-      </section>
+      </div>
     ),
     [page, maxSize, handlePageChange, isDataLoading, handleExport]
   );
 
   const schemaSection = useMemo(
     () => (
-      <section className="flex flex-col gap-2 h-full">
+      <div className="h-full overflow-y-auto border ">
         <DBSchemaTree
           tablesSchema={tablesSchema}
           indexesSchema={indexesSchema}
         />
-      </section>
+      </div>
     ),
     [tablesSchema, indexesSchema]
   );
 
   const schemaTab = useMemo(
     () => (
-      <div className="flex flex-col gap-4 h-full">
-        <section className="flex items-center gap-1">
-          <Button>Create Table</Button>
-          <Button>Create Index</Button>
-          <Button>Print Schema</Button>
-        </section>
+      <div className="flex flex-col h-full ">
+        <div className="flex items-center gap-1 p-2 border-b ">
+          <Button size="sm" variant="outline" className="text-xs">
+            Create Table
+          </Button>
+          <Button size="sm" variant="outline" className="text-xs">
+            Create Index
+          </Button>
+          <Button size="sm" variant="outline" className="text-xs">
+            Print Schema
+          </Button>
+        </div>
 
-        {schemaSection}
+        <div className="flex-1 overflow-hidden">{schemaSection}</div>
       </div>
     ),
     [schemaSection]
@@ -499,63 +524,70 @@ export default function App() {
 
   const editSection = useMemo(
     () => (
-      <div className="flex flex-col gap-4 h-full items-center justify-center">
+      <div className="h-full border overflow-auto">
         {selectedRow?.data ? (
-          <div className="flex flex-col gap-2 w-full items-center justify-between h-full">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-primary/10">
-                  {columns!.map((column, index) => (
-                    <TableHead key={column} className="p-2">
-                      <div className="flex items-center gap-1 pb-1">
-                        <ColumnIcon
-                          columnSchema={
-                            tablesSchema[currentTable!].schema[index]
+          <div className="flex flex-col w-full h-full">
+            <div className="overflow-auto flex-1">
+              <Table className="border">
+                <TableHeader>
+                  <TableRow className="bg-primary/5">
+                    {columns!.map((column, index) => (
+                      <TableHead key={column} className="p-1 text-xs">
+                        <div className="flex items-center gap-1">
+                          <ColumnIcon
+                            columnSchema={
+                              tablesSchema[currentTable!].schema[index]
+                            }
+                          />
+                          <span className="capitalize font-medium">
+                            {column}
+                          </span>
+                        </div>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    {editValues.map((value, i) => (
+                      <TableCell key={i} className="p-1">
+                        <Input
+                          name={columns![i]}
+                          className="h-7 text-xs"
+                          value={value}
+                          onChange={(e) =>
+                            handlEditInputChange(i, e.target.value)
                           }
                         />
-                        <span className="capitalize font-bold text-foreground">
-                          {column}
-                        </span>
-                      </div>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  {editValues.map((value, i) => (
-                    <TableCell key={i}>
-                      <Input
-                        name={columns![i]}
-                        className="border p-2 rounded"
-                        value={value}
-                        onChange={(e) =>
-                          handlEditInputChange(i, e.target.value)
-                        }
-                      />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableBody>
-            </Table>
-            <div className="flex justify-end w-full flex-wrap">
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+            <div className="flex justify-end mt-2">
               <Button
-                className="rounded-none grow"
+                size="sm"
+                variant="outline"
+                className="text-xs grow"
                 onClick={() => handleEditSubmit("update")}
               >
-                Apply Changes
+                Apply changes
               </Button>
               <Button
-                className="rounded-none grow"
+                size="sm"
                 variant="destructive"
+                className="text-xs grow"
                 onClick={() => handleEditSubmit("delete")}
               >
-                Delete This Row
+                Delete row
               </Button>
             </div>
           </div>
         ) : (
-          <p>Select a row to edit</p>
+          <div className="flex items-center justify-center h-full text-sm text-gray-500">
+            Select a row to edit
+          </div>
         )}
       </div>
     ),
@@ -572,39 +604,51 @@ export default function App() {
 
   const executeTab = useMemo(
     () => (
-      <>
-        <section className="flex items-center gap-1">
-          <Button onClick={handleQueryExecute} size="icon" title="Execute SQL">
-            <PlayIcon className="h-6 w-6" />
+      <div className="flex flex-col h-full ">
+        <div className="flex items-center gap-1 p-2 border-b ">
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs"
+            onClick={handleQueryExecute}
+            title="Execute SQL"
+          >
+            <PlayIcon className="h-3 w-3 mr-1" />
+            Execute SQL
           </Button>
-        </section>
+        </div>
 
-        <section className="flex flex-col gap-2">
+        <div className="p-2 flex-1">
           <textarea
-            className="border p-2 rounded h-24"
+            className="w-full h-full min-h-64 p-2 border rounded font-mono text-sm resize-none"
             placeholder="Enter SQL"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-        </section>
-      </>
+          {errorMessage && (
+            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+              {errorMessage}
+            </div>
+          )}
+        </div>
+      </div>
     ),
-    [query, handleQueryExecute]
+    [query, handleQueryExecute, errorMessage]
   );
 
   const dataTable = useMemo(
     () => (
-      <Table>
+      <Table className="border rounded">
         <TableHeader>
-          <TableRow className="bg-primary/10">
+          <TableRow className="bg-primary/5">
             {columns && currentTable ? (
               columns.map((column, index) => (
-                <TableHead key={column} className="p-2">
-                  <div className="flex items-center gap-1 pb-1">
+                <TableHead key={column} className="p-1 text-xs">
+                  <div className="flex items-center gap-1">
                     <ColumnIcon
                       columnSchema={tablesSchema[currentTable].schema[index]}
                     />
-                    <span className="capitalize font-bold text-foreground">
+                    <span className="capitalize font-medium text-foreground">
                       {column}
                     </span>
                     {sorterButton(column)}
@@ -618,7 +662,7 @@ export default function App() {
               ))
             ) : (
               <TableHead>
-                <p>No columns found</p>
+                <p className="text-xs">No columns found</p>
               </TableHead>
             )}
           </TableRow>
@@ -629,10 +673,12 @@ export default function App() {
               <TableRow
                 key={i}
                 onClick={() => setSelectedRow({ data: row, index: i })}
-                className={selectedRow?.index === i ? "bg-primary/10" : ""}
+                className={`cursor-pointer hover:bg-primary/5 text-xs ${
+                  selectedRow?.index === i ? "bg-primary/10" : ""
+                }`}
               >
                 {row.map((value, j) => (
-                  <TableCell key={j}>
+                  <TableCell key={j} className="p-2">
                     {value ?? (
                       <span className="text-muted-foreground">NULL</span>
                     )}
@@ -649,13 +695,22 @@ export default function App() {
                 <div className="flex flex-col items-center justify-center gap-2">
                   {filters ? (
                     <>
-                      <p>No data found for the current filters</p>
-                      <Button onClick={() => setFilters(null)}>
+                      <p className="text-sm">
+                        No data found for the current filters
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs"
+                        onClick={() => setFilters(null)}
+                      >
                         Clear filters
                       </Button>
                     </>
                   ) : (
-                    <p>No data found in the current table</p>
+                    <p className="text-sm">
+                      No data found in the current table
+                    </p>
                   )}
                 </div>
               </TableCell>
@@ -678,76 +733,80 @@ export default function App() {
 
   const dataTab = useMemo(
     () => (
-      <>
-        <section className="flex items-center gap-1">
-          <div className="flex items-center gap-2">
-            <span>Table:</span>
-            {TableSelector}
-          </div>
+      <div className="flex flex-col h-full">
+        <div className="flex items-center gap-1 p-2 border-b ">
+          {TableSelector}
           <Button
+            size="sm"
+            variant="outline"
+            className="h-8 text-xs"
             onClick={() => setFilters(null)}
             disabled={filters == null}
             title="Clear applied filters"
           >
-            <FilterXIcon className="h-6 w-6" />
+            <FilterXIcon className="h-3 w-3 mr-1" />
             Clear filters
           </Button>
           <Button
+            size="sm"
+            variant="outline"
+            className="h-8 text-xs"
             onClick={() => setSorters(null)}
             disabled={sorters == null}
             title="Reset sorting"
           >
-            <ListRestartIcon className="h-6 w-6" />
+            <ListRestartIcon className="h-3 w-3 mr-1" />
             Reset sorting
           </Button>
-          {/* TODO: maybe memo this button later on */}
           <Button
+            size="sm"
+            variant="outline"
+            className="h-8 text-xs"
             onClick={() => handleExport("table")}
             title="Export the current table as CSV"
           >
-            <FolderOutputIcon className="h-6 w-6" />
+            <FolderOutputIcon className="h-3 w-3 mr-1" />
             Export table
           </Button>
-        </section>
+          {(isDataLoading || isDatabaseLoading) && (
+            <span className="text-xs ml-2 text-gray-500">
+              {isDatabaseLoading ? "Loading database..." : "Loading data..."}
+            </span>
+          )}
+        </div>
 
-        <p>{isDataLoading ? "Data Loading..." : "Idle"}</p>
-        <p>{isDatabaseLoading ? "Database Loading..." : "Idle"}</p>
-
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="rounded-lg border h-screen overflow-auto min-h-[calc(100vh-15rem)]"
-        >
-          {/* Left Panel */}
-          <ResizablePanel defaultSize={50}>
-            <div className="flex h-full flex-col">
-              <div className="flex-1 max-h-[620px] overflow-auto">
+        <div className="overflow-hidden h-full">
+          <ResizablePanelGroup
+            direction="horizontal"
+            className="h-full rounded-md"
+          >
+            {/* Left Panel - Data Table */}
+            <ResizablePanel defaultSize={75} minSize={50}>
+              <div className="flex flex-col h-full justify-between">
                 {dataTable}
+                {paginationControls}
               </div>
-              <div className="p-2 border-t">{paginationControls}</div>
-            </div>
-          </ResizablePanel>
+            </ResizablePanel>
 
-          <ResizableHandle withHandle />
-          {/* Right Panel */}
-          <ResizablePanel defaultSize={20}>
-            <ResizablePanelGroup direction="vertical">
-              {/* Top Panel */}
-              <ResizablePanel defaultSize={20}>
-                <div className="flex-1 overflow-auto h-full">{editSection}</div>
-              </ResizablePanel>
+            <ResizableHandle withHandle />
 
-              <ResizableHandle withHandle />
+            {/* Right Panel - Split Vertically */}
+            <ResizablePanel defaultSize={25} minSize={15}>
+              <ResizablePanelGroup direction="vertical">
+                {/* Top Panel - Edit Section */}
+                <ResizablePanel defaultSize={40}>{editSection}</ResizablePanel>
 
-              {/* Bottom Panel */}
-              <ResizablePanel defaultSize={75}>
-                <div className="flex-1 overflow-auto h-full">
-                  {schemaSection}
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </>
+                <ResizableHandle withHandle />
+
+                {/* Bottom Panel - Schema */}
+                <ResizablePanel defaultSize={60}>
+                  <div className="h-full overflow-hidden">{schemaSection}</div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      </div>
     ),
     [
       TableSelector,
@@ -763,30 +822,78 @@ export default function App() {
     ]
   );
 
-  return (
-    <main className="flex flex-col gap-4 p-4">
-      <section className="flex gap-2">
-        <Input
-          type="file"
-          className="cursor-pointer"
-          onChange={handleFileChange}
-        />
-        <Button onClick={handleDownload} size="icon" title="Save the database">
-          <SaveIcon className="h-6 w-6" />
+  const topBar = useMemo(
+    () => (
+      <div className="flex items-center gap-2 p-2 border-b ">
+        <div className="relative">
+          <Input
+            type="file"
+            className="cursor-pointer opacity-0 absolute top-0 left-0 w-full h-full"
+            onChange={handleFileChange}
+          />
+          <Button size="sm" variant="outline" className="text-xs">
+            <DatabaseIcon className="h-3 w-3" />
+            Open Database
+          </Button>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-xs"
+          onClick={handleDownload}
+          title="Save the database"
+        >
+          <SaveIcon className="h-3 w-3" />
+          Save Database
         </Button>
-      </section>
+      </div>
+    ),
+    [handleFileChange, handleDownload]
+  );
 
-      <Tabs defaultValue="structure">
-        <TabsList className="w-full">
-          <TabsTrigger value="structure">Database Structure</TabsTrigger>
-          <TabsTrigger value="data">Browse Data</TabsTrigger>
-          <TabsTrigger value="execute">Execute SQL</TabsTrigger>
+  return (
+    <main className="flex flex-col h-screen overflow-hidden">
+      {topBar}
+
+      <Tabs defaultValue="data" className="flex-1 flex flex-col">
+        <TabsList className="mx-2 mt-2 justify-start border-b rounded-none bg-transparent h-8">
+          <TabsTrigger
+            value="structure"
+            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+          >
+            Database Structure
+          </TabsTrigger>
+          <TabsTrigger
+            value="data"
+            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+          >
+            Browse Data
+          </TabsTrigger>
+          <TabsTrigger
+            value="execute"
+            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+          >
+            Execute SQL
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="data">
-          {isDatabaseLoading ? <p>loading</p> : dataTab}
-        </TabsContent>
-        <TabsContent value="structure">{schemaTab}</TabsContent>
-        <TabsContent value="execute">{executeTab}</TabsContent>
+
+        <div className="flex-1 max-h-[calc(100vh-5.5rem)] overflow-hidden">
+          <TabsContent value="data" className="h-full m-0 p-0 border-none">
+            {isDatabaseLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <p>Loading database...</p>
+              </div>
+            ) : (
+              dataTab
+            )}
+          </TabsContent>
+          <TabsContent value="structure" className="h-full m-0 p-0 border-none">
+            {schemaTab}
+          </TabsContent>
+          <TabsContent value="execute" className="h-full m-0 p-0 border-none">
+            {executeTab}
+          </TabsContent>
+        </div>
       </Tabs>
     </main>
   );
