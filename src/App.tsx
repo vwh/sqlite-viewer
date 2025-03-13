@@ -37,6 +37,7 @@ import {
   FolderOutputIcon,
   PlusIcon,
   DatabaseIcon,
+  LoaderCircleIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -64,7 +65,7 @@ const FilterInput = memo(
     return (
       <Input
         type="text"
-        className="border border-primary/20 rounded px-2 py-1 max-h-7 w-full text-xs"
+        className="border border-primary/20 rounded px-2 py-1 max-h-6 w-full text-[0.8rem]!"
         value={value}
         onChange={handleChange}
         placeholder="Filter"
@@ -351,6 +352,8 @@ export default function App() {
           sorters,
         },
       });
+      // Reset the selected row
+      setSelectedRow(null);
     },
     [currentTable, columns, editValues, selectedRow, page, filters, sorters]
   );
@@ -469,7 +472,7 @@ export default function App() {
           </Button>
         </div>
         <div className="flex items-center gap-1">
-          <Button size="sm" variant="outline" className="h-7 text-xs">
+          <Button size="sm" variant="outline" className="h-7 text-xs" disabled>
             <PlusIcon className="h-3 w-3 mr-1" />
             Insert Row
           </Button>
@@ -565,11 +568,11 @@ export default function App() {
                 </TableBody>
               </Table>
             </div>
-            <div className="flex justify-end mt-2">
+            <div className="flex justify-end">
               <Button
                 size="sm"
                 variant="outline"
-                className="text-xs grow"
+                className="text-xs grow-2 rounded-none"
                 onClick={() => handleEditSubmit("update")}
               >
                 Apply changes
@@ -577,7 +580,7 @@ export default function App() {
               <Button
                 size="sm"
                 variant="destructive"
-                className="text-xs grow"
+                className="text-xs grow rounded-none"
                 onClick={() => handleEditSubmit("delete")}
               >
                 Delete row
@@ -769,8 +772,9 @@ export default function App() {
             Export table
           </Button>
           {(isDataLoading || isDatabaseLoading) && (
-            <span className="text-xs ml-2 text-gray-500">
-              {isDatabaseLoading ? "Loading database..." : "Loading data..."}
+            <span className="text-xs ml-2 text-gray-500 flex items-center">
+              <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
+              Loading data
             </span>
           )}
         </div>
@@ -781,7 +785,7 @@ export default function App() {
             className="h-full rounded-md"
           >
             {/* Left Panel - Data Table */}
-            <ResizablePanel defaultSize={75} minSize={50}>
+            <ResizablePanel defaultSize={75} minSize={25}>
               <div className="flex flex-col h-full justify-between">
                 {dataTable}
                 {paginationControls}
@@ -794,10 +798,18 @@ export default function App() {
             <ResizablePanel defaultSize={25} minSize={15}>
               <ResizablePanelGroup direction="vertical">
                 {/* Top Panel - Edit Section */}
-                <ResizablePanel defaultSize={40}>{editSection}</ResizablePanel>
-
-                <ResizableHandle withHandle />
-
+                <ResizablePanel
+                  defaultSize={15}
+                  minSize={15}
+                  maxSize={15}
+                  className={`${selectedRow ? "" : "hidden"}`}
+                >
+                  {editSection}
+                </ResizablePanel>
+                <ResizableHandle
+                  className={`${selectedRow ? "" : "hidden"}`}
+                  withHandle
+                />
                 {/* Bottom Panel - Schema */}
                 <ResizablePanel defaultSize={60}>
                   <div className="h-full overflow-hidden">{schemaSection}</div>
@@ -814,6 +826,7 @@ export default function App() {
       filters,
       sorters,
       paginationControls,
+      selectedRow,
       isDataLoading,
       isDatabaseLoading,
       schemaSection,
@@ -824,7 +837,7 @@ export default function App() {
 
   const topBar = useMemo(
     () => (
-      <div className="flex items-center gap-2 p-2 border-b ">
+      <div className="flex items-center gap-1 p-2 border-b ">
         <div className="relative">
           <Input
             type="file"
@@ -856,7 +869,7 @@ export default function App() {
       {topBar}
 
       <Tabs defaultValue="data" className="flex-1 flex flex-col">
-        <TabsList className="mx-2 mt-2 justify-start border-b rounded-none bg-transparent h-8">
+        <TabsList className="mt-2 justify-start border-b rounded-none bg-transparent h-9">
           <TabsTrigger
             value="structure"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
@@ -881,7 +894,8 @@ export default function App() {
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
             {isDatabaseLoading ? (
               <div className="flex items-center justify-center h-full">
-                <p>Loading database...</p>
+                <LoaderCircleIcon className="h-4 w-4 mr-2 animate-spin" />
+                <span>Loading database</span>
               </div>
             ) : (
               dataTab

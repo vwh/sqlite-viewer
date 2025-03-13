@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useSchemaStore } from "@/store/useSchemaStore";
 
 import type { TableSchema, IndexSchema, TableSchemaRow } from "@/types";
@@ -6,9 +6,10 @@ import type { TableSchema, IndexSchema, TableSchemaRow } from "@/types";
 import {
   ChevronRightIcon,
   ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronsDownUpIcon,
   TagIcon,
   TableIcon,
-  KeyRoundIcon,
   SearchIcon,
   DatabaseIcon,
 } from "lucide-react";
@@ -29,14 +30,23 @@ const TableItem = memo(
     const { expandedTables, toggleTable } = useSchemaStore();
     const expanded = expandedTables.includes(name);
 
+    const handleToggle = () => toggleTable(name);
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleTable(name);
+      }
+    };
+
     return (
       <div>
         <div
           className={cn(
-            "flex items-center py-1.5 cursor-pointer hover:bg-primary/10 rounded px-1.5 transition-colors",
-            expanded && "bg-primary/5"
+            "flex items-center py-1.5 cursor-pointer hover:ml-2 transition-all rounded px-1.5",
+            expanded && "ml-1"
           )}
-          onClick={() => toggleTable(name)}
+          onClick={handleToggle}
+          onKeyDown={handleKeyDown}
         >
           <div className="flex items-center justify-center w-5 h-5">
             {expanded ? (
@@ -45,8 +55,7 @@ const TableItem = memo(
               <ChevronRightIcon className="h-4 w-4" />
             )}
           </div>
-          <TableIcon className="h-4 w-4 ml-1 mr-2" />
-          <span className="font-medium capitalize">
+          <span className="capitalize">
             {name}{" "}
             <span className="text-xs text-primary/50">
               ({table.schema.length})
@@ -88,6 +97,27 @@ const TablesSection = memo(
       expandAllTables,
       collapseAllTables,
     } = useSchemaStore();
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const handleToggleSection = () => toggleTableSection();
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleTableSection();
+      }
+    };
+
+    const handleExpandAll = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      expandAllTables(tablesSchema);
+      setIsExpanded(true);
+    };
+
+    const handleCollapseAll = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      collapseAllTables();
+      setIsExpanded(false);
+    };
 
     return (
       <div>
@@ -96,7 +126,8 @@ const TablesSection = memo(
             "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 rounded-b transition-colors",
             !expandedTableSection && "mb-0"
           )}
-          onClick={toggleTableSection}
+          onClick={handleToggleSection}
+          onKeyDown={handleKeyDown}
         >
           <div className="flex items-center justify-center w-5 h-5">
             {expandedTableSection ? (
@@ -110,28 +141,25 @@ const TablesSection = memo(
 
           {expandedTableSection && (
             <div className="ml-auto flex">
-              <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  expandAllTables(tablesSchema);
-                }}
-              >
-                Expand All
-              </Button>
-              <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  collapseAllTables();
-                }}
-              >
-                Collapse All
-              </Button>
+              {isExpanded ? (
+                <Button
+                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCollapseAll}
+                >
+                  <ChevronsDownUpIcon className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button
+                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleExpandAll}
+                >
+                  <ChevronsUpDownIcon className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -158,15 +186,37 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
     expandAllIndexes,
     collapseAllIndexes,
   } = useSchemaStore();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleToggleSection = () => toggleIndexSection();
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleIndexSection();
+    }
+  };
+
+  const handleExpandAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    expandAllIndexes(indexes);
+    setIsExpanded(true);
+  };
+
+  const handleCollapseAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    collapseAllIndexes();
+    setIsExpanded(false);
+  };
 
   return (
     <div>
       <div
         className={cn(
-          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 rounded transition-colors",
+          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 transition-colors",
           !expandedIndexSection && "mb-0"
         )}
-        onClick={toggleIndexSection}
+        onClick={handleToggleSection}
+        onKeyDown={handleKeyDown}
       >
         <div className="flex items-center justify-center w-5 h-5">
           {expandedIndexSection ? (
@@ -180,67 +230,75 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
 
         {expandedIndexSection && indexes.length > 0 && (
           <div className="ml-auto flex space-x-1">
-            <Button
-              className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                expandAllIndexes(indexes);
-              }}
-            >
-              Expand All
-            </Button>
-            <Button
-              className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                collapseAllIndexes();
-              }}
-            >
-              Collapse All
-            </Button>
+            {isExpanded ? (
+              <Button
+                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                variant="ghost"
+                size="icon"
+                onClick={handleCollapseAll}
+              >
+                <ChevronsDownUpIcon className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                variant="ghost"
+                size="icon"
+                onClick={handleExpandAll}
+              >
+                <ChevronsUpDownIcon className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         )}
       </div>
 
       {expandedIndexSection && (
         <div className="pl-2 space-y-0.5 overflow-y-auto pr-1">
-          {indexes.map((index, idx) => (
-            <div key={idx}>
-              <div
-                className={cn(
-                  "flex items-center py-1.5 cursor-pointer hover:bg-primary/10 rounded px-1.5 transition-colors",
-                  expandedIndexes.includes(index.name) && "bg-primary/5"
-                )}
-                onClick={() => toggleIndex(index.name)}
-              >
-                <div className="flex items-center justify-center w-5 h-5">
-                  {expandedIndexes.includes(index.name) ? (
-                    <ChevronDownIcon className="h-4 w-4" />
-                  ) : (
-                    <ChevronRightIcon className="h-4 w-4" />
-                  )}
-                </div>
-                <KeyRoundIcon className="h-4 w-4 ml-1 mr-2" />
-                <span className="font-medium">{index.name}</span>
-                <span className="ml-2 text-xs text-primary/50">
-                  on{" "}
-                  <span className="font-medium capitalize">
-                    {index.tableName}
-                  </span>
-                </span>
-              </div>
+          {indexes.map((index, idx) => {
+            const isExpanded = expandedIndexes.includes(index.name);
+            const handleToggleIndex = () => toggleIndex(index.name);
+            const handleIndexKeyDown = (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleIndex(index.name);
+              }
+            };
 
-              {expandedIndexes.includes(index.name) && (
-                <div className="pl-9 py-1.5 font-mono text-xs text-primary/70 border-l-2 border-primary/20 ml-4 mt-1 bg-primary/5 rounded p-2 overflow-x-auto">
-                  {index.sql}
+            return (
+              <div key={idx}>
+                <div
+                  className={cn(
+                    "flex items-center py-1.5 cursor-pointer hover:ml-2 rounded px-1.5 transition-all",
+                    isExpanded && "ml-1"
+                  )}
+                  onClick={handleToggleIndex}
+                  onKeyDown={handleIndexKeyDown}
+                >
+                  <div className="flex items-center justify-center w-5 h-5">
+                    {isExpanded ? (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  <span>{index.name}</span>
+                  <span className="ml-2 text-xs text-primary/50">
+                    on{" "}
+                    <span className="font-medium capitalize">
+                      {index.tableName}
+                    </span>
+                  </span>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {isExpanded && (
+                  <div className="pl-9 py-1.5 font-mono text-xs text-primary/70 border-l-2 border-primary/20 ml-4 mt-1 bg-primary/5 rounded p-2 overflow-x-auto">
+                    {index.sql}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -278,11 +336,13 @@ const DBSchemaTree = ({
     if (!filter) return tablesSchema;
 
     const filtered: TableSchema = {};
-    Object.entries(tablesSchema).forEach(([tableName, tableData]) => {
+
+    for (const [tableName, tableData] of Object.entries(tablesSchema)) {
       if (tableName.toLowerCase().includes(filter.toLowerCase())) {
         filtered[tableName] = tableData;
       }
-    });
+    }
+
     return filtered;
   }, [tablesSchema, filter]);
 
