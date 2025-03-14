@@ -42,7 +42,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         if (instance) {
           const [results, maxSize] = instance.getTableData(
             payload.currentTable,
-            payload.page,
+            payload.limit,
+            payload.offset,
             payload.filters,
             payload.sorters
           );
@@ -85,7 +86,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               // Update data after executing a new SQL statement
               const [results, maxSize] = instance.getTableData(
                 payload.currentTable,
-                payload.page,
+                payload.offset,
+                payload.limit,
                 payload.filters,
                 payload.sorters
               );
@@ -106,10 +108,11 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
       case "getTableData": {
         // Retrieve paginated data for a table
         if (instance) {
-          const { currentTable, page, filters, sorters } = payload;
+          const { currentTable, filters, sorters, limit, offset } = payload;
           const [results, maxSize] = instance.getTableData(
             currentTable,
-            page,
+            limit,
+            offset,
             filters,
             sorters
           );
@@ -172,13 +175,15 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
       case "export": {
         // Export the data of a table as CSV
         if (instance) {
-          const { table, filters, sorters, page, exportType } = payload;
+          const { table, filters, sorters, limit, offset, exportType } =
+            payload;
           let results: string;
           if (exportType === "table") results = instance.getTableAsCsv(table);
           else
             results = instance.getCurrentDataAsCsv(
               table,
-              page,
+              limit,
+              offset,
               filters,
               sorters
             );

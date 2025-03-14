@@ -76,6 +76,7 @@ const FilterInput = memo(
 
 export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
+  const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
 
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -94,7 +95,9 @@ export default function App() {
   const [currentTable, setCurrentTable] = useState<string | null>(null);
 
   const [maxSize, setMaxSize] = useState<number>(1);
-  const [page, setPage] = useState(1);
+
+  const [limit, setLimit] = useState(50);
+  const [offset, setOffset] = useState(0);
 
   const [editValues, setEditValues] = useState<string[]>([]);
   const [selectedRow, setSelectedRow] = useState<{
@@ -124,7 +127,7 @@ export default function App() {
         setSorters(null);
         setSelectedRow(null);
         setIsInserting(false);
-        setPage(1);
+        setOffset(0);
         setIsDatabaseLoading(false);
       } // When the query is executed and returns results
       else if (action === "queryComplete") {
@@ -203,14 +206,53 @@ export default function App() {
     // Debounce to prevent too many requests when filters change rapidly
     const handler = setTimeout(() => {
       setIsDataLoading(true);
+
+      // limit of the data per page
+      let limit = 50;
+      const tableHeaderHight = document
+        .getElementById("tableHeader")
+        ?.getBoundingClientRect().height;
+      const dataSectionHight = document
+        .getElementById("dataSection")
+        ?.getBoundingClientRect().height;
+      const tableCellHight = document
+        .getElementById("tableCell")
+        ?.getBoundingClientRect().height;
+      const paginationControlsHight = document
+        .getElementById("paginationControls")
+        ?.getBoundingClientRect().height;
+      if (isFirstTimeLoading) {
+        setIsFirstTimeLoading(false);
+        if (dataSectionHight && paginationControlsHight) {
+          // 53 is hight of tableHeader and 33 is hight of tableRow
+          // They are hardcoded because they not loaded yet
+          limit = Math.floor(
+            (dataSectionHight - paginationControlsHight - 53) / 33
+          );
+        }
+      } else {
+        if (
+          tableHeaderHight &&
+          dataSectionHight &&
+          paginationControlsHight &&
+          tableCellHight
+        )
+          limit = Math.floor(
+            (dataSectionHight - tableHeaderHight - paginationControlsHight) /
+              tableCellHight
+          );
+      }
+      console.log(limit, offset);
+      setLimit(limit);
+
       workerRef.current?.postMessage({
         action: "getTableData",
-        payload: { currentTable, page, filters, sorters },
+        payload: { currentTable, filters, sorters, limit, offset },
       });
     }, 100);
 
     return () => clearTimeout(handler);
-  }, [currentTable, page, filters, sorters]);
+  }, [currentTable, filters, sorters, isFirstTimeLoading, offset]);
 
   // Update formValues when selectedRow changes
   useEffect(() => {
@@ -255,25 +297,24 @@ export default function App() {
       setIsDataLoading(true);
       workerRef.current?.postMessage({
         action: "exec",
-        payload: { query: stmt, currentTable, page, filters, sorters },
+        payload: { query: stmt, currentTable, filters, sorters },
       });
     }
-  }, [query, currentTable, page, filters, sorters]);
+  }, [query, currentTable, filters, sorters]);
 
   // Handles when user changes the page
   const handlePageChange = useCallback(
     (type: "next" | "prev" | "first" | "last" | number) => {
       setSelectedRow(null);
-      setPage((prev) => {
-        if (type === "next") return prev + 1;
-        if (type === "prev") return prev - 1;
-        if (type === "first") return 1;
-        if (type === "last") return maxSize;
-        if (typeof type === "number") return type;
+      setOffset((prev) => {
+        if (type === "next") return prev + limit;
+        if (type === "prev") return prev - limit <= 0 ? 0 : prev - limit;
+        if (type === "first") return 0;
+        if (type === "last") return maxSize - limit;
         return prev;
       });
     },
-    [maxSize]
+    [maxSize, limit]
   );
 
   // Handle when user updates the filter
@@ -281,7 +322,7 @@ export default function App() {
   const handleQueryFilter = useCallback((column: string, value: string) => {
     setFilters((prev) => ({ ...prev, [column]: value }));
     // Reset to first page when filtering
-    setPage(1);
+    setOffset(0);
     setSelectedRow(null);
   }, []);
 
@@ -299,7 +340,8 @@ export default function App() {
   const handleTableChange = useCallback((selectedTable: string) => {
     setFilters(null);
     setSorters(null);
-    setPage(1);
+    setOffset(0);
+    setMaxSize(0);
     setSelectedRow(null);
     setIsInserting(false);
     setCurrentTable(selectedTable);
@@ -307,20 +349,20 @@ export default function App() {
 
   // Handle when user exports the data
   const handleExport = useCallback(
-    (exportType: "table" | "all" | "current") => {
-      console.log("Exporting", exportType);
+    (exportType: "table" | "current") => {
       workerRef.current?.postMessage({
         action: "export",
         payload: {
           table: currentTable!,
+          offset,
+          limit,
           filters,
           sorters,
-          page,
           exportType: exportType,
         },
       });
     },
-    [currentTable, filters, sorters, page]
+    [currentTable, filters, sorters, offset, limit]
   );
 
   // Handle when user downloads the database
@@ -356,7 +398,6 @@ export default function App() {
         action: "refresh",
         payload: {
           currentTable: currentTable!,
-          page,
           filters,
           sorters,
         },
@@ -365,7 +406,7 @@ export default function App() {
       setSelectedRow(null);
       setIsInserting(false);
     },
-    [currentTable, columns, editValues, selectedRow, page, filters, sorters]
+    [currentTable, columns, editValues, selectedRow, filters, sorters]
   );
 
   const TableSelector = useMemo(
@@ -435,48 +476,53 @@ export default function App() {
 
   const paginationControls = useMemo(
     () => (
-      <div className="flex items-center justify-between bg-primary/5 p-2 border-t">
+      <div
+        className="flex items-center justify-between bg-primary/5 p-2 border-t"
+        id="paginationControls"
+      >
         <div className="flex items-center gap-1">
           <Button
             onClick={() => handlePageChange("first")}
-            disabled={page === 1 || isDataLoading}
+            disabled={offset === 0 || isDataLoading}
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            title="Go to the first page"
+            title="Go to the first data"
           >
             <ChevronFirstIcon className="h-4 w-4" />
           </Button>
           <Button
             onClick={() => handlePageChange("prev")}
-            disabled={page === 1 || isDataLoading}
+            disabled={offset === 0 || isDataLoading}
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            title="Go to the previous page"
+            title="Go to the previous data"
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
           <span className="text-xs px-2">
-            Page: {page} of {maxSize}
+            {offset + 1}
+            {" -> "}
+            {offset + limit > maxSize ? maxSize : offset + limit} of {maxSize}
           </span>
           <Button
             onClick={() => handlePageChange("next")}
-            disabled={page >= maxSize || isDataLoading}
+            disabled={offset + limit >= maxSize || isDataLoading}
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            title="Go to the next page"
+            title="Go to the next data"
           >
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
             onClick={() => handlePageChange("last")}
-            disabled={page === maxSize || isDataLoading}
+            disabled={offset + limit >= maxSize || isDataLoading}
             size="icon"
             variant="outline"
             className="h-7 w-7"
-            title="Go to the last page"
+            title="Go to the last data"
           >
             <ChevronLastIcon className="h-4 w-4" />
           </Button>
@@ -498,14 +544,24 @@ export default function App() {
             variant="outline"
             className="h-7 text-xs"
             title="Export current data as CSV"
+            disabled={!data}
           >
             <FolderOutputIcon className="h-3 w-3 mr-1" />
-            Export
+            Export data
           </Button>
         </div>
       </div>
     ),
-    [page, maxSize, handlePageChange, isDataLoading, handleExport, isInserting]
+    [
+      maxSize,
+      handlePageChange,
+      isDataLoading,
+      handleExport,
+      isInserting,
+      offset,
+      limit,
+      data,
+    ]
   );
 
   const schemaSection = useMemo(
@@ -871,7 +927,10 @@ export default function App() {
           >
             {/* Left Panel - Data Table */}
             <ResizablePanel defaultSize={75} minSize={25}>
-              <div className="flex flex-col h-full justify-between">
+              <div
+                className="flex flex-col h-full justify-between"
+                id="dataSection"
+              >
                 {dataTable}
                 {paginationControls}
               </div>
@@ -917,6 +976,7 @@ export default function App() {
       schemaSection,
       editSection,
       handleExport,
+      isInserting,
     ]
   );
 

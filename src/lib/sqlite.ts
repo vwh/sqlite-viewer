@@ -8,7 +8,6 @@ export default class Sqlite {
   static sqlJsStatic?: SqlJsStatic;
   private db: Database;
 
-  private limit: number = 50;
   public firstTable: string | null = null;
   public tablesSchema: TableSchema = {};
   public indexesSchema: IndexSchema[] = [];
@@ -155,18 +154,18 @@ export default class Sqlite {
 
     if (results.length === 0) return 0;
 
-    return Math.ceil((results[0].values[0][0] as number) / this.limit);
+    return Math.ceil(results[0].values[0][0] as number);
   }
 
   // Get the data for the requested table
   // Applies filters and sorters to the data
   public getTableData(
     table: string,
-    page: number,
+    limit: number,
+    offset: number,
     filters: Record<string, string> | null = null,
     sorters: Record<string, string> | null = null
   ) {
-    const [limit, offset] = [this.limit, (page - 1) * this.limit];
     const [results] = this.exec(`
       SELECT * FROM ${table} 
       ${buildWhereClause(filters)} 
@@ -235,20 +234,21 @@ export default class Sqlite {
   // Used for exporting data as CSV
   private export({
     table,
+    offset,
+    limit,
     filters,
     sorters,
-    page,
   }: {
     table: string;
+    offset?: number;
+    limit?: number;
     filters?: Record<string, string>;
     sorters?: Record<string, string>;
-    page?: number;
   }) {
     let query = `SELECT * FROM ${table} ${buildWhereClause(
       filters
     )} ${buildOrderByClause(sorters)}`;
-    if (page) query += ` LIMIT ${this.limit} OFFSET ${(page - 1) * this.limit}`;
-
+    if (offset && limit) query += ` LIMIT ${limit} OFFSET ${offset}`;
     const [results] = this.exec(query);
     return results;
   }
@@ -256,18 +256,18 @@ export default class Sqlite {
   // Used for exporting a selected table as CSV
   public getTableAsCsv(table: string) {
     const results = this.export({ table });
-    console.log(results);
     return arrayToCSV(results[0].columns, results[0].values);
   }
 
   // Used for exporting the current page of data as CSV
   public getCurrentDataAsCsv(
     table: string,
-    page: number,
+    limit: number,
+    offset: number,
     filters: Record<string, string>,
     sorters: Record<string, string>
   ) {
-    const results = this.export({ table, filters, sorters, page });
+    const results = this.export({ table, filters, sorters, limit, offset });
     return arrayToCSV(results[0].columns, results[0].values);
   }
 }
