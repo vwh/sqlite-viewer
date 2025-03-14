@@ -38,6 +38,7 @@ import {
   PlusIcon,
   DatabaseIcon,
   LoaderCircleIcon,
+  ChevronDown,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -45,6 +46,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import useMediaQuery from "./hooks/useMediaQuery";
 
 const FilterInput = memo(
   ({
@@ -65,7 +73,7 @@ const FilterInput = memo(
     return (
       <Input
         type="text"
-        className="border border-primary/20 rounded px-2 py-1 max-h-6 w-full text-[0.8rem]!"
+        className="rounded px-2 py-1 max-h-6 w-full text-[0.8rem]!"
         value={value}
         onChange={handleChange}
         placeholder="Filter"
@@ -77,6 +85,10 @@ const FilterInput = memo(
 export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [schemaPanelSize, setSchemaPanelSize] = useState(0);
+  const [dataPanelSize, setDataPanelSize] = useState(100);
 
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -112,6 +124,14 @@ export default function App() {
   const [isInserting, setIsInserting] = useState(false);
 
   const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    // Open schema panel in desktop
+    if (!isMobile) {
+      setSchemaPanelSize(25);
+      setDataPanelSize(75);
+    }
+  }, [isMobile]);
 
   // Initialize worker and send initial "init" message
   useEffect(() => {
@@ -502,10 +522,10 @@ export default function App() {
   const paginationControls = useMemo(
     () => (
       <div
-        className="flex items-center justify-between bg-primary/5 p-2 border-t"
+        className="flex items-center gap-2 justify-between bg-primary/5 p-2 border-t"
         id="paginationControls"
       >
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 grow">
           <Button
             onClick={() => handlePageChange("first")}
             disabled={offset === 0 || isDataLoading}
@@ -526,7 +546,7 @@ export default function App() {
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          <span className="text-xs px-2">
+          <span className="text-xs px-2 whitespace-nowrap">
             {offset + 1}
             {" -> "}
             {offset + limit > maxSize ? maxSize : offset + limit} of {maxSize}
@@ -552,7 +572,7 @@ export default function App() {
             <ChevronLastIcon className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="md:flex items-center gap-1 hidden">
           <Button
             size="sm"
             variant="outline"
@@ -591,7 +611,7 @@ export default function App() {
 
   const schemaSection = useMemo(
     () => (
-      <div className="h-full overflow-y-auto border ">
+      <div className="h-full overflow-y-auto">
         <DBSchemaTree
           tablesSchema={tablesSchema}
           indexesSchema={indexesSchema}
@@ -604,7 +624,7 @@ export default function App() {
   const schemaTab = useMemo(
     () => (
       <div className="flex flex-col h-full ">
-        {/* <div className="flex items-center gap-1 p-2 border-b ">
+        {/* <div className="flex items-center gap-1 p-2">
           <Button size="sm" variant="outline" className="text-xs">
             Create Table
           </Button>
@@ -630,7 +650,7 @@ export default function App() {
             {selectedRow && (
               <div className="flex flex-col w-full h-full">
                 <div className="overflow-auto flex-1">
-                  <Table className="border">
+                  <Table>
                     <TableHeader>
                       <TableRow className="bg-primary/5">
                         {columns!.map((column, index) => (
@@ -691,7 +711,7 @@ export default function App() {
         ) : (
           <div className="flex flex-col w-full h-full">
             <div className="overflow-auto flex-1">
-              <Table className="border">
+              <Table>
                 <TableHeader>
                   <TableRow className="bg-primary/5">
                     {columns!.map((column, index) => (
@@ -760,7 +780,7 @@ export default function App() {
       <>
         {" "}
         {customQueryObject ? (
-          <Table className="border">
+          <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
                 {customQueryObject.columns.map((column) => (
@@ -844,11 +864,14 @@ export default function App() {
 
         <div className="overflow-hidden h-full">
           <ResizablePanelGroup direction="horizontal" className="h-full">
-            <ResizablePanel defaultSize={75}>
+            <ResizablePanel
+              defaultSize={dataPanelSize}
+              onResize={setDataPanelSize}
+            >
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={25}>
                   {errorMessage && (
-                    <div className="p-2 border text-sm text-red-600">
+                    <div className="p-2 text-sm text-red-600">
                       {errorMessage}
                     </div>
                   )}
@@ -862,16 +885,20 @@ export default function App() {
                 <ResizableHandle withHandle />
 
                 <ResizablePanel defaultSize={75}>
-                  <div className="flex flex-col h-full justify-between">
+                  <div className="flex flex-col h-full justify-between border-l">
                     {customQueryDataTable}
                   </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </ResizablePanel>
 
-            <ResizableHandle withHandle />
+            <ResizableHandle className="hidden md:flex" withHandle />
 
-            <ResizablePanel defaultSize={25}>
+            <ResizablePanel
+              defaultSize={schemaPanelSize}
+              onResize={setSchemaPanelSize}
+              className="hidden md:block"
+            >
               <div className="h-full overflow-hidden">{schemaSection}</div>
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -884,15 +911,17 @@ export default function App() {
       errorMessage,
       customQueryDataTable,
       isDataLoading,
-      isDatabaseLoading,
       schemaSection,
       customQueryObject,
+      isDatabaseLoading,
+      dataPanelSize,
+      schemaPanelSize,
     ]
   );
 
   const dataTable = useMemo(
     () => (
-      <Table className="border">
+      <Table>
         <TableHeader>
           <TableRow className="bg-primary/5">
             {columns && currentTable ? (
@@ -989,43 +1018,123 @@ export default function App() {
     ]
   );
 
+  const dropDownActions = useMemo(
+    () => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs">
+            Actions <ChevronDown className="ml-1 h-3 w-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-40">
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs w-full justify-start"
+              onClick={() => setFilters(null)}
+              disabled={filters == null}
+              title="Clear applied filters"
+            >
+              <FilterXIcon className="h-3 w-3 mr-1" />
+              Clear filters
+            </Button>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs w-full justify-start"
+              onClick={() => setSorters(null)}
+              disabled={sorters == null}
+              title="Reset sorting"
+            >
+              <ListRestartIcon className="h-3 w-3 mr-1" />
+              Reset sorting
+            </Button>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs w-full justify-start"
+              onClick={() => setIsInserting(true)}
+              title="Insert a new row"
+            >
+              <PlusIcon className="h-3 w-3 mr-1" />
+              Insert row
+            </Button>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs w-full justify-start"
+              onClick={() => handleExport("table")}
+              title="Export the current table as CSV"
+            >
+              <FolderOutputIcon className="h-3 w-3 mr-1" />
+              Export table
+            </Button>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs w-full justify-start"
+              onClick={() => handleExport("current")}
+              title="Export the current data as CSV"
+            >
+              <FolderOutputIcon className="h-3 w-3 mr-1" />
+              Export data
+            </Button>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+    [filters, sorters, handleExport]
+  );
+
   const dataTab = useMemo(
     () => (
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-1 p-2 border-b ">
           {TableSelector}
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 text-xs"
-            onClick={() => setFilters(null)}
-            disabled={filters == null}
-            title="Clear applied filters"
-          >
-            <FilterXIcon className="h-3 w-3 mr-1" />
-            Clear filters
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 text-xs"
-            onClick={() => setSorters(null)}
-            disabled={sorters == null}
-            title="Reset sorting"
-          >
-            <ListRestartIcon className="h-3 w-3 mr-1" />
-            Reset sorting
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 text-xs"
-            onClick={() => handleExport("table")}
-            title="Export the current table as CSV"
-          >
-            <FolderOutputIcon className="h-3 w-3 mr-1" />
-            Export table
-          </Button>
+          <div className="md:flex items-center gap-1 hidden">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs"
+              onClick={() => setFilters(null)}
+              disabled={filters == null}
+              title="Clear applied filters"
+            >
+              <FilterXIcon className="h-3 w-3 mr-1" />
+              Clear filters
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs"
+              onClick={() => setSorters(null)}
+              disabled={sorters == null}
+              title="Reset sorting"
+            >
+              <ListRestartIcon className="h-3 w-3 mr-1" />
+              Reset sorting
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs"
+              onClick={() => handleExport("table")}
+              title="Export the current table as CSV"
+            >
+              <FolderOutputIcon className="h-3 w-3 mr-1" />
+              Export table
+            </Button>
+          </div>
+          <div className="md:hidden">{dropDownActions}</div>
           {(isDataLoading || isDatabaseLoading) && (
             <span className="text-xs ml-2 text-gray-500 flex items-center">
               <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
@@ -1037,7 +1146,10 @@ export default function App() {
         <div className="overflow-hidden h-full">
           <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Left Panel - Data Table */}
-            <ResizablePanel defaultSize={75}>
+            <ResizablePanel
+              defaultSize={dataPanelSize}
+              onResize={setDataPanelSize}
+            >
               <div
                 className="flex flex-col h-full justify-between border-l"
                 id="dataSection"
@@ -1047,10 +1159,14 @@ export default function App() {
               </div>
             </ResizablePanel>
 
-            <ResizableHandle withHandle />
+            <ResizableHandle className="hidden md:flex" withHandle />
 
             {/* Right Panel - Split Vertically */}
-            <ResizablePanel defaultSize={25}>
+            <ResizablePanel
+              defaultSize={schemaPanelSize}
+              onResize={setSchemaPanelSize}
+              className="hidden md:block"
+            >
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel
                   defaultSize={20}
@@ -1084,6 +1200,9 @@ export default function App() {
       editSection,
       handleExport,
       isInserting,
+      dataPanelSize,
+      schemaPanelSize,
+      dropDownActions,
     ]
   );
 
@@ -1145,9 +1264,9 @@ export default function App() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 max-h-[calc(100vh-5.5rem)] overflow-hidden">
+        <div className="flex-1 max-h-[calc(100vh-5.9rem)] overflow-hidden">
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
-            {isDataLoading ? (
+            {isDatabaseLoading ? (
               <div className="flex items-center justify-center h-full">
                 <LoaderCircleIcon className="h-4 w-4 mr-2 animate-spin" />
                 <span className="text-xl">Loading Database</span>
