@@ -653,7 +653,7 @@ export default function App() {
                 <div className="overflow-auto flex-1">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-primary/7">
+                      <TableRow className="bg-primary/5">
                         {columns!.map((column, index) => (
                           <TableHead key={column} className="p-1 text-xs">
                             <div className="flex items-center gap-1">
@@ -714,7 +714,7 @@ export default function App() {
             <div className="overflow-auto flex-1">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary/7">
+                  <TableRow className="bg-primary/5">
                     {columns!.map((column, index) => (
                       <TableHead key={column} className="p-1 text-xs">
                         <div className="flex items-center gap-1">
@@ -783,7 +783,7 @@ export default function App() {
         {customQueryObject ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-primary/7">
+              <TableRow className="bg-primary/5">
                 {customQueryObject.columns.map((column) => (
                   <TableHead key={column} className="p-1 text-xs">
                     <div className="flex items-center gap-1">
@@ -926,7 +926,7 @@ export default function App() {
     () => (
       <Table>
         <TableHeader>
-          <TableRow className="bg-primary/7">
+          <TableRow className="bg-primary/5">
             {columns && currentTable ? (
               columns.map((column, index) => (
                 <TableHead key={column} className="p-1 text-xs">
@@ -1213,7 +1213,7 @@ export default function App() {
 
   const topBar = useMemo(
     () => (
-      <div className="flex items-center gap-1 px-2 pt-2 border-b justify-between ">
+      <div className="flex items-center gap-1 p-1 border-b justify-between ">
         <div className="flex items-center gap-1 w-full">
           <div className="relative">
             <Input
