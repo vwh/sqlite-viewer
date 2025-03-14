@@ -469,9 +469,8 @@ export default function App() {
               aria-label="Sort Descending"
               disabled={isDataLoading}
               onClick={() => handleQuerySorter(column)}
-              className="p-1 hover:bg-primary/10 rounded"
             >
-              <ArrowDownNarrowWideIcon className="h-3 w-3" />
+              <ArrowDownNarrowWideIcon className="h-4 w-3" />
             </button>
           ) : (
             <button
@@ -480,7 +479,6 @@ export default function App() {
               aria-label="Sort Ascending"
               disabled={isDataLoading}
               onClick={() => handleQuerySorter(column)}
-              className="p-1 hover:bg-primary/10 rounded"
             >
               <ArrowUpNarrowWideIcon className="h-3 w-3" />
             </button>
@@ -492,7 +490,6 @@ export default function App() {
             aria-label="Sort Column"
             disabled={isDataLoading}
             onClick={() => handleQuerySorter(column)}
-            className="p-1 hover:bg-primary/10 rounded"
           >
             <ArrowUpDownIcon className="h-3 w-3" />
           </button>
@@ -607,7 +604,7 @@ export default function App() {
   const schemaTab = useMemo(
     () => (
       <div className="flex flex-col h-full ">
-        <div className="flex items-center gap-1 p-2 border-b ">
+        {/* <div className="flex items-center gap-1 p-2 border-b ">
           <Button size="sm" variant="outline" className="text-xs">
             Create Table
           </Button>
@@ -617,7 +614,7 @@ export default function App() {
           <Button size="sm" variant="outline" className="text-xs">
             Print Schema
           </Button>
-        </div>
+        </div> */}
 
         <div className="flex-1 overflow-hidden">{schemaSection}</div>
       </div>
@@ -901,15 +898,16 @@ export default function App() {
             {columns && currentTable ? (
               columns.map((column, index) => (
                 <TableHead key={column} className="p-1 text-xs">
-                  <div className="flex items-center gap-1">
-                    <ColumnIcon
-                      columnSchema={tablesSchema[currentTable].schema[index]}
-                    />
+                  <div className="flex items-center py-[1.5px] gap-1">
+                    {sorterButton(column)}
                     <span className="capitalize font-medium text-foreground">
                       {column}
                     </span>
-                    {sorterButton(column)}
+                    <ColumnIcon
+                      columnSchema={tablesSchema[currentTable].schema[index]}
+                    />
                   </div>
+
                   <FilterInput
                     column={column}
                     value={filters?.[column] || ""}
@@ -1125,18 +1123,21 @@ export default function App() {
       <Tabs defaultValue="data" className="flex-1 flex flex-col">
         <TabsList className="mt-2 justify-start border-b rounded-none bg-transparent h-9">
           <TabsTrigger
+            disabled={isDatabaseLoading}
             value="structure"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
           >
             Database Structure
           </TabsTrigger>
           <TabsTrigger
+            disabled={isDatabaseLoading}
             value="data"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
           >
             Browse Data
           </TabsTrigger>
           <TabsTrigger
+            disabled={isDatabaseLoading}
             value="execute"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
           >
@@ -1146,10 +1147,10 @@ export default function App() {
 
         <div className="flex-1 max-h-[calc(100vh-5.5rem)] overflow-hidden">
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
-            {isDatabaseLoading ? (
+            {isDataLoading ? (
               <div className="flex items-center justify-center h-full">
                 <LoaderCircleIcon className="h-4 w-4 mr-2 animate-spin" />
-                <span>Loading database</span>
+                <span className="text-xl">Loading Database</span>
               </div>
             ) : (
               dataTab

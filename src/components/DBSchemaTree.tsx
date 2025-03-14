@@ -42,7 +42,7 @@ const TableItem = memo(
       <div>
         <div
           className={cn(
-            "flex items-center py-1.5 cursor-pointer hover:ml-2 transition-all rounded px-1.5",
+            "flex items-center py-1 cursor-pointer hover:ml-2 transition-all rounded px-1.5",
             expanded && "ml-1"
           )}
           onClick={handleToggle}
@@ -55,8 +55,8 @@ const TableItem = memo(
               <ChevronRightIcon className="h-4 w-4" />
             )}
           </div>
-          <span className="capitalize">
-            {name}{" "}
+          <span className="capitalize flex gap-1 items-center">
+            <span className="text-sm">{name}</span>
             <span className="text-xs text-primary/50">
               ({table.schema.length})
             </span>
@@ -123,7 +123,7 @@ const TablesSection = memo(
       <div>
         <div
           className={cn(
-            "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 rounded-b transition-colors",
+            "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 transition-colors",
             !expandedTableSection && "mb-0"
           )}
           onClick={handleToggleSection}
@@ -137,7 +137,7 @@ const TablesSection = memo(
             )}
           </div>
           <DatabaseIcon className="h-4 w-4 mr-2" />
-          <span className="font-bold">Tables</span>
+          <span>Tables</span>
 
           {expandedTableSection && (
             <div className="ml-auto flex">
@@ -226,7 +226,7 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
           )}
         </div>
         <TagIcon className="h-4 w-4 mr-2" />
-        <span className="font-bold">Indexes</span>
+        <span>Indexes</span>
 
         {expandedIndexSection && indexes.length > 0 && (
           <div className="ml-auto flex space-x-1">
@@ -269,7 +269,7 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
               <div key={idx}>
                 <div
                   className={cn(
-                    "flex items-center py-1.5 cursor-pointer hover:ml-2 rounded px-1.5 transition-all",
+                    "flex items-center py-1 cursor-pointer hover:ml-2 rounded px-1.5 transition-all",
                     isExpanded && "ml-1"
                   )}
                   onClick={handleToggleIndex}
@@ -282,13 +282,12 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
                       <ChevronRightIcon className="h-4 w-4" />
                     )}
                   </div>
-                  <span>{index.name}</span>
-                  <span className="ml-2 text-xs text-primary/50">
-                    on{" "}
+                  <span className="text-sm">{index.name}</span>
+                  {/* <span className="text-xs text-primary/50">
                     <span className="font-medium capitalize">
                       {index.tableName}
                     </span>
-                  </span>
+                  </span> */}
                 </div>
 
                 {isExpanded && (
@@ -313,7 +312,7 @@ const SchemaSearch = memo(
         <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/40" />
         <Input
           placeholder="Search tables and indexes"
-          className="pl-8 h-8 text-sm w-full"
+          className="pl-8 h-8 text-sm w-full text-[0.8rem]!"
           onChange={(e) => onFilterChange(e.target.value)}
         />
       </div>
