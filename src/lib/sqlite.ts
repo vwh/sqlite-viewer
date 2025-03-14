@@ -218,6 +218,20 @@ export default class Sqlite {
     }
   }
 
+  // Insert a row into a table
+  public insert(table: string, columns: string[], values: string[]) {
+    try {
+      const query = `INSERT INTO ${table} (${columns.join(
+        ", "
+      )}) VALUES (${columns.map(() => "?").join(", ")})`;
+      const stmt = this.db.prepare(query);
+      stmt.run([...values]);
+      stmt.free();
+    } catch (error) {
+      throw new Error(`Error while inserting into table ${table}: ${error}`);
+    }
+  }
+
   // Used for exporting data as CSV
   private export({
     table,

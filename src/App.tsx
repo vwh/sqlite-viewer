@@ -101,6 +101,7 @@ export default function App() {
     data: SqlValue[];
     index: number;
   } | null>(null);
+  const [isInserting, setIsInserting] = useState(false);
 
   const workerRef = useRef<Worker | null>(null);
 
@@ -122,12 +123,15 @@ export default function App() {
         setFilters(null);
         setSorters(null);
         setSelectedRow(null);
+        setIsInserting(false);
         setPage(1);
         setIsDatabaseLoading(false);
       } // When the query is executed and returns results
       else if (action === "queryComplete") {
         if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
         const data = payload.results?.[0]?.values || [];
+        // put the first as initial value on EditValues used for insert form
+        setEditValues(payload.results?.[0]?.values?.[0] || []);
         // To be able to cache the columns
         if (data.length !== 0) {
           setData(payload.results?.[0]?.values || []);
@@ -146,6 +150,10 @@ export default function App() {
         // TODO setIsUpdating(false);
         // TODO Toast notification
         console.log("Update complete");
+      } else if (action === "insertComplete") {
+        setIsInserting(false);
+        // TODO Toast notification
+        console.log("Insert complete");
       }
       // When the database is downloaded
       else if (action === "downloadComplete") {
@@ -293,6 +301,7 @@ export default function App() {
     setSorters(null);
     setPage(1);
     setSelectedRow(null);
+    setIsInserting(false);
     setCurrentTable(selectedTable);
   }, []);
 
@@ -354,6 +363,7 @@ export default function App() {
       });
       // Reset the selected row
       setSelectedRow(null);
+      setIsInserting(false);
     },
     [currentTable, columns, editValues, selectedRow, page, filters, sorters]
   );
@@ -472,9 +482,15 @@ export default function App() {
           </Button>
         </div>
         <div className="flex items-center gap-1">
-          <Button size="sm" variant="outline" className="h-7 text-xs" disabled>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
+            onClick={() => setIsInserting(true)}
+            disabled={isInserting}
+          >
             <PlusIcon className="h-3 w-3 mr-1" />
-            Insert Row
+            Insert row
           </Button>
           <Button
             onClick={() => handleExport("current")}
@@ -489,7 +505,7 @@ export default function App() {
         </div>
       </div>
     ),
-    [page, maxSize, handlePageChange, isDataLoading, handleExport]
+    [page, maxSize, handlePageChange, isDataLoading, handleExport, isInserting]
   );
 
   const schemaSection = useMemo(
@@ -528,7 +544,70 @@ export default function App() {
   const editSection = useMemo(
     () => (
       <div className="h-full border overflow-auto">
-        {selectedRow?.data ? (
+        {!isInserting ? (
+          <div>
+            {selectedRow && (
+              <div className="flex flex-col w-full h-full">
+                <div className="overflow-auto flex-1">
+                  <Table className="border">
+                    <TableHeader>
+                      <TableRow className="bg-primary/5">
+                        {columns!.map((column, index) => (
+                          <TableHead key={column} className="p-1 text-xs">
+                            <div className="flex items-center gap-1">
+                              <ColumnIcon
+                                columnSchema={
+                                  tablesSchema[currentTable!].schema[index]
+                                }
+                              />
+                              <span className="capitalize font-medium">
+                                {column}
+                              </span>
+                            </div>
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        {editValues.map((value, i) => (
+                          <TableCell key={i} className="p-1">
+                            <Input
+                              name={columns![i]}
+                              className="h-7 text-xs"
+                              value={value}
+                              onChange={(e) =>
+                                handlEditInputChange(i, e.target.value)
+                              }
+                            />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs grow-2 rounded-none"
+                    onClick={() => handleEditSubmit("update")}
+                  >
+                    Apply changes
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="text-xs grow rounded-none"
+                    onClick={() => handleEditSubmit("delete")}
+                  >
+                    Delete row
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
           <div className="flex flex-col w-full h-full">
             <div className="overflow-auto flex-1">
               <Table className="border">
@@ -552,18 +631,31 @@ export default function App() {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    {editValues.map((value, i) => (
-                      <TableCell key={i} className="p-1">
-                        <Input
-                          name={columns![i]}
-                          className="h-7 text-xs"
-                          value={value}
-                          onChange={(e) =>
-                            handlEditInputChange(i, e.target.value)
-                          }
-                        />
-                      </TableCell>
-                    ))}
+                    {editValues
+                      ? editValues.map((value, i) => (
+                          <TableCell key={i} className="p-1">
+                            <Input
+                              name={columns![i]}
+                              className="h-7 text-xs"
+                              placeholder={value}
+                              onChange={(e) =>
+                                handlEditInputChange(i, e.target.value)
+                              }
+                            />
+                          </TableCell>
+                        ))
+                      : // If the table is empty, fill it with empty values
+                        columns!.map((column, index) => (
+                          <TableCell key={column} className="p-1">
+                            <Input
+                              name={column}
+                              className="h-7 text-xs"
+                              onChange={(e) =>
+                                handlEditInputChange(index, e.target.value)
+                              }
+                            />
+                          </TableCell>
+                        ))}
                   </TableRow>
                 </TableBody>
               </Table>
@@ -573,35 +665,25 @@ export default function App() {
                 size="sm"
                 variant="outline"
                 className="text-xs grow-2 rounded-none"
-                onClick={() => handleEditSubmit("update")}
+                onClick={() => handleEditSubmit("insert")}
               >
-                Apply changes
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                className="text-xs grow rounded-none"
-                onClick={() => handleEditSubmit("delete")}
-              >
-                Delete row
+                <PlusIcon className="h-3 w-3" />
+                Insert row
               </Button>
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full text-sm text-gray-500">
-            Select a row to edit
           </div>
         )}
       </div>
     ),
     [
-      selectedRow,
       currentTable,
+      selectedRow,
       tablesSchema,
       columns,
       editValues,
       handlEditInputChange,
       handleEditSubmit,
+      isInserting,
     ]
   );
 
@@ -675,7 +757,10 @@ export default function App() {
             data.map((row, i) => (
               <TableRow
                 key={i}
-                onClick={() => setSelectedRow({ data: row, index: i })}
+                onClick={() => {
+                  setSelectedRow({ data: row, index: i });
+                  setIsInserting(false);
+                }}
                 className={`cursor-pointer hover:bg-primary/5 text-xs ${
                   selectedRow?.index === i ? "bg-primary/10" : ""
                 }`}
@@ -802,12 +887,12 @@ export default function App() {
                   defaultSize={15}
                   minSize={15}
                   maxSize={15}
-                  className={`${selectedRow ? "" : "hidden"}`}
+                  className={`${selectedRow || isInserting ? "" : "hidden"}`}
                 >
                   {editSection}
                 </ResizablePanel>
                 <ResizableHandle
-                  className={`${selectedRow ? "" : "hidden"}`}
+                  className={`${selectedRow || isInserting ? "" : "hidden"}`}
                   withHandle
                 />
                 {/* Bottom Panel - Schema */}

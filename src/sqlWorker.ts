@@ -158,6 +158,17 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         }
         break;
       }
+      case "insert": {
+        // Insert a row into a table
+        if (instance) {
+          const { table, columns, values } = payload;
+          instance.insert(table, columns, values);
+          self.postMessage({
+            action: "insertComplete",
+          });
+        }
+        break;
+      }
       case "export": {
         // Export the data of a table as CSV
         if (instance) {
