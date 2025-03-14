@@ -53,6 +53,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useMediaQuery from "./hooks/useMediaQuery";
+import { ModeToggle } from "./components/theme/modeToggle";
 
 const FilterInput = memo(
   ({
@@ -73,7 +74,7 @@ const FilterInput = memo(
     return (
       <Input
         type="text"
-        className="rounded px-2 py-1 max-h-6 w-full text-[0.8rem]!"
+        className="rounded px-2 py-1 max-h-6 w-full text-[0.8rem]! border-primary/20"
         value={value}
         onChange={handleChange}
         placeholder="Filter"
@@ -636,7 +637,7 @@ export default function App() {
           </Button>
         </div> */}
 
-        <div className="flex-1 overflow-hidden">{schemaSection}</div>
+        <div className="flex-1 overflow-hidden border">{schemaSection}</div>
       </div>
     ),
     [schemaSection]
@@ -675,7 +676,7 @@ export default function App() {
                           <TableCell key={i} className="p-1">
                             <Input
                               name={columns![i]}
-                              className="h-7 text-xs"
+                              className="h-7 text-xs border-primary/20"
                               value={value}
                               onChange={(e) =>
                                 handlEditInputChange(i, e.target.value)
@@ -736,7 +737,7 @@ export default function App() {
                       <TableCell key={column} className="p-1">
                         <Input
                           name={column}
-                          className="h-7 text-xs"
+                          className="h-7 text-xs border-primary/20"
                           placeholder={editValues?.[index] ?? ""}
                           onChange={(e) =>
                             handlEditInputChange(index, e.target.value)
@@ -822,7 +823,7 @@ export default function App() {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-2 h-full bg-primary/5">
+          <div className="flex flex-col items-center justify-center gap-2 h-full">
             <p className="text-sm">No data to show</p>
           </div>
         )}
@@ -833,7 +834,7 @@ export default function App() {
 
   const executeTab = useMemo(
     () => (
-      <div className="flex flex-col h-full border">
+      <div className="flex flex-col h-full">
         <div className="flex items-center gap-1 p-2 border-b ">
           <Button
             size="sm"
@@ -884,7 +885,7 @@ export default function App() {
                 </ResizablePanel>
                 <ResizableHandle withHandle />
 
-                <ResizablePanel defaultSize={75}>
+                <ResizablePanel defaultSize={75} className="border">
                   <div className="flex flex-col h-full justify-between border-l">
                     {customQueryDataTable}
                   </div>
@@ -899,7 +900,9 @@ export default function App() {
               onResize={setSchemaPanelSize}
               className="hidden md:block"
             >
-              <div className="h-full overflow-hidden">{schemaSection}</div>
+              <div className="h-full overflow-hidden border">
+                {schemaSection}
+              </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>
@@ -961,7 +964,7 @@ export default function App() {
                   setIsInserting(false);
                 }}
                 className={`cursor-pointer hover:bg-primary/5 text-xs ${
-                  selectedRow?.index === i ? "bg-primary/10" : ""
+                  selectedRow?.index === i ? "bg-primary/5" : ""
                 }`}
               >
                 {row.map((value, j) => (
@@ -1151,7 +1154,7 @@ export default function App() {
               onResize={setDataPanelSize}
             >
               <div
-                className="flex flex-col h-full justify-between border-l"
+                className="flex flex-col h-full justify-between border"
                 id="dataSection"
               >
                 {dataTable}
@@ -1165,7 +1168,7 @@ export default function App() {
             <ResizablePanel
               defaultSize={schemaPanelSize}
               onResize={setSchemaPanelSize}
-              className="hidden md:block"
+              className="hidden md:block border"
             >
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel
@@ -1179,7 +1182,9 @@ export default function App() {
                   withHandle
                 />
                 <ResizablePanel defaultSize={80}>
-                  <div className="h-full overflow-hidden">{schemaSection}</div>
+                  <div className="h-full overflow-hidden border">
+                    {schemaSection}
+                  </div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </ResizablePanel>
@@ -1208,28 +1213,33 @@ export default function App() {
 
   const topBar = useMemo(
     () => (
-      <div className="flex items-center gap-1 p-2 border-b ">
-        <div className="relative">
-          <Input
-            type="file"
-            className="cursor-pointer opacity-0 absolute top-0 left-0 w-full h-full"
-            onChange={handleFileChange}
-          />
-          <Button size="sm" variant="outline" className="text-xs">
-            <DatabaseIcon className="h-3 w-3" />
-            Open Database
+      <div className="flex items-center gap-1 p-2 border-b justify-between ">
+        <div className="flex items-center gap-1">
+          <div className="relative">
+            <Input
+              type="file"
+              className="cursor-pointer opacity-0 absolute top-0 left-0 w-full h-full"
+              onChange={handleFileChange}
+            />
+            <Button size="sm" variant="outline" className="text-xs">
+              <DatabaseIcon className="h-3 w-3" />
+              Open Database
+            </Button>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs"
+            onClick={handleDownload}
+            title="Save the database"
+          >
+            <SaveIcon className="h-3 w-3" />
+            Save Database
           </Button>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="text-xs"
-          onClick={handleDownload}
-          title="Save the database"
-        >
-          <SaveIcon className="h-3 w-3" />
-          Save Database
-        </Button>
+        <div>
+          <ModeToggle />
+        </div>
       </div>
     ),
     [handleFileChange, handleDownload]
@@ -1278,7 +1288,10 @@ export default function App() {
           <TabsContent value="structure" className="h-full m-0 p-0 border-none">
             {schemaTab}
           </TabsContent>
-          <TabsContent value="execute" className="h-full m-0 p-0 border-none">
+          <TabsContent
+            value="execute"
+            className="h-full m-0 p-0 border-none border"
+          >
             {executeTab}
           </TabsContent>
         </div>

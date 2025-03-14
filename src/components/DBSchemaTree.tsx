@@ -123,7 +123,7 @@ const TablesSection = memo(
       <div>
         <div
           className={cn(
-            "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 transition-colors",
+            "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/5 bg-primary/7 transition-colors",
             !expandedTableSection && "mb-0"
           )}
           onClick={handleToggleSection}
@@ -143,7 +143,7 @@ const TablesSection = memo(
             <div className="ml-auto flex">
               {isExpanded ? (
                 <Button
-                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
                   variant="ghost"
                   size="icon"
                   onClick={handleCollapseAll}
@@ -152,7 +152,7 @@ const TablesSection = memo(
                 </Button>
               ) : (
                 <Button
-                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
                   variant="ghost"
                   size="icon"
                   onClick={handleExpandAll}
@@ -212,7 +212,7 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
     <div>
       <div
         className={cn(
-          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/10 bg-primary/5 transition-colors",
+          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/5 bg-primary/7 transition-colors",
           !expandedIndexSection && "mb-0"
         )}
         onClick={handleToggleSection}
@@ -232,7 +232,7 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
           <div className="ml-auto flex space-x-1">
             {isExpanded ? (
               <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
                 variant="ghost"
                 size="icon"
                 onClick={handleCollapseAll}
@@ -241,7 +241,7 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
               </Button>
             ) : (
               <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/10 rounded transition-colors"
+                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
                 variant="ghost"
                 size="icon"
                 onClick={handleExpandAll}
@@ -312,7 +312,7 @@ const SchemaSearch = memo(
         <SearchIcon className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/40" />
         <Input
           placeholder="Search tables and indexes"
-          className="pl-8 h-8 text-sm w-full text-[0.8rem]!"
+          className="pl-8 h-8 text-sm w-full text-[0.8rem]! border-primary/20"
           onChange={(e) => onFilterChange(e.target.value)}
         />
       </div>
