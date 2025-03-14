@@ -86,8 +86,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               // Update data after executing a new SQL statement
               const [results, maxSize] = instance.getTableData(
                 payload.currentTable,
-                payload.offset,
                 payload.limit,
+                payload.offset,
                 payload.filters,
                 payload.sorters
               );

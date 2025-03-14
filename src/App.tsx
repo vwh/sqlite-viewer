@@ -161,6 +161,7 @@ export default function App() {
           setCustomQueryObject(null);
         }
         setIsDataLoading(false);
+        setErrorMessage(null);
       }
       // When the database is updated and requires a new schema
       else if (action === "updateInstance") {
@@ -313,10 +314,10 @@ export default function App() {
       setIsDataLoading(true);
       workerRef.current?.postMessage({
         action: "exec",
-        payload: { query: stmt, currentTable, filters, sorters },
+        payload: { query: stmt, currentTable, filters, sorters, limit, offset },
       });
     }
-  }, [query, currentTable, filters, sorters]);
+  }, [query, currentTable, filters, sorters, limit, offset]);
 
   // Handles when user changes the page
   const handlePageChange = useCallback(
