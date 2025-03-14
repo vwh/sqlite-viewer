@@ -464,7 +464,7 @@ export default function App() {
         onValueChange={handleTableChange}
         value={currentTable || undefined}
       >
-        <SelectTrigger className="w-48 h-8 text-sm">
+        <SelectTrigger className="w-48 h-8 text-sm border border-primary/20">
           <SelectValue placeholder="Select Table" />
         </SelectTrigger>
         <SelectContent>
@@ -653,7 +653,7 @@ export default function App() {
                 <div className="overflow-auto flex-1">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-primary/5">
+                      <TableRow className="bg-primary/7">
                         {columns!.map((column, index) => (
                           <TableHead key={column} className="p-1 text-xs">
                             <div className="flex items-center gap-1">
@@ -676,7 +676,7 @@ export default function App() {
                           <TableCell key={i} className="p-1">
                             <Input
                               name={columns![i]}
-                              className="h-7 text-xs border-primary/20"
+                              className="h-7 text-xs border-primary/20 text-[0.8rem]!"
                               value={value}
                               onChange={(e) =>
                                 handlEditInputChange(i, e.target.value)
@@ -714,7 +714,7 @@ export default function App() {
             <div className="overflow-auto flex-1">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-primary/5">
+                  <TableRow className="bg-primary/7">
                     {columns!.map((column, index) => (
                       <TableHead key={column} className="p-1 text-xs">
                         <div className="flex items-center gap-1">
@@ -737,7 +737,7 @@ export default function App() {
                       <TableCell key={column} className="p-1">
                         <Input
                           name={column}
-                          className="h-7 text-xs border-primary/20"
+                          className="h-7 text-xs border-primary/20 text-[0.8rem]!"
                           placeholder={editValues?.[index] ?? ""}
                           onChange={(e) =>
                             handlEditInputChange(index, e.target.value)
@@ -783,7 +783,7 @@ export default function App() {
         {customQueryObject ? (
           <Table>
             <TableHeader>
-              <TableRow className="bg-primary/5">
+              <TableRow className="bg-primary/7">
                 {customQueryObject.columns.map((column) => (
                   <TableHead key={column} className="p-1 text-xs">
                     <div className="flex items-center gap-1">
@@ -926,7 +926,7 @@ export default function App() {
     () => (
       <Table>
         <TableHeader>
-          <TableRow className="bg-primary/5">
+          <TableRow className="bg-primary/7">
             {columns && currentTable ? (
               columns.map((column, index) => (
                 <TableHead key={column} className="p-1 text-xs">
@@ -1213,15 +1213,15 @@ export default function App() {
 
   const topBar = useMemo(
     () => (
-      <div className="flex items-center gap-1 p-2 border-b justify-between ">
-        <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 px-2 pt-2 border-b justify-between ">
+        <div className="flex items-center gap-1 w-full">
           <div className="relative">
             <Input
               type="file"
               className="cursor-pointer opacity-0 absolute top-0 left-0 w-full h-full"
               onChange={handleFileChange}
             />
-            <Button size="sm" variant="outline" className="text-xs">
+            <Button size="sm" variant="outline" className="text-xs w-full">
               <DatabaseIcon className="h-3 w-3" />
               Open Database
             </Button>
@@ -1246,11 +1246,11 @@ export default function App() {
   );
 
   return (
-    <main className="flex flex-col h-screen overflow-hidden">
+    <main className="flex flex-col h-screen overflow-hidden bg-primary/5">
       {topBar}
 
       <Tabs defaultValue="data" className="flex-1 flex flex-col">
-        <TabsList className="mt-2 justify-start border-b rounded-none bg-transparent h-9">
+        <TabsList className="mt-2 bg-primary/5 w-full justify-start border-b rounded-none h-9">
           <TabsTrigger
             disabled={isDatabaseLoading}
             value="structure"
@@ -1274,7 +1274,7 @@ export default function App() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 max-h-[calc(100vh-5.9rem)] overflow-hidden">
+        <div className="flex-1 max-h-[calc(100vh-5.5rem)] overflow-hidden">
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
             {isDatabaseLoading ? (
               <div className="flex items-center justify-center h-full">
