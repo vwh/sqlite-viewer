@@ -170,7 +170,6 @@ export default function App() {
         link.click();
       } else if (action === "exportComplete") {
         // TODO setIsExporting(false);
-        console.log(payload.results);
         const blob = new Blob([payload.results], {
           type: "text/csv",
         });
@@ -242,7 +241,6 @@ export default function App() {
               tableCellHight
           );
       }
-      console.log(limit, offset);
       setLimit(limit);
 
       workerRef.current?.postMessage({
@@ -398,6 +396,8 @@ export default function App() {
         action: "refresh",
         payload: {
           currentTable: currentTable!,
+          offset,
+          limit,
           filters,
           sorters,
         },
@@ -406,7 +406,16 @@ export default function App() {
       setSelectedRow(null);
       setIsInserting(false);
     },
-    [currentTable, columns, editValues, selectedRow, filters, sorters]
+    [
+      currentTable,
+      columns,
+      editValues,
+      selectedRow,
+      filters,
+      sorters,
+      offset,
+      limit,
+    ]
   );
 
   const TableSelector = useMemo(
@@ -601,7 +610,7 @@ export default function App() {
     () => (
       <div className="h-full border overflow-auto">
         {!isInserting ? (
-          <div>
+          <>
             {selectedRow && (
               <div className="flex flex-col w-full h-full">
                 <div className="overflow-auto flex-1">
@@ -662,7 +671,7 @@ export default function App() {
                 </div>
               </div>
             )}
-          </div>
+          </>
         ) : (
           <div className="flex flex-col w-full h-full">
             <div className="overflow-auto flex-1">
@@ -687,31 +696,18 @@ export default function App() {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    {editValues
-                      ? editValues.map((value, i) => (
-                          <TableCell key={i} className="p-1">
-                            <Input
-                              name={columns![i]}
-                              className="h-7 text-xs"
-                              placeholder={value}
-                              onChange={(e) =>
-                                handlEditInputChange(i, e.target.value)
-                              }
-                            />
-                          </TableCell>
-                        ))
-                      : // If the table is empty, fill it with empty values
-                        columns!.map((column, index) => (
-                          <TableCell key={column} className="p-1">
-                            <Input
-                              name={column}
-                              className="h-7 text-xs"
-                              onChange={(e) =>
-                                handlEditInputChange(index, e.target.value)
-                              }
-                            />
-                          </TableCell>
-                        ))}
+                    {columns!.map((column, index) => (
+                      <TableCell key={column} className="p-1">
+                        <Input
+                          name={column}
+                          className="h-7 text-xs"
+                          placeholder={editValues?.[index] ?? ""}
+                          onChange={(e) =>
+                            handlEditInputChange(index, e.target.value)
+                          }
+                        />
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableBody>
               </Table>
@@ -941,11 +937,8 @@ export default function App() {
             {/* Right Panel - Split Vertically */}
             <ResizablePanel defaultSize={25} minSize={15}>
               <ResizablePanelGroup direction="vertical">
-                {/* Top Panel - Edit Section */}
                 <ResizablePanel
-                  defaultSize={15}
-                  minSize={15}
-                  maxSize={15}
+                  defaultSize={20}
                   className={`${selectedRow || isInserting ? "" : "hidden"}`}
                 >
                   {editSection}
@@ -954,8 +947,7 @@ export default function App() {
                   className={`${selectedRow || isInserting ? "" : "hidden"}`}
                   withHandle
                 />
-                {/* Bottom Panel - Schema */}
-                <ResizablePanel defaultSize={60}>
+                <ResizablePanel defaultSize={80}>
                   <div className="h-full overflow-hidden">{schemaSection}</div>
                 </ResizablePanel>
               </ResizablePanelGroup>

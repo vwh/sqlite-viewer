@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
@@ -132,7 +132,7 @@ function SelectSeparator({
   );
 }
 
-function SelectScrollUpButton({
+const SelectScrollUpButton = React.memo(function SelectScrollUpButton({
   className,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
@@ -148,7 +148,7 @@ function SelectScrollUpButton({
       <ChevronUpIcon className="size-4" />
     </SelectPrimitive.ScrollUpButton>
   );
-}
+});
 
 function SelectScrollDownButton({
   className,
