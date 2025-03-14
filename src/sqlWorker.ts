@@ -77,7 +77,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
             if (results.length > 0) {
               // TODO: return isCustomQuery
               self.postMessage({
-                action: "queryComplete",
+                action: "customQueryComplete",
                 payload: { results },
               });
             }

@@ -85,6 +85,11 @@ export default function App() {
   const [columns, setColumns] = useState<string[] | null>(null);
   const [isDataLoading, setIsDataLoading] = useState(false);
 
+  const [customQueryObject, setCustomQueryObject] = useState<{
+    data: SqlValue[][];
+    columns: string[];
+  } | null>(null);
+
   const [filters, setFilters] = useState<Record<string, string> | null>(null);
   const [sorters, setSorters] = useState<Record<string, "asc" | "desc"> | null>(
     null
@@ -131,7 +136,7 @@ export default function App() {
         setIsDatabaseLoading(false);
       } // When the query is executed and returns results
       else if (action === "queryComplete") {
-        if (payload.maxSize !== undefined) setMaxSize(payload.maxSize);
+        setMaxSize(payload.maxSize);
         const data = payload.results?.[0]?.values || [];
         // put the first as initial value on EditValues used for insert form
         setEditValues(payload.results?.[0]?.values?.[0] || []);
@@ -144,7 +149,20 @@ export default function App() {
         }
         setIsDataLoading(false);
         setErrorMessage(null);
-      } // When the database is updated and requires a new schema
+      } // When the custom query is executed and returns results
+      else if (action === "customQueryComplete") {
+        const data = payload.results?.[0]?.values || [];
+        if (data.length !== 0) {
+          setCustomQueryObject({
+            data: payload.results?.[0]?.values || [],
+            columns: payload.results?.[0]?.columns || [],
+          });
+        } else {
+          setCustomQueryObject(null);
+        }
+        setIsDataLoading(false);
+      }
+      // When the database is updated and requires a new schema
       else if (action === "updateInstance") {
         setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
@@ -739,9 +757,65 @@ export default function App() {
     ]
   );
 
+  const customQueryDataTable = useMemo(
+    () => (
+      <>
+        {" "}
+        {customQueryObject ? (
+          <Table className="border">
+            <TableHeader>
+              <TableRow className="bg-primary/5">
+                {customQueryObject.columns.map((column) => (
+                  <TableHead key={column} className="p-1 text-xs">
+                    <div className="flex items-center gap-1">
+                      <span className="capitalize font-medium text-foreground">
+                        {column}
+                      </span>
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {customQueryObject.data && customQueryObject.data.length > 0 ? (
+                customQueryObject.data.map((row, i) => (
+                  <TableRow key={i} className="hover:bg-primary/5 text-xs">
+                    {row.map((value, j) => (
+                      <TableCell key={j} className="p-2">
+                        {value ?? (
+                          <span className="text-muted-foreground">NULL</span>
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={customQueryObject?.columns?.length || 1}
+                    className="h-32 text-center"
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2 bg-pr">
+                      <p className="text-sm">No data to show</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2 h-full bg-primary/5">
+            <p className="text-sm">No data to show</p>
+          </div>
+        )}
+      </>
+    ),
+    [customQueryObject]
+  );
+
   const executeTab = useMemo(
     () => (
-      <div className="flex flex-col h-full ">
+      <div className="flex flex-col h-full border">
         <div className="flex items-center gap-1 p-2 border-b ">
           <Button
             size="sm"
@@ -753,29 +827,74 @@ export default function App() {
             <PlayIcon className="h-3 w-3 mr-1" />
             Execute SQL
           </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs"
+            disabled={!customQueryObject?.data}
+          >
+            <FolderOutputIcon className="h-3 w-3 mr-1" />
+            Export data
+          </Button>
+          {(isDataLoading || isDatabaseLoading) && (
+            <span className="text-xs ml-2 text-gray-500 flex items-center">
+              <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
+              Loading data
+            </span>
+          )}
         </div>
 
-        <div className="p-2 flex-1">
-          <textarea
-            className="w-full h-full min-h-64 p-2 border rounded font-mono text-sm resize-none"
-            placeholder="Enter SQL"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          {errorMessage && (
-            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
-              {errorMessage}
-            </div>
-          )}
+        <div className="overflow-hidden h-full">
+          <ResizablePanelGroup direction="horizontal" className="h-full">
+            <ResizablePanel defaultSize={75}>
+              <ResizablePanelGroup direction="vertical">
+                <ResizablePanel defaultSize={25}>
+                  {errorMessage && (
+                    <div className="p-2 border text-sm text-red-600">
+                      {errorMessage}
+                    </div>
+                  )}
+                  <textarea
+                    className="w-full h-full p-2 border font-mono text-sm resize-none"
+                    placeholder="Enter SQL"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </ResizablePanel>
+                <ResizableHandle withHandle />
+
+                <ResizablePanel defaultSize={75}>
+                  <div className="flex flex-col h-full justify-between">
+                    {customQueryDataTable}
+                  </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={25}>
+              <div className="h-full overflow-hidden">{schemaSection}</div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </div>
     ),
-    [query, handleQueryExecute, errorMessage]
+    [
+      query,
+      handleQueryExecute,
+      errorMessage,
+      customQueryDataTable,
+      isDataLoading,
+      isDatabaseLoading,
+      schemaSection,
+      customQueryObject,
+    ]
   );
 
   const dataTable = useMemo(
     () => (
-      <Table className="border rounded">
+      <Table className="border">
         <TableHeader>
           <TableRow className="bg-primary/5">
             {columns && currentTable ? (
@@ -917,14 +1036,11 @@ export default function App() {
         </div>
 
         <div className="overflow-hidden h-full">
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="h-full rounded-md"
-          >
+          <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Left Panel - Data Table */}
-            <ResizablePanel defaultSize={75} minSize={25}>
+            <ResizablePanel defaultSize={75}>
               <div
-                className="flex flex-col h-full justify-between"
+                className="flex flex-col h-full justify-between border-l"
                 id="dataSection"
               >
                 {dataTable}
@@ -935,7 +1051,7 @@ export default function App() {
             <ResizableHandle withHandle />
 
             {/* Right Panel - Split Vertically */}
-            <ResizablePanel defaultSize={25} minSize={15}>
+            <ResizablePanel defaultSize={25}>
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel
                   defaultSize={20}
