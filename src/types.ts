@@ -15,7 +15,7 @@ export type IndexSchema = {
 export type TableSchemaRow = {
   name: string; // Column name
   cid: number;
-  type: string;
+  type: string | null;
   dflt_value: string;
   IsNullable: boolean;
   isPrimaryKey: boolean;

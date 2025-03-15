@@ -197,5 +197,14 @@
 html,
 body {
   height: 100%;
-  overflow: hidden; /* Prevents page scroll */
+  overflow: hidden;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .height-container {
+    height: -webkit-fill-available;
+  }
 }

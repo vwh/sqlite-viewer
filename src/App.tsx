@@ -55,6 +55,7 @@ import {
 import useMediaQuery from "./hooks/useMediaQuery";
 import { ModeToggle } from "./components/theme/modeToggle";
 import CustomSQLTextarea from "./components/CustomSQLTextarea";
+import Span from "./components/Span";
 
 const FilterInput = memo(
   ({
@@ -465,7 +466,7 @@ export default function App() {
         onValueChange={handleTableChange}
         value={currentTable || undefined}
       >
-        <SelectTrigger className="w-48 h-8 text-sm border border-primary/20">
+        <SelectTrigger className="w-30 sm:w-48 h-8 text-sm border border-primary/20">
           <SelectValue placeholder="Select Table" />
         </SelectTrigger>
         <SelectContent>
@@ -638,7 +639,7 @@ export default function App() {
           </Button>
         </div> */}
 
-        <div className="flex-1 overflow-hidden border">{schemaSection}</div>
+        <div className="flex-1 overflow-hidden">{schemaSection}</div>
       </div>
     ),
     [schemaSection]
@@ -646,7 +647,7 @@ export default function App() {
 
   const editSection = useMemo(
     () => (
-      <div className="h-full border overflow-auto">
+      <div className="h-full overflow-auto">
         {!isInserting ? (
           <>
             {selectedRow && (
@@ -663,9 +664,9 @@ export default function App() {
                                   tablesSchema[currentTable!].schema[index]
                                 }
                               />
-                              <span className="capitalize font-medium">
+                              <Span className="capitalize font-medium">
                                 {column}
-                              </span>
+                              </Span>
                             </div>
                           </TableHead>
                         ))}
@@ -724,9 +725,9 @@ export default function App() {
                               tablesSchema[currentTable!].schema[index]
                             }
                           />
-                          <span className="capitalize font-medium">
+                          <Span className="capitalize font-medium">
                             {column}
-                          </span>
+                          </Span>
                         </div>
                       </TableHead>
                     ))}
@@ -780,7 +781,6 @@ export default function App() {
   const customQueryDataTable = useMemo(
     () => (
       <>
-        {" "}
         {customQueryObject ? (
           <Table>
             <TableHeader>
@@ -788,9 +788,9 @@ export default function App() {
                 {customQueryObject.columns.map((column) => (
                   <TableHead key={column} className="p-1 text-xs">
                     <div className="flex items-center gap-1">
-                      <span className="capitalize font-medium text-foreground">
+                      <Span className="capitalize font-medium text-foreground">
                         {column}
-                      </span>
+                      </Span>
                     </div>
                   </TableHead>
                 ))}
@@ -802,8 +802,12 @@ export default function App() {
                   <TableRow key={i} className="hover:bg-primary/5 text-xs">
                     {row.map((value, j) => (
                       <TableCell key={j} className="p-2">
-                        {value ?? (
-                          <span className="text-muted-foreground">NULL</span>
+                        {value ? (
+                          <Span>{value}</Span>
+                        ) : (
+                          <span className="text-muted-foreground italic">
+                            NULL
+                          </span>
                         )}
                       </TableCell>
                     ))}
@@ -815,8 +819,11 @@ export default function App() {
                     colSpan={customQueryObject?.columns?.length || 1}
                     className="h-32 text-center"
                   >
-                    <div className="flex flex-col items-center justify-center gap-2 bg-pr">
-                      <p className="text-sm">No data to show</p>
+                    <div className="flex flex-col items-center justify-center gap-1 h-full">
+                      <h3 className="text-md font-medium">No Data To Show</h3>
+                      <p className="text-sm">
+                        Seems like there is no data to display
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -824,8 +831,9 @@ export default function App() {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-2 h-full">
-            <p className="text-sm">No data to show</p>
+          <div className="flex flex-col items-center justify-center gap-1 h-full">
+            <h3 className="text-md font-medium">No Data To Show</h3>
+            <p className="text-sm">Execute a query to view data</p>
           </div>
         )}
       </>
@@ -873,7 +881,7 @@ export default function App() {
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel defaultSize={25}>
                   {errorMessage && (
-                    <div className="p-2 text-sm text-red-600">
+                    <div className="p-2 text-sm text-red-400">
                       {errorMessage}
                     </div>
                   )}
@@ -892,8 +900,8 @@ export default function App() {
                 </ResizablePanel>
                 <ResizableHandle withHandle />
 
-                <ResizablePanel defaultSize={75} className="border">
-                  <div className="flex flex-col h-full justify-between border-l">
+                <ResizablePanel defaultSize={75}>
+                  <div className="flex flex-col h-full justify-between border">
                     {customQueryDataTable}
                   </div>
                 </ResizablePanel>
@@ -907,9 +915,7 @@ export default function App() {
               onResize={setSchemaPanelSize}
               className=""
             >
-              <div className="h-full overflow-hidden border">
-                {schemaSection}
-              </div>
+              <div className="h-full overflow-hidden">{schemaSection}</div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>
@@ -941,14 +947,13 @@ export default function App() {
                 <TableHead key={column} className="p-1 text-xs">
                   <div className="flex items-center py-[1.5px] gap-1">
                     {sorterButton(column)}
-                    <span className="capitalize font-medium text-foreground">
+                    <Span className="capitalize font-medium text-foreground">
                       {column}
-                    </span>
+                    </Span>
                     <ColumnIcon
                       columnSchema={tablesSchema[currentTable].schema[index]}
                     />
                   </div>
-
                   <FilterInput
                     column={column}
                     value={filters?.[column] || ""}
@@ -978,8 +983,20 @@ export default function App() {
               >
                 {row.map((value, j) => (
                   <TableCell key={j} className="p-2">
-                    {value ?? (
-                      <span className="text-muted-foreground">NULL</span>
+                    {/* Check if it is blob and show a <span>blob</span> */}
+                    {value ? (
+                      <>
+                        {tablesSchema[currentTable!].schema[j]?.type ===
+                        "BLOB" ? (
+                          <span className="text-muted-foreground italic">
+                            BLOB
+                          </span>
+                        ) : (
+                          <Span>{value}</Span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground italic">NULL</span>
                     )}
                   </TableCell>
                 ))}
@@ -991,11 +1008,11 @@ export default function App() {
                 colSpan={columns?.length || 1}
                 className="h-32 text-center"
               >
-                <div className="flex flex-col items-center justify-center gap-2">
+                <div className="flex flex-col items-center justify-center gap-1 h-full">
                   {filters ? (
                     <>
-                      <p className="text-sm">
-                        No data found for the current filters
+                      <p className="text-md font-medium">
+                        No Data To Show For Current Filters
                       </p>
                       <Button
                         size="sm"
@@ -1003,13 +1020,18 @@ export default function App() {
                         className="text-xs"
                         onClick={() => setFilters(null)}
                       >
+                        <FilterXIcon className="mr-1 h-3 w-3" />
                         Clear filters
                       </Button>
                     </>
                   ) : (
-                    <p className="text-sm">
-                      No data found in the current table
-                    </p>
+                    <>
+                      {" "}
+                      <h3 className="text-md font-medium">No Data To Show</h3>
+                      <p className="text-sm">
+                        This table does not have any data to display
+                      </p>
+                    </>
                   )}
                 </div>
               </TableCell>
@@ -1191,9 +1213,7 @@ export default function App() {
                   withHandle
                 />
                 <ResizablePanel defaultSize={80}>
-                  <div className="h-full overflow-hidden border">
-                    {schemaSection}
-                  </div>
+                  <div className="h-full overflow-hidden">{schemaSection}</div>
                 </ResizablePanel>
               </ResizablePanelGroup>
             </ResizablePanel>

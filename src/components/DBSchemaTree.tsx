@@ -366,14 +366,18 @@ const DBSchemaTree = ({
           <IndexesSection indexes={filteredIndexes} />
         )}
       </div>
-      <div className="p-2 bg-primary/5 border-t flex justify-between items-center text-xs text-primary/60">
+      <div className="p-2 bg-primary/5 border-t flex justify-between items-center text-xs text-primary/60 gap-2">
         <div className="flex items-center">
-          <TableIcon className="h-3 w-3 mr-1" />
-          <span>{Object.keys(tablesSchema).length} Tables</span>
+          <TableIcon className="h-3 w-3 mr-1 text-wrap" />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {Object.keys(tablesSchema).length} Tables
+          </span>
         </div>
         <div className="flex items-center">
           <TagIcon className="h-3 w-3 mr-1" />
-          <span>{indexesSchema.length} Indexes</span>
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {indexesSchema.length} Indexes
+          </span>
         </div>
       </div>
     </div>
