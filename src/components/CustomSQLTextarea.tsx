@@ -140,7 +140,7 @@ const SQLITE_KEYWORDS = [
 ];
 
 interface CustomSQLTextareaProps {
-  value: string;
+  query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   tableSchema: TableSchema;
   columns: string[];

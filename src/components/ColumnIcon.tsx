@@ -26,19 +26,22 @@ export const ColumnIcon: React.FC<{ columnSchema: TableSchemaRow }> = memo(
 
     const { type, isPrimaryKey, isForeignKey } = columnSchema;
 
-    const typeIcon = isBlob(type) ? (
-      <CuboidIcon className="h-4 w-4 text-green-500" />
-    ) : isDate(type) ? (
-      <CalendarIcon className="h-4 w-4 text-blue-500" />
-    ) : isText(type) ? (
-      <TypeIcon className="h-4 w-4 text-indigo-500" />
-    ) : isNumber(type) ? (
-      <HashIcon className="h-4 w-4 text-red-500" />
-    ) : isBoolean(type) ? (
-      <ToggleLeftIcon className="h-4 w-4 text-pink-500" />
-    ) : (
-      <HelpCircleIcon className="h-4 w-4 text-gray-500" />
-    );
+    let typeIcon = <HelpCircleIcon className="h-4 w-4 text-gray-500" />;
+    if (type) {
+      typeIcon = isBlob(type) ? (
+        <CuboidIcon className="h-4 w-4 text-green-500" />
+      ) : isDate(type) ? (
+        <CalendarIcon className="h-4 w-4 text-blue-500" />
+      ) : isText(type) ? (
+        <TypeIcon className="h-4 w-4 text-indigo-500" />
+      ) : isNumber(type) ? (
+        <HashIcon className="h-4 w-4 text-red-500" />
+      ) : isBoolean(type) ? (
+        <ToggleLeftIcon className="h-4 w-4 text-pink-500" />
+      ) : (
+        <HelpCircleIcon className="h-4 w-4 text-gray-500" />
+      );
+    }
 
     if (isPrimaryKey)
       return <KeyRoundIcon className="h-4 w-4 text-yellow-500" />;
