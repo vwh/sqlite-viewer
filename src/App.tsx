@@ -524,10 +524,10 @@ export default function App() {
   const paginationControls = useMemo(
     () => (
       <div
-        className="flex items-center gap-2 justify-between bg-primary/5 p-2 border-t"
+        className="flex items-center justify-between bg-background border-t w-full"
         id="paginationControls"
       >
-        <div className="flex items-center gap-1 grow">
+        <div className="flex items-center gap-1 grow bg-primary/10 p-2">
           <Button
             onClick={() => handlePageChange("first")}
             disabled={offset === 0 || isDataLoading}
@@ -574,7 +574,7 @@ export default function App() {
             <ChevronLastIcon className="h-4 w-4" />
           </Button>
         </div>
-        <div className="md:flex items-center gap-1 hidden">
+        <div className="md:flex items-center gap-1 hidden bg-primary/10 p-2">
           <Button
             size="sm"
             variant="outline"
@@ -836,7 +836,7 @@ export default function App() {
   const executeTab = useMemo(
     () => (
       <div className="flex flex-col h-full">
-        <div className="flex items-center gap-1 p-2 border-b ">
+        <div className="flex items-center gap-1 py-2 px-1 border-b ">
           <Button
             size="sm"
             variant="outline"
@@ -900,12 +900,12 @@ export default function App() {
               </ResizablePanelGroup>
             </ResizablePanel>
 
-            <ResizableHandle className="hidden md:flex" withHandle />
+            <ResizableHandle withHandle />
 
             <ResizablePanel
               defaultSize={schemaPanelSize}
               onResize={setSchemaPanelSize}
-              className="hidden md:block"
+              className=""
             >
               <div className="h-full overflow-hidden border">
                 {schemaSection}
@@ -926,6 +926,8 @@ export default function App() {
       isDatabaseLoading,
       dataPanelSize,
       schemaPanelSize,
+      columns,
+      tablesSchema,
     ]
   );
 
@@ -1108,7 +1110,7 @@ export default function App() {
   const dataTab = useMemo(
     () => (
       <div className="flex flex-col h-full">
-        <div className="flex items-center gap-1 p-2 border-b ">
+        <div className="flex items-center gap-1 py-2 px-1 border-b ">
           {TableSelector}
           <div className="md:flex items-center gap-1 hidden">
             <Button
@@ -1161,7 +1163,7 @@ export default function App() {
               onResize={setDataPanelSize}
             >
               <div
-                className="flex flex-col h-full justify-between border"
+                className="flex flex-col h-full justify-between border-l"
                 id="dataSection"
               >
                 {dataTable}
@@ -1169,13 +1171,13 @@ export default function App() {
               </div>
             </ResizablePanel>
 
-            <ResizableHandle className="hidden md:flex" withHandle />
+            <ResizableHandle withHandle />
 
             {/* Right Panel - Split Vertically */}
             <ResizablePanel
               defaultSize={schemaPanelSize}
               onResize={setSchemaPanelSize}
-              className="hidden md:block border"
+              className=""
             >
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel
@@ -1281,7 +1283,7 @@ export default function App() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 max-h-[calc(100vh-5.5rem)] overflow-hidden">
+        <div className="flex-1 max-h-[calc(100vh-5.4rem)] overflow-hidden">
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
             {isDatabaseLoading ? (
               <div className="flex items-center justify-center h-full">
