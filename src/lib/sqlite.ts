@@ -28,7 +28,7 @@ export default class Sqlite {
   private static async initSQLjs(): Promise<SqlJsStatic> {
     if (Sqlite.sqlJsStatic) return Sqlite.sqlJsStatic;
     return await initSqlJs({
-      locateFile: (file) => `https://sql.js.org/dist/${file}`,
+      locateFile: (file) => `/wasm/${file}`,
     });
   }
 
