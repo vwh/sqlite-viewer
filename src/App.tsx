@@ -39,6 +39,8 @@ import {
   DatabaseIcon,
   LoaderCircleIcon,
   ChevronDown,
+  Trash2Icon,
+  SquarePenIcon,
 } from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
@@ -652,60 +654,53 @@ export default function App() {
           <>
             {selectedRow && (
               <div className="flex flex-col w-full h-full">
-                <div className="overflow-auto flex-1">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-primary/5">
-                        {columns!.map((column, index) => (
-                          <TableHead key={column} className="p-1 text-xs">
-                            <div className="flex items-center gap-1">
-                              <ColumnIcon
-                                columnSchema={
-                                  tablesSchema[currentTable!].schema[index]
-                                }
-                              />
-                              <Span className="capitalize font-medium">
-                                {column}
-                              </Span>
-                            </div>
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        {editValues.map((value, i) => (
-                          <TableCell key={i} className="p-1">
-                            <Input
-                              name={columns![i]}
-                              className="h-7 text-xs border-primary/20 text-[0.8rem]!"
-                              value={value}
-                              onChange={(e) =>
-                                handlEditInputChange(i, e.target.value)
-                              }
-                            />
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                <div className="overflow-auto">
+                  <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
+                    <SquarePenIcon className="h-4 w-4" />
+                    <Span className="whitespace-nowrap">Updating row</Span>
+                  </div>
+                  {columns!.map((column, index) => (
+                    <div key={column}>
+                      <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
+                        <ColumnIcon
+                          columnSchema={
+                            tablesSchema[currentTable!].schema[index]
+                          }
+                        />
+                        <Span className="capitalize font-medium text-xs">
+                          {column}
+                        </Span>
+                      </div>
+                      <Input
+                        name={column}
+                        className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
+                        value={editValues[index]}
+                        onChange={(e) =>
+                          handlEditInputChange(index, e.target.value)
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div className="flex justify-end">
+                <div className="flex w-full">
                   <Button
                     size="sm"
                     variant="outline"
-                    className="text-xs grow-2 rounded-none"
+                    className="text-xs rounded-none grow"
                     onClick={() => handleEditSubmit("update")}
+                    title="Update this row"
                   >
+                    <SquarePenIcon className="h-3 w-3 mr-1" />
                     Apply changes
                   </Button>
                   <Button
                     size="sm"
                     variant="destructive"
-                    className="text-xs grow rounded-none"
+                    className="text-xs rounded-none"
                     onClick={() => handleEditSubmit("delete")}
+                    title="Delete this row"
                   >
-                    Delete row
+                    <Trash2Icon className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -713,52 +708,40 @@ export default function App() {
           </>
         ) : (
           <div className="flex flex-col w-full h-full">
-            <div className="overflow-auto flex-1">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-primary/5">
-                    {columns!.map((column, index) => (
-                      <TableHead key={column} className="p-1 text-xs">
-                        <div className="flex items-center gap-1">
-                          <ColumnIcon
-                            columnSchema={
-                              tablesSchema[currentTable!].schema[index]
-                            }
-                          />
-                          <Span className="capitalize font-medium">
-                            {column}
-                          </Span>
-                        </div>
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    {columns!.map((column, index) => (
-                      <TableCell key={column} className="p-1">
-                        <Input
-                          name={column}
-                          className="h-7 text-xs border-primary/20 text-[0.8rem]!"
-                          placeholder={editValues?.[index] ?? ""}
-                          onChange={(e) =>
-                            handlEditInputChange(index, e.target.value)
-                          }
-                        />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableBody>
-              </Table>
+            <div className="overflow-auto">
+              <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
+                <PlusIcon className="h-4 w-4" />
+                <Span className="whitespace-nowrap">Inserting row</Span>
+              </div>
+              {columns!.map((column, index) => (
+                <div key={column}>
+                  <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
+                    <ColumnIcon
+                      columnSchema={tablesSchema[currentTable!].schema[index]}
+                    />
+                    <Span className="capitalize font-medium text-xs">
+                      {column}
+                    </Span>
+                  </div>
+                  <Input
+                    name={column}
+                    className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
+                    placeholder={editValues?.[index] ?? ""}
+                    onChange={(e) =>
+                      handlEditInputChange(index, e.target.value)
+                    }
+                  />
+                </div>
+              ))}
             </div>
-            <div className="flex justify-end">
+            <div className="flex w-full">
               <Button
                 size="sm"
                 variant="outline"
-                className="text-xs grow-2 rounded-none"
+                className="text-xs w-full"
                 onClick={() => handleEditSubmit("insert")}
               >
-                <PlusIcon className="h-3 w-3" />
+                <PlusIcon className="h-3 w-3 mr-1" />
                 Insert row
               </Button>
             </div>

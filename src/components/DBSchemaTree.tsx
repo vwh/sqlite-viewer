@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ColumnIcon } from "./ColumnIcon";
+import Span from "./Span";
 
 const TableItem = memo(
   ({
@@ -76,9 +77,9 @@ const TableItem = memo(
                     {columnSchema.name}
                   </span>
                 </div>
-                <span className="text-xs text-primary/60">
+                <Span className="text-xs text-primary/60 whitespace-nowrap">
                   {columnSchema.type}
-                </span>
+                </Span>
               </div>
             ))}
           </div>
