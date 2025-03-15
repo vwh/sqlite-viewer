@@ -1288,7 +1288,7 @@ export default function App() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 max-h-[calc(100vh-5.4rem)] overflow-hidden">
+        <div className="flex-1 max-h-custom-dvh overflow-hidden">
           <TabsContent value="data" className="h-full m-0 p-0 border-none">
             {isDatabaseLoading ? (
               <div className="flex items-center justify-center h-full">

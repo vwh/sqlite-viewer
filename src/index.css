@@ -203,8 +203,14 @@ body {
   padding: 0;
 }
 
-@supports (-webkit-touch-callout: none) {
-  .height-container {
-    height: -webkit-fill-available;
+@supports (height: 100dvh) {
+  .max-h-custom-dvh {
+    max-height: calc(100dvh - 5.4rem);
+  }
+}
+
+@supports not (height: 100dvh) {
+  .max-h-custom-dvh {
+    max-height: calc(100vh - 5.4rem);
   }
 }
