@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useMediaQuery from "./hooks/useMediaQuery";
 import { ModeToggle } from "./components/theme/modeToggle";
+import CustomSQLTextarea from "./components/CustomSQLTextarea";
 
 const FilterInput = memo(
   ({
@@ -876,11 +877,17 @@ export default function App() {
                       {errorMessage}
                     </div>
                   )}
-                  <textarea
+                  {/* <textarea
                     className="w-full h-full p-2 border font-mono text-sm resize-none"
                     placeholder="Enter SQL"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                  /> */}
+                  <CustomSQLTextarea
+                    query={query}
+                    setQuery={setQuery}
+                    tableSchema={tablesSchema}
+                    columns={columns}
                   />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
