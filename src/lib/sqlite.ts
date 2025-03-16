@@ -304,3 +304,10 @@ function arrayToCSV(columns: string[], rows: SqlValue[][]) {
   );
   return [header, ...csvRows].join("\n");
 }
+
+export class CustomQueryError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CustomQueryError";
+  }
+}

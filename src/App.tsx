@@ -58,6 +58,8 @@ import useMediaQuery from "./hooks/useMediaQuery";
 import { ModeToggle } from "./components/theme/modeToggle";
 import CustomSQLTextarea from "./components/CustomSQLTextarea";
 import Span from "./components/Span";
+import { toast } from "sonner";
+import { CustomQueryError } from "./lib/sqlite";
 
 const FilterInput = memo(
   ({
@@ -175,7 +177,6 @@ export default function App() {
           setData(null);
         }
         setIsDataLoading(false);
-        setErrorMessage(null);
       } // When the custom query is executed and returns results
       else if (action === "customQueryComplete") {
         const data = payload.results?.[0]?.values || [];
@@ -195,14 +196,16 @@ export default function App() {
         setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
         setIsDataLoading(false);
+        setErrorMessage(null);
+        toast.success("Database schema updated successfully");
       } else if (action === "updateComplete") {
-        // TODO setIsUpdating(false);
-        // TODO Toast notification
-        console.log("Update complete");
+        setErrorMessage(null);
+        setSelectedRow(null);
+        toast.success(`Row ${payload.type} successfully`);
       } else if (action === "insertComplete") {
         setIsInserting(false);
-        // TODO Toast notification
-        console.log("Insert complete");
+        setErrorMessage(null);
+        toast.success("Row inserted successfully");
       }
       // When the database is downloaded
       else if (action === "downloadComplete") {
@@ -228,8 +231,11 @@ export default function App() {
       // When the worker encounters an error
       else if (action === "queryError") {
         console.error("Worker error:", payload.error);
-        // TODO setErrorMessage(payload.error.message); on when we do user custom queries
-        setErrorMessage(payload.error.message);
+        if (payload.error.isCustomQueryError) {
+          setErrorMessage(payload.error.message);
+        } else {
+          toast.error(payload.error.message);
+        }
         setIsDataLoading(false);
       } else {
         console.warn("Unknown action:", action);
@@ -243,7 +249,7 @@ export default function App() {
     return () => {
       workerRef.current?.terminate();
     };
-  }, []);
+  }, [isFirstTimeLoading]);
 
   // When fetching data, ask the worker for new data
   useEffect(() => {

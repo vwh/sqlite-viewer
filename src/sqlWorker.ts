@@ -1,4 +1,4 @@
-import Sqlite from "./lib/sqlite";
+import Sqlite, { CustomQueryError } from "./lib/sqlite";
 
 let instance: Sqlite | null = null;
 
@@ -54,54 +54,60 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         } else {
           self.postMessage({
             action: "queryError",
-            payload: { error: "No database loaded" },
+            payload: { error: new Error("No database loaded") },
           });
         }
         break;
       }
       case "exec": {
         // Execute a SQL query (could be multiple statements)
-        if (instance) {
-          const [results, doTablesChanged] = instance.exec(payload.query);
-          // If the structure changed, update tables and schema
-          if (doTablesChanged) {
-            self.postMessage({
-              action: "updateInstance",
-              payload: {
-                tableSchema: instance.tablesSchema,
-                indexSchema: instance.indexesSchema,
-              },
-            });
+        try {
+          if (instance) {
+            const [results, doTablesChanged] = instance.exec(payload.query);
+            // If the structure changed, update tables and schema
+            if (doTablesChanged) {
+              self.postMessage({
+                action: "updateInstance",
+                payload: {
+                  tableSchema: instance.tablesSchema,
+                  indexSchema: instance.indexesSchema,
+                },
+              });
+            } else {
+              // If it is a SELECT statement return the results
+              if (results.length > 0) {
+                // TODO: return isCustomQuery
+                self.postMessage({
+                  action: "customQueryComplete",
+                  payload: { results },
+                });
+              }
+              // If it is an INSERT/UPDATE/DELETE statement, return the updated data
+              else {
+                // Update data after executing a new SQL statement
+                const [results, maxSize] = instance.getTableData(
+                  payload.currentTable,
+                  payload.limit,
+                  payload.offset,
+                  payload.filters,
+                  payload.sorters
+                );
+                self.postMessage({
+                  action: "queryComplete",
+                  payload: { results, maxSize },
+                });
+              }
+            }
           } else {
-            // If it is a SELECT statement return the results
-            if (results.length > 0) {
-              // TODO: return isCustomQuery
-              self.postMessage({
-                action: "customQueryComplete",
-                payload: { results },
-              });
-            }
-            // If it is an INSERT/UPDATE/DELETE statement, return the updated data
-            else {
-              // Update data after executing a new SQL statement
-              const [results, maxSize] = instance.getTableData(
-                payload.currentTable,
-                payload.limit,
-                payload.offset,
-                payload.filters,
-                payload.sorters
-              );
-              self.postMessage({
-                action: "queryComplete",
-                payload: { results, maxSize },
-              });
-            }
+            self.postMessage({
+              action: "queryError",
+              payload: { error: new Error("No database loaded") },
+            });
           }
-        } else {
-          self.postMessage({
-            action: "queryError",
-            payload: { error: "No database loaded" },
-          });
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new CustomQueryError(error.message);
+          }
         }
         break;
       }
@@ -123,7 +129,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         } else {
           self.postMessage({
             action: "queryError",
-            payload: { error: "No database loaded" },
+            payload: { error: new Error("No database loaded") },
           });
         }
         break;
@@ -146,6 +152,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           instance.update(table, columns, values, whereValues);
           self.postMessage({
             action: "updateComplete",
+            payload: { type: "updated" },
           });
         }
         break;
@@ -157,6 +164,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           instance.delete(table, columns, values);
           self.postMessage({
             action: "updateComplete",
+            payload: { type: "deleted" },
           });
         }
         break;
@@ -198,15 +206,23 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         console.warn("Unknown worker action:", action);
     }
   } catch (error) {
-    if (error instanceof Error)
+    if (error instanceof Error) {
       self.postMessage({
         action: "queryError",
-        payload: { error: error },
+        payload: {
+          error: {
+            message: error.message,
+            isCustomQueryError: error instanceof CustomQueryError,
+          },
+        },
       });
-    else
+    } else {
       self.postMessage({
         action: "queryError",
-        payload: { error: "Unknown error" },
+        payload: {
+          error: { message: "Unknown error", isCustomQueryError: false },
+        },
       });
+    }
   }
 };
