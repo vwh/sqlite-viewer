@@ -15,7 +15,7 @@ const TopBar = ({ handleFileChange, handleDownload }: TopBarProps) => {
   const topBar = useMemo(
     () => (
       <header className="flex items-center justify-between gap-1 p-1 border-b">
-        <div className="flex items-center gap-1">
+        <section className="flex items-center gap-1">
           <label
             htmlFor="file-upload"
             className="relative cursor-pointer w-full"
@@ -41,7 +41,7 @@ const TopBar = ({ handleFileChange, handleDownload }: TopBarProps) => {
             <SaveIcon className="h-3 w-3" />
             Save Database
           </Button>
-        </div>
+        </section>
         <ModeToggle />
       </header>
     ),

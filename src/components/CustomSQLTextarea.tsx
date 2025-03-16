@@ -139,6 +139,7 @@ const SQLITE_KEYWORDS = [
   "WITHOUT",
 ];
 
+// SQLite functions used for autocompletion
 const BUILT_IN_FUNCTIONS = [
   "ABS",
   "ACOS",

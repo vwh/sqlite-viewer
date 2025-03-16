@@ -1,15 +1,13 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useDatabaseWorker } from "./providers/DatabaseWorkerProvider";
+import { useDatabaseStore } from "./store/useDatabaseStore";
+import { usePanelStore } from "./store/usePanelStore";
 import useMediaQuery from "./hooks/useMediaQuery";
+
+import type { SqlValue } from "sql.js";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,80 +18,84 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ColumnIcon from "./components/table/ColumnIcon";
-import {
-  ArrowDownNarrowWideIcon,
-  ArrowUpDownIcon,
-  ArrowUpNarrowWideIcon,
-  ChevronRightIcon,
-  ChevronLastIcon,
-  ChevronLeftIcon,
-  ChevronFirstIcon,
-  FilterXIcon,
-  ListRestartIcon,
-  PlayIcon,
-  FolderOutputIcon,
-  PlusIcon,
-  LoaderCircleIcon,
-  ChevronDown,
-  Trash2Icon,
-  SquarePenIcon,
-} from "lucide-react";
 import DBSchemaTree from "./components/DBSchemaTree";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import TopBar from "./components/TopBar";
 import CustomSQLTextarea from "./components/CustomSQLTextarea";
 import Span from "./components/Span";
-import { toast } from "sonner";
-import TopBar from "./components/TopBar";
-import FilterInput from "./components/table/FilterInput";
 
-import type { Filters, IndexSchema, Sorters, TableSchema } from "@/types";
-import type { SqlValue } from "sql.js";
+import TableSelector from "./components/TableSelector";
+import FilterInput from "./components/table/FilterInput";
+import ActionsDropdown from "./components/ActionsDropdown";
+import PaginationControls from "./components/PaginationControls";
+
+import {
+  ArrowDownNarrowWideIcon,
+  ArrowUpDownIcon,
+  ArrowUpNarrowWideIcon,
+  ChevronLeftIcon,
+  FilterXIcon,
+  ListRestartIcon,
+  PlayIcon,
+  FolderOutputIcon,
+  PlusIcon,
+  LoaderCircleIcon,
+  Trash2Icon,
+  SquarePenIcon,
+} from "lucide-react";
 
 export default function App() {
-  const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
-  const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("data");
+  const {
+    handleQueryExecute,
+    handleQuerySorter,
+    handleExport,
+    handleDownload,
+    handleFileChange,
+    handleEditSubmit,
+    handleQueryFilter,
+  } = useDatabaseWorker();
 
+  const {
+    tablesSchema,
+    indexesSchema,
+    currentTable,
+    data,
+    columns,
+    isDatabaseLoading,
+    isDataLoading,
+    errorMessage,
+    filters,
+    sorters,
+    customQueryObject,
+    setFilters,
+    setSorters,
+  } = useDatabaseStore();
+
+  const {
+    schemaPanelSize,
+    dataPanelSize,
+    topPanelSize,
+    bottomPanelSize,
+    setPanelsForDevice,
+    setTopPanelSize,
+    setBottomPanelSize,
+    setSchemaPanelSize,
+    setDataPanelSize,
+  } = usePanelStore();
+
+  const [activeTab, setActiveTab] = useState("data");
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const [schemaPanelSize, setSchemaPanelSize] = useState(0);
-  const [dataPanelSize, setDataPanelSize] = useState(100);
-  const [topPanelSize, setTopPanelSize] = useState(0);
-  const [bottomPanelSize, setBottomPanelSize] = useState(100);
+
+  // Set panel sizes when device type changes
+  useEffect(() => {
+    setPanelsForDevice(isMobile);
+  }, [isMobile, setPanelsForDevice]);
 
   const [query, setQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const [data, setData] = useState<SqlValue[][] | null>(null);
-  const [columns, setColumns] = useState<string[] | null>(null);
-  const [isDataLoading, setIsDataLoading] = useState(false);
-
-  const [customQueryObject, setCustomQueryObject] = useState<{
-    data: SqlValue[][];
-    columns: string[];
-  } | null>(null);
-
-  const [filters, setFilters] = useState<Filters | null>(null);
-  const [sorters, setSorters] = useState<Sorters | null>(null);
-
-  const [tablesSchema, setTablesSchema] = useState<TableSchema>({});
-  const [indexesSchema, setIndexesSchema] = useState<IndexSchema[]>([]);
-  const [currentTable, setCurrentTable] = useState<string | null>(null);
-
-  const [maxSize, setMaxSize] = useState<number>(1);
-
-  const [limit, setLimit] = useState(50);
-  const [offset, setOffset] = useState(0);
 
   const [editValues, setEditValues] = useState<string[]>([]);
   const [selectedRow, setSelectedRow] = useState<{
@@ -101,193 +103,6 @@ export default function App() {
     index: number;
   } | null>(null);
   const [isInserting, setIsInserting] = useState(false);
-
-  const workerRef = useRef<Worker | null>(null);
-
-  useEffect(() => {
-    // Open schema panel in desktop
-    if (!isMobile) {
-      setSchemaPanelSize(25);
-      setDataPanelSize(75);
-    }
-  }, [isMobile]);
-
-  // Handle the edit section reset
-  const handleEditSectionReset = useCallback(() => {
-    setIsInserting(false);
-    setSelectedRow(null);
-    setTopPanelSize(0);
-    setBottomPanelSize(100);
-    if (isMobile) {
-      setDataPanelSize(100);
-      setSchemaPanelSize(0);
-    }
-  }, [isMobile]);
-
-  // Initialize worker and send initial "init" message
-  useEffect(() => {
-    // Create a new worker
-    workerRef.current = new Worker(
-      new URL("./lib/sqlite/sqliteWorker.ts", import.meta.url),
-      {
-        type: "module",
-      }
-    );
-    // Listen for messages from the worker
-    workerRef.current.onmessage = (event) => {
-      const { action, payload } = event.data;
-      // When the worker is initialized
-      if (action === "initComplete") {
-        setTablesSchema(payload.tableSchema);
-        setIndexesSchema(payload.indexSchema);
-        setCurrentTable(payload.currentTable);
-        // Reset
-        setFilters(null);
-        setSorters(null);
-        setSelectedRow(null);
-        setIsInserting(false);
-        setOffset(0);
-        setIsDatabaseLoading(false);
-      } // When the query is executed and returns results
-      else if (action === "queryComplete") {
-        setMaxSize(payload.maxSize);
-        const data = payload.results?.[0]?.values || [];
-        // put the first as initial value on EditValues used for insert form
-        setEditValues(payload.results?.[0]?.values?.[0] || []);
-        // To be able to cache the columns
-        if (data.length !== 0) {
-          setData(payload.results?.[0]?.values || []);
-          setColumns(payload.results?.[0]?.columns || []);
-        } else {
-          setData(null);
-        }
-        setIsDataLoading(false);
-      } // When the custom query is executed and returns results
-      else if (action === "customQueryComplete") {
-        const data = payload.results?.[0]?.values || [];
-        if (data.length !== 0) {
-          setCustomQueryObject({
-            data: payload.results?.[0]?.values || [],
-            columns: payload.results?.[0]?.columns || [],
-          });
-        } else {
-          setCustomQueryObject(null);
-        }
-        setIsDataLoading(false);
-        setErrorMessage(null);
-      }
-      // When the database is updated and requires a new schema
-      else if (action === "updateInstance") {
-        setTablesSchema(payload.tableSchema);
-        setIndexesSchema(payload.indexSchema);
-        setIsDataLoading(false);
-        setErrorMessage(null);
-        toast.success("Database schema updated successfully");
-      } else if (action === "updateComplete") {
-        setErrorMessage(null);
-        handleEditSectionReset();
-        toast.success(`Row ${payload.type} successfully`);
-      } else if (action === "insertComplete") {
-        setErrorMessage(null);
-        handleEditSectionReset();
-        toast.success("Row inserted successfully");
-      }
-      // When the database is downloaded
-      else if (action === "downloadComplete") {
-        const blob = new Blob([payload.bytes], {
-          type: "application/octet-stream",
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "database.sqlite";
-        link.click();
-      } else if (action === "exportComplete") {
-        // TODO setIsExporting(false);
-        const blob = new Blob([payload.results], {
-          type: "text/csv",
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "export.csv";
-        link.click();
-      }
-      // When the worker encounters an error
-      else if (action === "queryError") {
-        console.error("Worker error:", payload.error);
-        if (payload.error.isCustomQueryError) {
-          setErrorMessage(payload.error.message);
-        } else {
-          toast.error(payload.error.message);
-        }
-        setIsDataLoading(false);
-      } else {
-        console.warn("Unknown action:", action);
-      }
-    };
-
-    setIsDatabaseLoading(true);
-    // Start with a new database instance
-    workerRef.current.postMessage({ action: "init" });
-
-    return () => {
-      workerRef.current?.terminate();
-    };
-  }, [handleEditSectionReset]);
-
-  // When fetching data, ask the worker for new data
-  useEffect(() => {
-    if (!currentTable) return;
-    // Debounce to prevent too many requests when filters change rapidly
-    const handler = setTimeout(() => {
-      setIsDataLoading(true);
-
-      // limit of the data per page
-      let limit = 50;
-      const tableHeaderHight = document
-        .getElementById("tableHeader")
-        ?.getBoundingClientRect().height;
-      const dataSectionHight = document
-        .getElementById("dataSection")
-        ?.getBoundingClientRect().height;
-      const tableCellHight = document
-        .getElementById("tableCell")
-        ?.getBoundingClientRect().height;
-      const paginationControlsHight = document
-        .getElementById("paginationControls")
-        ?.getBoundingClientRect().height;
-      if (isFirstTimeLoading) {
-        setIsFirstTimeLoading(false);
-        if (dataSectionHight && paginationControlsHight) {
-          // 53 is hight of tableHeader and 33 is hight of tableRow
-          // They are hardcoded because they not loaded yet
-          limit = Math.floor(
-            (dataSectionHight - paginationControlsHight - 53) / 33
-          );
-        }
-      } else {
-        if (
-          tableHeaderHight &&
-          dataSectionHight &&
-          paginationControlsHight &&
-          tableCellHight
-        )
-          limit = Math.floor(
-            (dataSectionHight - tableHeaderHight - paginationControlsHight) /
-              tableCellHight
-          );
-      }
-      setLimit(limit);
-
-      workerRef.current?.postMessage({
-        action: "getTableData",
-        payload: { currentTable, filters, sorters, limit, offset },
-      });
-    }, 100);
-
-    return () => clearTimeout(handler);
-  }, [currentTable, filters, sorters, isFirstTimeLoading, offset]);
 
   // Update formValues when selectedRow changes
   useEffect(() => {
@@ -316,7 +131,7 @@ export default function App() {
       setDataPanelSize(100);
       setSchemaPanelSize(0);
     }
-  }, [activeTab, dataPanelSize]);
+  }, [activeTab, dataPanelSize, setSchemaPanelSize, setDataPanelSize]);
 
   // Handle row click to toggle edit panel
   const handleRowClick = useCallback(
@@ -333,7 +148,13 @@ export default function App() {
         setBottomPanelSize(25);
       }
     },
-    [isMobile]
+    [
+      isMobile,
+      setBottomPanelSize,
+      setDataPanelSize,
+      setSchemaPanelSize,
+      setTopPanelSize,
+    ]
   );
 
   // Handle insert row button click
@@ -349,114 +170,13 @@ export default function App() {
       setTopPanelSize(75);
       setBottomPanelSize(25);
     }
-  }, [isMobile]);
-
-  // Handle file upload by sending the file to the worker
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setIsDatabaseLoading(true);
-        const arrayBuffer = e.target?.result as ArrayBuffer;
-        workerRef.current?.postMessage({
-          action: "openFile",
-          payload: { file: arrayBuffer },
-        });
-      };
-      reader.readAsArrayBuffer(file);
-    },
-    []
-  );
-
-  // Handle SQL statement execution by sending it to the worker
-  const handleQueryExecute = useCallback(() => {
-    // Remove SQL comments before processing
-    const cleanedQuery = query
-      .replace(/--.*$/gm, "")
-      .replace(/\/\*[\s\S]*?\*\//g, "");
-    // Split the query into multiple statements
-    const statements = cleanedQuery
-      .split(";")
-      .map((stmt) => stmt.trim())
-      .filter((stmt) => stmt !== "");
-    for (const stmt of statements) {
-      setIsDataLoading(true);
-      workerRef.current?.postMessage({
-        action: "exec",
-        payload: { query: stmt, currentTable, filters, sorters, limit, offset },
-      });
-    }
-  }, [query, currentTable, filters, sorters, limit, offset]);
-
-  // Handles when user changes the page
-  const handlePageChange = useCallback(
-    (type: "next" | "prev" | "first" | "last" | number) => {
-      setSelectedRow(null);
-      setOffset((prev) => {
-        if (type === "next") return prev + limit;
-        if (type === "prev") return prev - limit <= 0 ? 0 : prev - limit;
-        if (type === "first") return 0;
-        if (type === "last") return maxSize - limit;
-        return prev;
-      });
-    },
-    [maxSize, limit]
-  );
-
-  // Handle when user updates the filter
-  // Filters the data by searching for a value in a column using LIKE
-  const handleQueryFilter = useCallback((column: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [column]: value }));
-    // Reset to first page when filtering
-    setOffset(0);
-    setSelectedRow(null);
-  }, []);
-
-  // Handle when user updates the sorter
-  // Sorts the data order by the selected column
-  const handleQuerySorter = useCallback((column: string) => {
-    setSorters((prev) => ({
-      ...prev,
-      [column]: prev?.[column] === "asc" ? "desc" : "asc",
-    }));
-    setSelectedRow(null);
-  }, []);
-
-  // Handle when user changes the table
-  const handleTableChange = useCallback((selectedTable: string) => {
-    setFilters(null);
-    setSorters(null);
-    setOffset(0);
-    setMaxSize(0);
-    setSelectedRow(null);
-    setIsInserting(false);
-    setCurrentTable(selectedTable);
-  }, []);
-
-  // Handle when user exports the data
-  const handleExport = useCallback(
-    (exportType: "table" | "current") => {
-      workerRef.current?.postMessage({
-        action: "export",
-        payload: {
-          table: currentTable!,
-          offset,
-          limit,
-          filters,
-          sorters,
-          exportType: exportType,
-        },
-      });
-    },
-    [currentTable, filters, sorters, offset, limit]
-  );
-
-  // Handle when user downloads the database
-  const handleDownload = useCallback(() => {
-    workerRef.current?.postMessage({ action: "download" });
-  }, []);
+  }, [
+    isMobile,
+    setBottomPanelSize,
+    setDataPanelSize,
+    setSchemaPanelSize,
+    setTopPanelSize,
+  ]);
 
   // Handle when user updates the edit inputs
   const handlEditInputChange = useCallback(
@@ -466,64 +186,6 @@ export default function App() {
       setEditValues(newEditValues);
     },
     [editValues]
-  );
-
-  // Handle when user submits the edit form
-  const handleEditSubmit = useCallback(
-    (type: "insert" | "update" | "delete") => {
-      setIsDataLoading(true);
-      workerRef.current?.postMessage({
-        action: type,
-        payload: {
-          table: currentTable!,
-          columns,
-          values: editValues,
-          whereValues: selectedRow?.data,
-        },
-      });
-      // Refresh the data
-      workerRef.current?.postMessage({
-        action: "refresh",
-        payload: {
-          currentTable: currentTable!,
-          offset,
-          limit,
-          filters,
-          sorters,
-        },
-      });
-    },
-    [
-      currentTable,
-      columns,
-      editValues,
-      selectedRow,
-      filters,
-      sorters,
-      offset,
-      limit,
-    ]
-  );
-
-  const TableSelector = useMemo(
-    () => (
-      <Select
-        onValueChange={handleTableChange}
-        value={currentTable || undefined}
-      >
-        <SelectTrigger className="w-30 sm:w-48 h-8 text-sm border border-primary/20">
-          <SelectValue placeholder="Select Table" />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.keys(tablesSchema).map((table) => (
-            <SelectItem key={table} value={table}>
-              <span className="capitalize">{table}</span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    ),
-    [tablesSchema, currentTable, handleTableChange]
   );
 
   const sorterButton = useCallback(
@@ -565,97 +227,6 @@ export default function App() {
       </>
     ),
     [sorters, handleQuerySorter, isDataLoading]
-  );
-
-  const paginationControls = useMemo(
-    () => (
-      <div
-        className="flex items-center justify-between bg-background border-t w-full"
-        id="paginationControls"
-      >
-        <div className="flex items-center gap-1 grow bg-primary/10 p-2">
-          <Button
-            onClick={() => handlePageChange("first")}
-            disabled={offset === 0 || isDataLoading}
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            title="Go to the first data"
-          >
-            <ChevronFirstIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            onClick={() => handlePageChange("prev")}
-            disabled={offset === 0 || isDataLoading}
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            title="Go to the previous data"
-          >
-            <ChevronLeftIcon className="h-4 w-4" />
-          </Button>
-          <span className="text-xs px-2 whitespace-nowrap">
-            {offset + 1}
-            {" -> "}
-            {offset + limit > maxSize ? maxSize : offset + limit} of {maxSize}
-          </span>
-          <Button
-            onClick={() => handlePageChange("next")}
-            disabled={offset + limit >= maxSize || isDataLoading}
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            title="Go to the next data"
-          >
-            <ChevronRightIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            onClick={() => handlePageChange("last")}
-            disabled={offset + limit >= maxSize || isDataLoading}
-            size="icon"
-            variant="outline"
-            className="h-7 w-7"
-            title="Go to the last data"
-          >
-            <ChevronLastIcon className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="md:flex items-center gap-1 hidden bg-primary/10 p-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs"
-            onClick={handleInsert}
-            disabled={isInserting}
-          >
-            <PlusIcon className="h-3 w-3 mr-1" />
-            Insert row
-          </Button>
-          <Button
-            onClick={() => handleExport("current")}
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs"
-            title="Export current data as CSV"
-            disabled={!data}
-          >
-            <FolderOutputIcon className="h-3 w-3 mr-1" />
-            Export data
-          </Button>
-        </div>
-      </div>
-    ),
-    [
-      maxSize,
-      handlePageChange,
-      isDataLoading,
-      handleExport,
-      isInserting,
-      offset,
-      limit,
-      data,
-      handleInsert,
-    ]
   );
 
   const schemaSection = useMemo(
@@ -751,7 +322,9 @@ export default function App() {
                 size="sm"
                 variant="outline"
                 className="text-xs w-full"
-                onClick={() => handleEditSubmit("insert")}
+                onClick={() =>
+                  handleEditSubmit("insert", editValues, selectedRow)
+                }
               >
                 <PlusIcon className="h-3 w-3 mr-1" />
                 Insert row
@@ -763,7 +336,9 @@ export default function App() {
                 size="sm"
                 variant="outline"
                 className="text-xs rounded-none grow"
-                onClick={() => handleEditSubmit("update")}
+                onClick={() =>
+                  handleEditSubmit("update", editValues, selectedRow)
+                }
                 // TODO: disable it if the data is the same as the current row and didn't change
                 title="Update this row"
               >
@@ -774,7 +349,9 @@ export default function App() {
                 size="sm"
                 variant="destructive"
                 className="text-xs rounded-none"
-                onClick={() => handleEditSubmit("delete")}
+                onClick={() =>
+                  handleEditSubmit("delete", editValues, selectedRow)
+                }
                 title="Delete this row"
               >
                 <Trash2Icon className="h-3 w-3" />
@@ -792,6 +369,11 @@ export default function App() {
       handlEditInputChange,
       handleEditSubmit,
       isInserting,
+      selectedRow,
+      setBottomPanelSize,
+      setDataPanelSize,
+      setSchemaPanelSize,
+      setTopPanelSize,
     ]
   );
 
@@ -866,7 +448,9 @@ export default function App() {
             size="sm"
             variant="outline"
             className="text-xs"
-            onClick={handleQueryExecute}
+            onClick={() => {
+              handleQueryExecute(query);
+            }}
             title="Execute SQL"
           >
             <PlayIcon className="h-3 w-3 mr-1" />
@@ -949,6 +533,8 @@ export default function App() {
       dataPanelSize,
       schemaPanelSize,
       tablesSchema,
+      setDataPanelSize,
+      setSchemaPanelSize,
     ]
   );
 
@@ -1062,92 +648,15 @@ export default function App() {
       currentTable,
       tablesSchema,
       handleRowClick,
+      setFilters,
     ]
-  );
-
-  const dropDownActions = useMemo(
-    () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-8 text-xs">
-            Actions <ChevronDown className="ml-1 h-3 w-3" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-40">
-          <DropdownMenuItem asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-xs w-full justify-start"
-              onClick={() => setFilters(null)}
-              disabled={filters == null}
-              title="Clear applied filters"
-            >
-              <FilterXIcon className="h-3 w-3 mr-1" />
-              Clear filters
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-xs w-full justify-start"
-              onClick={() => setSorters(null)}
-              disabled={sorters == null}
-              title="Reset sorting"
-            >
-              <ListRestartIcon className="h-3 w-3 mr-1" />
-              Reset sorting
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-xs w-full justify-start"
-              onClick={handleInsert}
-              disabled={isInserting}
-              title="Insert a new row"
-            >
-              <PlusIcon className="h-3 w-3 mr-1" />
-              Insert row
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-xs w-full justify-start"
-              onClick={() => handleExport("table")}
-              title="Export the current table as CSV"
-            >
-              <FolderOutputIcon className="h-3 w-3 mr-1" />
-              Export table
-            </Button>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 text-xs w-full justify-start"
-              onClick={() => handleExport("current")}
-              title="Export the current data as CSV"
-            >
-              <FolderOutputIcon className="h-3 w-3 mr-1" />
-              Export data
-            </Button>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-    [filters, sorters, handleExport, handleInsert, isInserting]
   );
 
   const dataTab = useMemo(
     () => (
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-1 py-2 px-1 border-b ">
-          {TableSelector}
+          <TableSelector />
           <div className="md:flex items-center gap-1 hidden">
             <Button
               size="sm"
@@ -1182,7 +691,9 @@ export default function App() {
               Export table
             </Button>
           </div>
-          <div className="md:hidden">{dropDownActions}</div>
+          <div className="md:hidden">
+            <ActionsDropdown handleInsert={handleInsert} isInserting />
+          </div>
           {(isDataLoading || isDatabaseLoading) && (
             <span className="text-xs ml-2 text-gray-500 flex items-center">
               <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
@@ -1205,7 +716,7 @@ export default function App() {
                 id="dataSection"
               >
                 {dataTable}
-                {paginationControls}
+                <PaginationControls handleInsert={handleInsert} isInserting />
               </div>
             </ResizablePanel>
 
@@ -1248,11 +759,9 @@ export default function App() {
       </div>
     ),
     [
-      TableSelector,
       dataTable,
       filters,
       sorters,
-      paginationControls,
       selectedRow,
       isDataLoading,
       isDatabaseLoading,
@@ -1262,9 +771,15 @@ export default function App() {
       isInserting,
       dataPanelSize,
       schemaPanelSize,
-      dropDownActions,
       topPanelSize,
       bottomPanelSize,
+      setFilters,
+      setSorters,
+      setDataPanelSize,
+      setSchemaPanelSize,
+      setTopPanelSize,
+      setBottomPanelSize,
+      handleInsert,
     ]
   );
 
