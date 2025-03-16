@@ -1,7 +1,7 @@
-import Sqlite, { CustomQueryError } from "./lib/sqlite";
+import Sqlite, { CustomQueryError } from "./sqlite";
 
 import type { SqlValue } from "sql.js";
-import type { Filters, Sorters } from "./types";
+import type { Filters, Sorters } from "@/types";
 
 interface InitEvent {
   action: "init";
@@ -129,7 +129,10 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
 
   // Check if the database instance is initialized
   if (instance === null) {
-    self.postMessage({ action: "error", payload: "Database not initialized" });
+    self.postMessage({
+      action: "queryError",
+      payload: "Database not initialized",
+    });
     return;
   }
 

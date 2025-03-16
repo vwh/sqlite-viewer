@@ -1,3 +1,4 @@
+// The demo database for the main loaded database
 const DEMO_DB = `
 PRAGMA foreign_keys = ON;
 

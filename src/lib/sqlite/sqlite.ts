@@ -1,4 +1,5 @@
 import initSqlJs from "sql.js";
+
 import DEMO_DB from "./demo-db";
 
 import type { Database, SqlJsStatic, SqlValue } from "sql.js";
@@ -11,7 +12,9 @@ import type {
 } from "@/types";
 
 export default class Sqlite {
+  // Static SQL.js instance
   static sqlJsStatic?: SqlJsStatic;
+  // Database instance
   private db: Database;
 
   public firstTable: string | null = null;
@@ -20,13 +23,11 @@ export default class Sqlite {
 
   private constructor(db: Database, isFile = false) {
     this.db = db;
-
     // Check if user is opening a file or creating a new database.
     if (!isFile) {
       // The demo database
       this.db.exec(DEMO_DB);
     }
-
     this.getDatabaseSchema();
   }
 
@@ -147,7 +148,7 @@ export default class Sqlite {
 
   // Get the max size of the requested table
   // Used for pagination
-  private getMaxSizeOfTable(tableName: string, filters: Filters | null = null) {
+  private getMaxSizeOfTable(tableName: string, filters?: Filters) {
     const [results] = this.exec(`
       SELECT COUNT(*) FROM ${tableName} 
       ${buildWhereClause(filters)}
@@ -164,8 +165,8 @@ export default class Sqlite {
     table: string,
     limit: number,
     offset: number,
-    filters: Filters | null = null,
-    sorters: Sorters | null = null
+    filters?: Filters,
+    sorters?: Sorters
   ) {
     const [results] = this.exec(`
       SELECT * FROM ${table} 
@@ -280,7 +281,7 @@ function isStructureChangeable(sql: string) {
 }
 
 // Build the WHERE clause for a SQL statement
-function buildWhereClause(filters: Filters | null = null) {
+function buildWhereClause(filters?: Filters) {
   if (!filters) return "";
 
   const filtersArray = Object.entries(filters)
@@ -290,7 +291,7 @@ function buildWhereClause(filters: Filters | null = null) {
 }
 
 // Build the ORDER BY clause for a SQL statement
-function buildOrderByClause(sorters: Sorters | null = null) {
+function buildOrderByClause(sorters?: Sorters) {
   if (!sorters) return "";
 
   const sortersArray = Object.entries(sorters)
@@ -308,7 +309,6 @@ function arrayToCSV(columns: string[], rows: SqlValue[][]) {
   return [header, ...csvRows].join("\n");
 }
 
-// make CustomQueryError with message
 export class CustomQueryError extends Error {
   constructor(message: string) {
     super(message);

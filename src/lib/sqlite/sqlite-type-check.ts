@@ -20,6 +20,5 @@ export const isInteger = (value: string) => checkType(value, "INTEGER");
 export const isReal = (value: string) => checkType(value, "REAL");
 export const isNumeric = (value: string) => checkType(value, "NUMERIC");
 export const isBoolean = (value: string) => checkType(value, "BOOLEAN");
-
 export const isNumber = (value: string) =>
   isInteger(value) || isReal(value) || isNumeric(value);

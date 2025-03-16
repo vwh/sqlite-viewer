@@ -1,11 +1,12 @@
 import { memo } from "react";
+
 import {
   isDate,
   isNumber,
   isText,
   isBlob,
   isBoolean,
-} from "@/lib/sqlite-type-check";
+} from "@/lib/sqlite/sqlite-type-check";
 
 import type { TableSchemaRow } from "@/types";
 
@@ -20,13 +21,13 @@ import {
   HelpCircleIcon,
 } from "lucide-react";
 
-export const ColumnIcon: React.FC<{ columnSchema: TableSchemaRow }> = memo(
-  ({ columnSchema }) => {
-    if (!columnSchema) return null; // Avoids errors when it's undefined
+const ColumnIcon = memo(
+  ({ columnSchema }: { columnSchema: TableSchemaRow | null }) => {
+    if (!columnSchema) return null;
 
     const { type, isPrimaryKey, isForeignKey } = columnSchema;
 
-    let typeIcon = <HelpCircleIcon className="h-4 w-4 text-gray-500" />;
+    let typeIcon = null;
     if (type) {
       typeIcon = isBlob(type) ? (
         <CuboidIcon className="h-4 w-4 text-green-500" />
@@ -43,18 +44,14 @@ export const ColumnIcon: React.FC<{ columnSchema: TableSchemaRow }> = memo(
       );
     }
 
-    if (isPrimaryKey)
-      return <KeyRoundIcon className="h-4 w-4 text-yellow-500" />;
-    if (isForeignKey)
-      return <KeySquareIcon className="h-4 w-4 text-purple-500" />;
-    return typeIcon;
-
-    // return (
-    //   <div className="flex items-center gap-[2px]">
-    //     {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
-    //     {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
-    //     {typeIcon}
-    //   </div>
-    // );
+    return (
+      <div className="flex items-center gap-[2px]">
+        {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
+        {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
+        {typeIcon}
+      </div>
+    );
   }
 );
+
+export default ColumnIcon;

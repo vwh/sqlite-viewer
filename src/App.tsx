@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ColumnIcon } from "./components/ColumnIcon";
+import ColumnIcon from "./components/table/ColumnIcon";
 import {
   ArrowDownNarrowWideIcon,
   ArrowUpDownIcon,
@@ -127,9 +127,12 @@ export default function App() {
   // Initialize worker and send initial "init" message
   useEffect(() => {
     // Create a new worker
-    workerRef.current = new Worker(new URL("./sqlWorker.ts", import.meta.url), {
-      type: "module",
-    });
+    workerRef.current = new Worker(
+      new URL("./lib/sqlite/sqliteWorker.ts", import.meta.url),
+      {
+        type: "module",
+      }
+    );
     // Listen for messages from the worker
     workerRef.current.onmessage = (event) => {
       const { action, payload } = event.data;

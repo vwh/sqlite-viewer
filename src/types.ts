@@ -22,7 +22,7 @@ export type IndexSchema = {
   tableName: string;
 };
 
-// ----
+// ---- State ----
 
 export type Sorters = Record<string, "asc" | "desc">;
 export type Filters = Record<string, string>;

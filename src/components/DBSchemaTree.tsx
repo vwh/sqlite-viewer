@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ColumnIcon } from "./ColumnIcon";
+import ColumnIcon from "@/components/table/ColumnIcon";
 import Span from "./Span";
 
 const TableItem = memo(
