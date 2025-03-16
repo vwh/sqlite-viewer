@@ -11,7 +11,7 @@ interface TopBarProps {
   handleDownload: () => void;
 }
 
-export const TopBar = ({ handleFileChange, handleDownload }: TopBarProps) => {
+const TopBar = ({ handleFileChange, handleDownload }: TopBarProps) => {
   const topBar = useMemo(
     () => (
       <header className="flex items-center justify-between gap-1 p-1 border-b">

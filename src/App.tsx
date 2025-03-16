@@ -234,7 +234,7 @@ export default function App() {
     return () => {
       workerRef.current?.terminate();
     };
-  }, [isFirstTimeLoading, handleEditSectionReset]);
+  }, [handleEditSectionReset]);
 
   // When fetching data, ask the worker for new data
   useEffect(() => {

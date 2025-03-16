@@ -16,9 +16,9 @@ const checkType = (value: string, type: SQLiteType): boolean =>
 export const isDate = (value: string) => checkType(value, "DATE");
 export const isBlob = (value: string) => checkType(value, "BLOB");
 export const isText = (value: string) => checkType(value, "TEXT");
-export const isInteger = (value: string) => checkType(value, "INTEGER");
-export const isReal = (value: string) => checkType(value, "REAL");
 export const isNumeric = (value: string) => checkType(value, "NUMERIC");
 export const isBoolean = (value: string) => checkType(value, "BOOLEAN");
+export const isInteger = (value: string) => checkType(value, "INTEGER");
+export const isReal = (value: string) => checkType(value, "REAL");
 export const isNumber = (value: string) =>
   isInteger(value) || isReal(value) || isNumeric(value);
