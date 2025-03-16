@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback, useRef, memo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import useMediaQuery from "./hooks/useMediaQuery";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,9 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import type { IndexSchema, TableSchema } from "@/types";
-import type { SqlValue } from "sql.js";
 import { ColumnIcon } from "./components/ColumnIcon";
 import {
   ArrowDownNarrowWideIcon,
@@ -32,11 +30,9 @@ import {
   ChevronFirstIcon,
   FilterXIcon,
   ListRestartIcon,
-  SaveIcon,
   PlayIcon,
   FolderOutputIcon,
   PlusIcon,
-  DatabaseIcon,
   LoaderCircleIcon,
   ChevronDown,
   Trash2Icon,
@@ -54,39 +50,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useMediaQuery from "./hooks/useMediaQuery";
-import { ModeToggle } from "./components/theme/modeToggle";
+
 import CustomSQLTextarea from "./components/CustomSQLTextarea";
 import Span from "./components/Span";
 import { toast } from "sonner";
+import TopBar from "./components/TopBar";
+import FilterInput from "./components/table/FilterInput";
 
-const FilterInput = memo(
-  ({
-    column,
-    value,
-    onChange,
-  }: {
-    column: string;
-    value: string;
-    onChange: (column: string, value: string) => void;
-  }) => {
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) =>
-        onChange(column, e.target.value),
-      [column, onChange]
-    );
-
-    return (
-      <Input
-        type="text"
-        className="rounded px-2 py-1 max-h-6 w-full text-[0.8rem]! border-primary/20"
-        value={value}
-        onChange={handleChange}
-        placeholder="Filter"
-      />
-    );
-  }
-);
+import type { Filters, IndexSchema, Sorters, TableSchema } from "@/types";
+import type { SqlValue } from "sql.js";
 
 export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
@@ -111,10 +83,8 @@ export default function App() {
     columns: string[];
   } | null>(null);
 
-  const [filters, setFilters] = useState<Record<string, string> | null>(null);
-  const [sorters, setSorters] = useState<Record<string, "asc" | "desc"> | null>(
-    null
-  );
+  const [filters, setFilters] = useState<Filters | null>(null);
+  const [sorters, setSorters] = useState<Sorters | null>(null);
 
   const [tablesSchema, setTablesSchema] = useState<TableSchema>({});
   const [indexesSchema, setIndexesSchema] = useState<IndexSchema[]>([]);
@@ -711,7 +681,6 @@ export default function App() {
             Print Schema
           </Button>
         </div> */}
-
         <div className="flex-1 overflow-hidden">{schemaSection}</div>
       </div>
     ),
@@ -1296,44 +1265,12 @@ export default function App() {
     ]
   );
 
-  const topBar = useMemo(
-    () => (
-      <div className="flex items-center gap-1 p-1 border-b justify-between ">
-        <div className="flex items-center gap-1 w-full">
-          <div className="relative">
-            <Input
-              type="file"
-              className="cursor-pointer opacity-0 absolute top-0 left-0 w-full h-full"
-              onChange={handleFileChange}
-            />
-            <Button size="sm" variant="outline" className="text-xs w-full">
-              <DatabaseIcon className="h-3 w-3" />
-              Open Database
-            </Button>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-xs"
-            onClick={handleDownload}
-            title="Save the database"
-          >
-            <SaveIcon className="h-3 w-3" />
-            Save Database
-          </Button>
-        </div>
-        <div>
-          <ModeToggle />
-        </div>
-      </div>
-    ),
-    [handleFileChange, handleDownload]
-  );
-
   return (
     <main className="flex flex-col h-screen overflow-hidden bg-primary/5">
-      {topBar}
-
+      <TopBar
+        handleFileChange={handleFileChange}
+        handleDownload={handleDownload}
+      />
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

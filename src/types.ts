@@ -1,14 +1,11 @@
+// ---- Schema ----
+
 export type TableSchema = Record<
-  string,
+  string, // Table name
   {
     schema: TableSchemaRow[];
   }
 >;
-
-export type IndexSchema = {
-  name: string;
-  tableName: string;
-};
 
 export type TableSchemaRow = {
   name: string; // Column name
@@ -19,3 +16,13 @@ export type TableSchemaRow = {
   isPrimaryKey: boolean;
   isForeignKey: boolean;
 };
+
+export type IndexSchema = {
+  name: string;
+  tableName: string;
+};
+
+// ----
+
+export type Sorters = Record<string, "asc" | "desc">;
+export type Filters = Record<string, string>;

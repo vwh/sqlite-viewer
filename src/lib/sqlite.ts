@@ -2,7 +2,13 @@ import initSqlJs from "sql.js";
 import DEMO_DB from "./demo-db";
 
 import type { Database, SqlJsStatic, SqlValue } from "sql.js";
-import type { IndexSchema, TableSchema, TableSchemaRow } from "@/types";
+import type {
+  Filters,
+  IndexSchema,
+  Sorters,
+  TableSchema,
+  TableSchemaRow,
+} from "@/types";
 
 export default class Sqlite {
   static sqlJsStatic?: SqlJsStatic;
@@ -141,10 +147,7 @@ export default class Sqlite {
 
   // Get the max size of the requested table
   // Used for pagination
-  private getMaxSizeOfTable(
-    tableName: string,
-    filters: Record<string, string> | null = null
-  ) {
+  private getMaxSizeOfTable(tableName: string, filters: Filters | null = null) {
     const [results] = this.exec(`
       SELECT COUNT(*) FROM ${tableName} 
       ${buildWhereClause(filters)}
@@ -161,8 +164,8 @@ export default class Sqlite {
     table: string,
     limit: number,
     offset: number,
-    filters: Record<string, string> | null = null,
-    sorters: Record<string, string> | null = null
+    filters: Filters | null = null,
+    sorters: Sorters | null = null
   ) {
     const [results] = this.exec(`
       SELECT * FROM ${table} 
@@ -182,8 +185,8 @@ export default class Sqlite {
   public update(
     table: string,
     columns: string[],
-    values: string[],
-    whereValues: string[]
+    values: SqlValue[],
+    whereValues: SqlValue[]
   ) {
     try {
       const setClause = columns.map((column) => `${column} = ?`).join(", ");
@@ -201,7 +204,7 @@ export default class Sqlite {
   }
 
   // Delete a row from a table
-  public delete(table: string, columns: string[], values: string[]) {
+  public delete(table: string, columns: string[], values: SqlValue[]) {
     try {
       const whereClause = columns
         .map((column) => `${column} = ?`)
@@ -216,7 +219,7 @@ export default class Sqlite {
   }
 
   // Insert a row into a table
-  public insert(table: string, columns: string[], values: string[]) {
+  public insert(table: string, columns: string[], values: SqlValue[]) {
     try {
       const query = `INSERT INTO ${table} (${columns.join(
         ", "
@@ -240,8 +243,8 @@ export default class Sqlite {
     table: string;
     offset?: number;
     limit?: number;
-    filters?: Record<string, string>;
-    sorters?: Record<string, string>;
+    filters?: Filters;
+    sorters?: Sorters;
   }) {
     let query = `SELECT * FROM ${table} ${buildWhereClause(
       filters
@@ -262,8 +265,8 @@ export default class Sqlite {
     table: string,
     limit: number,
     offset: number,
-    filters: Record<string, string>,
-    sorters: Record<string, string>
+    filters: Filters,
+    sorters: Sorters
   ) {
     const results = this.export({ table, filters, sorters, limit, offset });
     return arrayToCSV(results[0].columns, results[0].values);
@@ -277,7 +280,7 @@ function isStructureChangeable(sql: string) {
 }
 
 // Build the WHERE clause for a SQL statement
-function buildWhereClause(filters: Record<string, string> | null = null) {
+function buildWhereClause(filters: Filters | null = null) {
   if (!filters) return "";
 
   const filtersArray = Object.entries(filters)
@@ -287,7 +290,7 @@ function buildWhereClause(filters: Record<string, string> | null = null) {
 }
 
 // Build the ORDER BY clause for a SQL statement
-function buildOrderByClause(sorters: Record<string, string> | null = null) {
+function buildOrderByClause(sorters: Sorters | null = null) {
   if (!sorters) return "";
 
   const sortersArray = Object.entries(sorters)
@@ -305,6 +308,7 @@ function arrayToCSV(columns: string[], rows: SqlValue[][]) {
   return [header, ...csvRows].join("\n");
 }
 
+// make CustomQueryError with message
 export class CustomQueryError extends Error {
   constructor(message: string) {
     super(message);
