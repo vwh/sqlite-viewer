@@ -874,14 +874,11 @@ export default function App() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   /> */}
-                  {columns && (
-                    <CustomSQLTextarea
-                      query={query}
-                      setQuery={setQuery}
-                      tableSchema={tablesSchema}
-                      columns={columns}
-                    />
-                  )}
+                  <CustomSQLTextarea
+                    query={query}
+                    setQuery={setQuery}
+                    tableSchema={tablesSchema}
+                  />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
 
@@ -917,7 +914,6 @@ export default function App() {
       isDatabaseLoading,
       dataPanelSize,
       schemaPanelSize,
-      columns,
       tablesSchema,
     ]
   );

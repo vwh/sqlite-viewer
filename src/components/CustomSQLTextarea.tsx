@@ -139,21 +139,53 @@ const SQLITE_KEYWORDS = [
   "WITHOUT",
 ];
 
+const BUILT_IN_FUNCTIONS = [
+  "ABS",
+  "ACOS",
+  "ASIN",
+  "ATAN",
+  "CEIL",
+  "COS",
+  "EXP",
+  "FLOOR",
+  "HEX",
+  "LENGTH",
+  "LOG",
+  "LOWER",
+  "LTRIM",
+  "OCT",
+  "PI",
+  "POW",
+  "ROUND",
+  "SIGN",
+  "SIN",
+  "SQRT",
+  "TAN",
+  "TRIM",
+  "UPPER",
+];
+
 interface CustomSQLTextareaProps {
   query: string;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   tableSchema: TableSchema;
-  columns: string[];
 }
 
 export default function CustomSQLTextarea({
   query,
   setQuery,
   tableSchema,
-  columns,
 }: CustomSQLTextareaProps) {
   const { theme } = useTheme();
-  const tableNames = useMemo(() => Object.keys(tableSchema), [tableSchema]);
+
+  const { tableNames, columnNames } = useMemo(() => {
+    const tableNames = Object.keys(tableSchema);
+    const columnNames = tableNames.flatMap((table) =>
+      tableSchema[table].schema.map((col) => col.name)
+    );
+
+    return { tableNames, columnNames };
+  }, [tableSchema]);
 
   const completionOptions = useMemo(
     () => [
@@ -161,10 +193,11 @@ export default function CustomSQLTextarea({
         label: keyword,
         type: "keyword",
       })),
+      ...BUILT_IN_FUNCTIONS.map((fn) => ({ label: fn, type: "function" })),
       ...tableNames.map((table) => ({ label: table, type: "table" })),
-      ...columns.map((column) => ({ label: column, type: "column" })),
+      ...columnNames.map((column) => ({ label: column, type: "column" })),
     ],
-    [tableNames, columns]
+    [tableNames, columnNames]
   );
 
   const myCompletions = useCallback(
