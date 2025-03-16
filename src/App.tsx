@@ -305,6 +305,29 @@ export default function App() {
     }
   }, [selectedRow]);
 
+  // Update formValues when isInserting or selectedRow changes
+  useEffect(() => {
+    if (isInserting) {
+      // When inserting, initialize with empty strings or default values
+      setEditValues(columns?.map(() => "") || []);
+    } else if (selectedRow?.data) {
+      // When editing, set values from the selected row
+      setEditValues(selectedRow.data.map((value) => value?.toString() ?? ""));
+    }
+  }, [isInserting, selectedRow, columns]);
+
+  // Handle row click to toggle edit panel
+  const handleRowClick = useCallback((row: SqlValue[], index: number) => {
+    setIsInserting(false);
+    setSelectedRow({ data: row, index: index });
+  }, []);
+
+  // Handle insert row button click
+  const handleInsert = useCallback(() => {
+    setSelectedRow(null);
+    setIsInserting(true);
+  }, []);
+
   // Handle file upload by sending the file to the worker
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -447,8 +470,8 @@ export default function App() {
         },
       });
       // Reset the selected row
-      setSelectedRow(null);
       setIsInserting(false);
+      setSelectedRow(null);
     },
     [
       currentTable,
@@ -582,7 +605,7 @@ export default function App() {
             size="sm"
             variant="outline"
             className="h-7 text-xs"
-            onClick={() => setIsInserting(true)}
+            onClick={handleInsert}
             disabled={isInserting}
           >
             <PlusIcon className="h-3 w-3 mr-1" />
@@ -611,6 +634,7 @@ export default function App() {
       offset,
       limit,
       data,
+      handleInsert,
     ]
   );
 
@@ -650,90 +674,41 @@ export default function App() {
   const editSection = useMemo(
     () => (
       <div className="h-full overflow-auto">
-        {!isInserting ? (
-          <>
-            {selectedRow && (
-              <div className="flex flex-col w-full h-full">
-                <div className="overflow-auto">
-                  <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
-                    <SquarePenIcon className="h-4 w-4" />
-                    <Span className="whitespace-nowrap">Updating row</Span>
-                  </div>
-                  {columns!.map((column, index) => (
-                    <div key={column}>
-                      <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
-                        <ColumnIcon
-                          columnSchema={
-                            tablesSchema[currentTable!].schema[index]
-                          }
-                        />
-                        <Span className="capitalize font-medium text-xs">
-                          {column}
-                        </Span>
-                      </div>
-                      <Input
-                        name={column}
-                        className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
-                        value={editValues[index]}
-                        onChange={(e) =>
-                          handlEditInputChange(index, e.target.value)
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="flex w-full">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-xs rounded-none grow"
-                    onClick={() => handleEditSubmit("update")}
-                    title="Update this row"
-                  >
-                    <SquarePenIcon className="h-3 w-3 mr-1" />
-                    Apply changes
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="text-xs rounded-none"
-                    onClick={() => handleEditSubmit("delete")}
-                    title="Delete this row"
-                  >
-                    <Trash2Icon className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="flex flex-col w-full h-full">
-            <div className="overflow-auto">
-              <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
-                <PlusIcon className="h-4 w-4" />
-                <Span className="whitespace-nowrap">Inserting row</Span>
-              </div>
-              {columns!.map((column, index) => (
-                <div key={column}>
-                  <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
-                    <ColumnIcon
-                      columnSchema={tablesSchema[currentTable!].schema[index]}
-                    />
-                    <Span className="capitalize font-medium text-xs">
-                      {column}
-                    </Span>
-                  </div>
-                  <Input
-                    name={column}
-                    className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
-                    placeholder={editValues?.[index] ?? ""}
-                    onChange={(e) =>
-                      handlEditInputChange(index, e.target.value)
-                    }
-                  />
-                </div>
-              ))}
+        <div className="flex flex-col w-full h-full">
+          <div className="overflow-auto">
+            <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
+              {isInserting ? (
+                <>
+                  <PlusIcon className="h-4 w-4" />
+                  <Span className="whitespace-nowrap">Inserting row</Span>
+                </>
+              ) : (
+                <>
+                  <SquarePenIcon className="h-4 w-4" />
+                  <Span className="whitespace-nowrap">Updating row</Span>
+                </>
+              )}
             </div>
+            {columns?.map((column, index) => (
+              <div key={column}>
+                <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
+                  <ColumnIcon
+                    columnSchema={tablesSchema[currentTable!]?.schema[index]}
+                  />
+                  <Span className="capitalize font-medium text-xs">
+                    {column}
+                  </Span>
+                </div>
+                <Input
+                  name={column}
+                  className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
+                  value={editValues[index] || ""}
+                  onChange={(e) => handlEditInputChange(index, e.target.value)}
+                />
+              </div>
+            ))}
+          </div>
+          {isInserting ? (
             <div className="flex w-full">
               <Button
                 size="sm"
@@ -745,13 +720,34 @@ export default function App() {
                 Insert row
               </Button>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex w-full">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs rounded-none grow"
+                onClick={() => handleEditSubmit("update")}
+                title="Update this row"
+              >
+                <SquarePenIcon className="h-3 w-3 mr-1" />
+                Apply changes
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="text-xs rounded-none"
+                onClick={() => handleEditSubmit("delete")}
+                title="Delete this row"
+              >
+                <Trash2Icon className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     ),
     [
       currentTable,
-      selectedRow,
       tablesSchema,
       columns,
       editValues,
@@ -954,10 +950,7 @@ export default function App() {
             data.map((row, i) => (
               <TableRow
                 key={i}
-                onClick={() => {
-                  setSelectedRow({ data: row, index: i });
-                  setIsInserting(false);
-                }}
+                onClick={() => handleRowClick(row, i)}
                 className={`cursor-pointer hover:bg-primary/5 text-xs ${
                   selectedRow?.index === i ? "bg-primary/5" : ""
                 }`}
@@ -1030,6 +1023,7 @@ export default function App() {
       columns,
       currentTable,
       tablesSchema,
+      handleRowClick,
     ]
   );
 
@@ -1073,7 +1067,8 @@ export default function App() {
               variant="ghost"
               size="sm"
               className="h-8 text-xs w-full justify-start"
-              onClick={() => setIsInserting(true)}
+              onClick={handleInsert}
+              disabled={isInserting}
               title="Insert a new row"
             >
               <PlusIcon className="h-3 w-3 mr-1" />
@@ -1107,7 +1102,7 @@ export default function App() {
         </DropdownMenuContent>
       </DropdownMenu>
     ),
-    [filters, sorters, handleExport]
+    [filters, sorters, handleExport, handleInsert, isInserting]
   );
 
   const dataTab = useMemo(
