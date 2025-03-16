@@ -94,6 +94,8 @@ export default function App() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [schemaPanelSize, setSchemaPanelSize] = useState(0);
   const [dataPanelSize, setDataPanelSize] = useState(100);
+  const [topPanelSize, setTopPanelSize] = useState(0);
+  const [bottomPanelSize, setBottomPanelSize] = useState(100);
 
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -317,16 +319,37 @@ export default function App() {
   }, [isInserting, selectedRow, columns]);
 
   // Handle row click to toggle edit panel
-  const handleRowClick = useCallback((row: SqlValue[], index: number) => {
-    setIsInserting(false);
-    setSelectedRow({ data: row, index: index });
-  }, []);
+  const handleRowClick = useCallback(
+    (row: SqlValue[], index: number) => {
+      setIsInserting(false);
+      setSelectedRow({ data: row, index: index });
+      if (isMobile) {
+        setTopPanelSize(100);
+        setBottomPanelSize(0);
+        setDataPanelSize(0);
+        setSchemaPanelSize(100);
+      } else {
+        setTopPanelSize(75);
+        setBottomPanelSize(25);
+      }
+    },
+    [isMobile]
+  );
 
   // Handle insert row button click
   const handleInsert = useCallback(() => {
     setSelectedRow(null);
     setIsInserting(true);
-  }, []);
+    if (isMobile) {
+      setTopPanelSize(100);
+      setBottomPanelSize(0);
+      setDataPanelSize(0);
+      setSchemaPanelSize(100);
+    } else {
+      setTopPanelSize(75);
+      setBottomPanelSize(25);
+    }
+  }, [isMobile]);
 
   // Handle file upload by sending the file to the worker
   const handleFileChange = useCallback(
@@ -472,6 +495,12 @@ export default function App() {
       // Reset the selected row
       setIsInserting(false);
       setSelectedRow(null);
+      setTopPanelSize(0);
+      setBottomPanelSize(100);
+      if (isMobile) {
+        setDataPanelSize(100);
+        setSchemaPanelSize(0);
+      }
     },
     [
       currentTable,
@@ -482,6 +511,7 @@ export default function App() {
       sorters,
       offset,
       limit,
+      isMobile,
     ]
   );
 
@@ -676,18 +706,36 @@ export default function App() {
       <div className="h-full overflow-auto">
         <div className="flex flex-col w-full h-full">
           <div className="overflow-auto">
-            <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1">
-              {isInserting ? (
-                <>
-                  <PlusIcon className="h-4 w-4" />
-                  <Span className="whitespace-nowrap">Inserting row</Span>
-                </>
-              ) : (
-                <>
-                  <SquarePenIcon className="h-4 w-4" />
-                  <Span className="whitespace-nowrap">Updating row</Span>
-                </>
-              )}
+            <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1 justify-between">
+              <div className="flex items-center gap-1">
+                {isInserting ? (
+                  <>
+                    <PlusIcon className="h-4 w-4" />
+                    <Span className="whitespace-nowrap">Inserting row</Span>
+                  </>
+                ) : (
+                  <>
+                    <SquarePenIcon className="h-4 w-4" />
+                    <Span className="whitespace-nowrap">Updating row</Span>
+                  </>
+                )}
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs md:hidden"
+                onClick={() => {
+                  setIsInserting(false);
+                  setSelectedRow(null);
+                  setTopPanelSize(0);
+                  setBottomPanelSize(100);
+                  setDataPanelSize(100);
+                  setSchemaPanelSize(0);
+                }}
+              >
+                <ChevronLeftIcon className="h-3 w-3 mr-1" />
+                Go back
+              </Button>
             </div>
             {columns?.map((column, index) => (
               <div key={column}>
@@ -1157,6 +1205,8 @@ export default function App() {
           <ResizablePanelGroup direction="horizontal" className="h-full">
             {/* Left Panel - Data Table */}
             <ResizablePanel
+              id="dataPanel"
+              key={`data-${dataPanelSize}`}
               defaultSize={dataPanelSize}
               onResize={setDataPanelSize}
             >
@@ -1173,13 +1223,18 @@ export default function App() {
 
             {/* Right Panel - Split Vertically */}
             <ResizablePanel
+              id="schemaPanel"
+              key={`schema-${schemaPanelSize}`}
               defaultSize={schemaPanelSize}
               onResize={setSchemaPanelSize}
               className=""
             >
               <ResizablePanelGroup direction="vertical">
                 <ResizablePanel
-                  defaultSize={20}
+                  id="topPanel"
+                  key={`top-${topPanelSize}`}
+                  defaultSize={topPanelSize}
+                  onResize={setTopPanelSize}
                   className={`${selectedRow || isInserting ? "" : "hidden"}`}
                 >
                   {editSection}
@@ -1188,7 +1243,12 @@ export default function App() {
                   className={`${selectedRow || isInserting ? "" : "hidden"}`}
                   withHandle
                 />
-                <ResizablePanel defaultSize={80}>
+                <ResizablePanel
+                  id="bottomPanel"
+                  key={`bottom-${bottomPanelSize}`}
+                  defaultSize={bottomPanelSize}
+                  onResize={setBottomPanelSize}
+                >
                   <div className="h-full overflow-hidden">{schemaSection}</div>
                 </ResizablePanel>
               </ResizablePanelGroup>
@@ -1213,6 +1273,8 @@ export default function App() {
       dataPanelSize,
       schemaPanelSize,
       dropDownActions,
+      topPanelSize,
+      bottomPanelSize,
     ]
   );
 
@@ -1274,6 +1336,12 @@ export default function App() {
             disabled={isDatabaseLoading}
             value="execute"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            onClick={() => {
+              if (isMobile) {
+                setDataPanelSize(100);
+                setSchemaPanelSize(0);
+              }
+            }}
           >
             Execute SQL
           </TabsTrigger>

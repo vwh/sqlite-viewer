@@ -5,10 +5,20 @@ function useMediaQuery(query: string) {
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    const listener = () => setMatches(media.matches);
+    let timeoutId: number | null = null;
+
+    const listener = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        setMatches(media.matches);
+      }, 100);
+    };
 
     media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      media.removeEventListener("change", listener);
+    };
   }, [query]);
 
   return matches;
