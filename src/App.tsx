@@ -59,7 +59,6 @@ import { ModeToggle } from "./components/theme/modeToggle";
 import CustomSQLTextarea from "./components/CustomSQLTextarea";
 import Span from "./components/Span";
 import { toast } from "sonner";
-import { CustomQueryError } from "./lib/sqlite";
 
 const FilterInput = memo(
   ({
@@ -92,6 +91,7 @@ const FilterInput = memo(
 export default function App() {
   const [isDatabaseLoading, setIsDatabaseLoading] = useState(false);
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("data");
 
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [schemaPanelSize, setSchemaPanelSize] = useState(0);
@@ -139,6 +139,18 @@ export default function App() {
     if (!isMobile) {
       setSchemaPanelSize(25);
       setDataPanelSize(75);
+    }
+  }, [isMobile]);
+
+  // Handle the edit section reset
+  const handleEditSectionReset = useCallback(() => {
+    setIsInserting(false);
+    setSelectedRow(null);
+    setTopPanelSize(0);
+    setBottomPanelSize(100);
+    if (isMobile) {
+      setDataPanelSize(100);
+      setSchemaPanelSize(0);
     }
   }, [isMobile]);
 
@@ -200,11 +212,11 @@ export default function App() {
         toast.success("Database schema updated successfully");
       } else if (action === "updateComplete") {
         setErrorMessage(null);
-        setSelectedRow(null);
+        handleEditSectionReset();
         toast.success(`Row ${payload.type} successfully`);
       } else if (action === "insertComplete") {
-        setIsInserting(false);
         setErrorMessage(null);
+        handleEditSectionReset();
         toast.success("Row inserted successfully");
       }
       // When the database is downloaded
@@ -249,7 +261,7 @@ export default function App() {
     return () => {
       workerRef.current?.terminate();
     };
-  }, [isFirstTimeLoading]);
+  }, [isFirstTimeLoading, handleEditSectionReset]);
 
   // When fetching data, ask the worker for new data
   useEffect(() => {
@@ -323,6 +335,15 @@ export default function App() {
       setEditValues(selectedRow.data.map((value) => value?.toString() ?? ""));
     }
   }, [isInserting, selectedRow, columns]);
+
+  // Update panel sizes when active tab changes
+  useEffect(() => {
+    // When switching to execute tab, ensure proper panel sizes
+    if (activeTab === "execute" && dataPanelSize <= 0) {
+      setDataPanelSize(100);
+      setSchemaPanelSize(0);
+    }
+  }, [activeTab, dataPanelSize]);
 
   // Handle row click to toggle edit panel
   const handleRowClick = useCallback(
@@ -498,15 +519,6 @@ export default function App() {
           sorters,
         },
       });
-      // Reset the selected row
-      setIsInserting(false);
-      setSelectedRow(null);
-      setTopPanelSize(0);
-      setBottomPanelSize(100);
-      if (isMobile) {
-        setDataPanelSize(100);
-        setSchemaPanelSize(0);
-      }
     },
     [
       currentTable,
@@ -517,7 +529,6 @@ export default function App() {
       sorters,
       offset,
       limit,
-      isMobile,
     ]
   );
 
@@ -781,6 +792,7 @@ export default function App() {
                 variant="outline"
                 className="text-xs rounded-none grow"
                 onClick={() => handleEditSubmit("update")}
+                // TODO: disable it if the data is the same as the current row and didn't change
                 title="Update this row"
               >
                 <SquarePenIcon className="h-3 w-3 mr-1" />
@@ -1322,9 +1334,15 @@ export default function App() {
     <main className="flex flex-col h-screen overflow-hidden bg-primary/5">
       {topBar}
 
-      <Tabs defaultValue="data" className="flex-1 flex flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="flex-1 flex flex-col"
+      >
         <TabsList className="mt-2 bg-primary/5 w-full justify-start border-b rounded-none h-9">
           <TabsTrigger
+            id="structure"
+            key="structure"
             disabled={isDatabaseLoading}
             value="structure"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
@@ -1332,6 +1350,8 @@ export default function App() {
             Database Structure
           </TabsTrigger>
           <TabsTrigger
+            id="data"
+            key="data"
             disabled={isDatabaseLoading}
             value="data"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
@@ -1340,6 +1360,8 @@ export default function App() {
           </TabsTrigger>
           <TabsTrigger
             disabled={isDatabaseLoading}
+            id="execute"
+            key="execute"
             value="execute"
             className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
             onClick={() => {
