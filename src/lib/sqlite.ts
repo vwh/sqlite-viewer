@@ -116,23 +116,21 @@ export default class Sqlite {
     this.firstTable = null;
 
     const [results] = this.exec(
-      "SELECT type, name, sql, tbl_name FROM sqlite_master WHERE name != 'sqlite_sequence'"
+      "SELECT type, name, tbl_name FROM sqlite_master WHERE name != 'sqlite_sequence'"
     );
 
     if (results.length === 0) return;
 
     for (const row of results[0].values) {
-      const [type, name, sql, tableName] = row;
+      const [type, name, tableName] = row;
       if (type === "table") {
         const tableSchema = this.getTableInfo(tableName as string);
         this.tablesSchema[tableName as string] = {
           schema: tableSchema,
-          sql: sql as string,
         };
       } else if (type === "index") {
         this.indexesSchema.push({
           name: name as string,
-          sql: sql as string,
           tableName: tableName as string,
         });
       }

@@ -21,13 +21,7 @@ import { ColumnIcon } from "./ColumnIcon";
 import Span from "./Span";
 
 const TableItem = memo(
-  ({
-    name,
-    table,
-  }: {
-    name: string;
-    table: { sql: string; schema: TableSchemaRow[] };
-  }) => {
+  ({ name, table }: { name: string; table: { schema: TableSchemaRow[] } }) => {
     const { expandedTables, toggleTable } = useSchemaStore();
     const expanded = expandedTables.includes(name);
 
@@ -179,34 +173,13 @@ const TablesSection = memo(
 
 // Indexes section with expandable header
 const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
-  const {
-    expandedIndexSection,
-    toggleIndexSection,
-    expandedIndexes,
-    toggleIndex,
-    expandAllIndexes,
-    collapseAllIndexes,
-  } = useSchemaStore();
-  const [isExpanded, setIsExpanded] = useState(false);
-
+  const { expandedIndexSection, toggleIndexSection } = useSchemaStore();
   const handleToggleSection = () => toggleIndexSection();
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       toggleIndexSection();
     }
-  };
-
-  const handleExpandAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    expandAllIndexes(indexes);
-    setIsExpanded(true);
-  };
-
-  const handleCollapseAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    collapseAllIndexes();
-    setIsExpanded(false);
   };
 
   return (
@@ -228,74 +201,25 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
         </div>
         <TagIcon className="h-4 w-4 mr-2" />
         <span>Indexes</span>
-
-        {expandedIndexSection && indexes.length > 0 && (
-          <div className="ml-auto flex space-x-1">
-            {isExpanded ? (
-              <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
-                variant="ghost"
-                size="icon"
-                onClick={handleCollapseAll}
-              >
-                <ChevronsDownUpIcon className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button
-                className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
-                variant="ghost"
-                size="icon"
-                onClick={handleExpandAll}
-              >
-                <ChevronsUpDownIcon className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        )}
       </div>
 
       {expandedIndexSection && (
         <div className="pl-2 space-y-0.5 overflow-y-auto pr-1">
           {indexes.map((index, idx) => {
-            const isExpanded = expandedIndexes.includes(index.name);
-            const handleToggleIndex = () => toggleIndex(index.name);
-            const handleIndexKeyDown = (e: React.KeyboardEvent) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                toggleIndex(index.name);
-              }
-            };
-
             return (
               <div key={idx}>
                 <div
                   className={cn(
-                    "flex items-center py-1 cursor-pointer hover:ml-2 rounded px-1.5 transition-all",
-                    isExpanded && "ml-1"
+                    "flex items-center py-1 cursor-pointer hover:ml-2 rounded px-1.5 transition-all"
                   )}
-                  onClick={handleToggleIndex}
-                  onKeyDown={handleIndexKeyDown}
                 >
-                  <div className="flex items-center justify-center w-5 h-5">
-                    {isExpanded ? (
-                      <ChevronDownIcon className="h-4 w-4" />
-                    ) : (
-                      <ChevronRightIcon className="h-4 w-4" />
-                    )}
-                  </div>
-                  <span className="text-sm">{index.name}</span>
-                  {/* <span className="text-xs text-primary/50">
-                    <span className="font-medium capitalize">
+                  <div className="flex gap-1 items-center justify-between w-full">
+                    <span className="text-sm">{index.name}</span>
+                    <Span className="text-xs text-primary/60 font-medium whitespace-nowrap">
                       {index.tableName}
-                    </span>
-                  </span> */}
-                </div>
-
-                {isExpanded && (
-                  <div className="pl-9 py-1.5 font-mono text-xs text-primary/70 border-l-2 border-primary/20 ml-4 mt-1 bg-primary/5 rounded p-2 overflow-x-auto">
-                    {index.sql}
+                    </Span>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

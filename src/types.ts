@@ -1,14 +1,12 @@
 export type TableSchema = Record<
   string,
   {
-    sql: string;
     schema: TableSchemaRow[];
   }
 >;
 
 export type IndexSchema = {
   name: string;
-  sql: string;
   tableName: string;
 };
 
