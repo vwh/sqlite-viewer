@@ -1,8 +1,10 @@
-export default function Span({
+import { memo, type ReactNode } from "react";
+
+const Span = memo(function Span({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   return (
@@ -14,4 +16,6 @@ export default function Span({
       {children}
     </span>
   );
-}
+});
+
+export default Span;

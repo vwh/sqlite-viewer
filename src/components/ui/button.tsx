@@ -1,22 +1,23 @@
 import type * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import type { VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
 import buttonVariants from "./buttonVariants";
-import { useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 
-function Button({
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  };
+
+const ButtonComponent = ({
   className,
   variant,
   size,
   asChild = false,
   onClick,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
+}: ButtonProps) => {
   const Comp = asChild ? Slot : "button";
 
   const handleClick = useCallback(
@@ -41,6 +42,6 @@ function Button({
       {...props}
     />
   );
-}
+};
 
-export { Button };
+export const Button = memo(ButtonComponent);

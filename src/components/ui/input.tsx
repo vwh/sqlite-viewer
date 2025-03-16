@@ -1,8 +1,12 @@
 import type * as React from "react";
-
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+const InputComponent = ({
+  className,
+  type,
+  ...props
+}: React.ComponentProps<"input">) => {
   return (
     <input
       type={type}
@@ -16,6 +20,6 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       {...props}
     />
   );
-}
+};
 
-export { Input };
+export const Input = memo(InputComponent);
