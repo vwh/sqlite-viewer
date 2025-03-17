@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useSchemaStore } from "@/store/useSchemaStore";
 
 import type { TableSchema, IndexSchema, TableSchemaRow } from "@/types";
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ColumnIcon from "@/components/table/ColumnIcon";
 import Span from "./Span";
+import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 const TableItem = memo(
   ({ name, table }: { name: string; table: { schema: TableSchemaRow[] } }) => {
@@ -26,7 +27,7 @@ const TableItem = memo(
     const expanded = expandedTables.includes(name);
 
     const handleToggle = () => toggleTable(name);
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         toggleTable(name);
@@ -95,20 +96,20 @@ const TablesSection = memo(
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleToggleSection = () => toggleTableSection();
-    const handleKeyDown = (e: React.KeyboardEvent) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         toggleTableSection();
       }
     };
 
-    const handleExpandAll = (e: React.MouseEvent) => {
+    const handleExpandAll = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       expandAllTables(tablesSchema);
       setIsExpanded(true);
     };
 
-    const handleCollapseAll = (e: React.MouseEvent) => {
+    const handleCollapseAll = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       collapseAllTables();
       setIsExpanded(false);
@@ -175,7 +176,7 @@ const TablesSection = memo(
 const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
   const { expandedIndexSection, toggleIndexSection } = useSchemaStore();
   const handleToggleSection = () => toggleIndexSection();
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       toggleIndexSection();
@@ -246,17 +247,12 @@ const SchemaSearch = memo(
 );
 
 // Main DBSchemaTree component
-const DBSchemaTree = ({
-  tablesSchema,
-  indexesSchema,
-}: {
-  tablesSchema: TableSchema;
-  indexesSchema: IndexSchema[];
-}) => {
-  const [filter, setFilter] = React.useState("");
+const DBSchemaTree = () => {
+  const [filter, setFilter] = useState("");
+  const { tablesSchema, indexesSchema } = useDatabaseStore();
 
   // Filter tables and indexes based on search term
-  const filteredTables = React.useMemo(() => {
+  const filteredTables = useMemo(() => {
     if (!filter) return tablesSchema;
 
     const filtered: TableSchema = {};
@@ -270,7 +266,7 @@ const DBSchemaTree = ({
     return filtered;
   }, [tablesSchema, filter]);
 
-  const filteredIndexes = React.useMemo(() => {
+  const filteredIndexes = useMemo(() => {
     if (!filter) return indexesSchema;
 
     return indexesSchema.filter(

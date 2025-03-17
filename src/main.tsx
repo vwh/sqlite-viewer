@@ -7,13 +7,16 @@ import App from "./App.tsx";
 
 import "./index.css";
 import { DatabaseWorkerProvider } from "./providers/DatabaseWorkerProvider.tsx";
+import { PanelProvider } from "./providers/PanelProvider.tsx";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-      <DatabaseWorkerProvider>
-        <App />
-      </DatabaseWorkerProvider>
+      <PanelProvider>
+        <DatabaseWorkerProvider>
+          <App />
+        </DatabaseWorkerProvider>
+      </PanelProvider>
       <Toaster richColors />
     </ThemeProvider>
   </StrictMode>

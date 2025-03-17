@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -6,12 +7,9 @@ import { ModeToggle } from "./theme/modeToggle";
 
 import { DatabaseIcon, SaveIcon } from "lucide-react";
 
-interface TopBarProps {
-  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleDownload: () => void;
-}
+const TopBar = () => {
+  const { handleFileChange, handleDownload } = useDatabaseWorker();
 
-const TopBar = ({ handleFileChange, handleDownload }: TopBarProps) => {
   const topBar = useMemo(
     () => (
       <header className="flex items-center justify-between gap-1 p-1 border-b">

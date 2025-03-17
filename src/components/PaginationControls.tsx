@@ -12,17 +12,11 @@ import {
   FolderOutputIcon,
   PlusIcon,
 } from "lucide-react";
+import { usePanelManager } from "@/providers/PanelProvider";
 
-interface PaginationControlsProps {
-  handleInsert: () => void;
-  isInserting: boolean;
-}
-
-const PaginationControls = ({
-  handleInsert,
-  isInserting,
-}: PaginationControlsProps) => {
+const PaginationControls = () => {
   const { handlePageChange, handleExport } = useDatabaseWorker();
+  const { isInserting, handleInsert } = usePanelManager();
   const { offset, limit, maxSize, isDataLoading } = useDatabaseStore();
 
   const paginationControls = useMemo(

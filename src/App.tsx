@@ -3,8 +3,6 @@ import { useDatabaseWorker } from "./providers/DatabaseWorkerProvider";
 import { useDatabaseStore } from "./store/useDatabaseStore";
 import { usePanelStore } from "./store/usePanelStore";
 
-import type { SqlValue } from "sql.js";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -46,21 +44,27 @@ import {
   Trash2Icon,
   SquarePenIcon,
 } from "lucide-react";
+import { usePanelManager } from "./providers/PanelProvider";
 
 export default function App() {
   const {
     handleQueryExecute,
     handleQuerySorter,
     handleExport,
-    handleDownload,
-    handleFileChange,
     handleEditSubmit,
     handleQueryFilter,
   } = useDatabaseWorker();
 
   const {
+    handleRowClick,
+    selectedRowData,
+    isInserting,
+    goBackToData,
+    expandDataPanel,
+  } = usePanelManager();
+
+  const {
     tablesSchema,
-    indexesSchema,
     currentTable,
     data,
     columns,
@@ -79,7 +83,6 @@ export default function App() {
     dataPanelSize,
     topPanelSize,
     bottomPanelSize,
-    setPanelsForDevice,
     setTopPanelSize,
     setBottomPanelSize,
     setSchemaPanelSize,
@@ -89,93 +92,39 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState("data");
 
-  // Set panel sizes when page loads
-  useEffect(() => {
-    setPanelsForDevice();
-  }, [setPanelsForDevice]);
-
   const [query, setQuery] = useState("");
 
   const [editValues, setEditValues] = useState<string[]>([]);
-  const [selectedRow, setSelectedRow] = useState<{
-    data: SqlValue[];
-    index: number;
-  } | null>(null);
-  const [isInserting, setIsInserting] = useState(false);
 
   // Update formValues when selectedRow changes
   useEffect(() => {
-    if (selectedRow?.data) {
+    if (selectedRowData) {
       setEditValues(
-        selectedRow.data.map((value) => value?.toString() ?? "null")
+        selectedRowData.data.map((value) => value?.toString() ?? "null")
       );
     }
-  }, [selectedRow]);
+  }, [selectedRowData]);
 
   // Update formValues when isInserting or selectedRow changes
   useEffect(() => {
     if (isInserting) {
       // When inserting, initialize with empty strings or default values
       setEditValues(columns?.map(() => "") || []);
-    } else if (selectedRow?.data) {
+    } else if (selectedRowData) {
       // When editing, set values from the selected row
-      setEditValues(selectedRow.data.map((value) => value?.toString() ?? ""));
+      setEditValues(
+        selectedRowData.data.map((value) => value?.toString() ?? "")
+      );
     }
-  }, [isInserting, selectedRow, columns]);
+  }, [isInserting, selectedRowData, columns]);
 
   // Update panel sizes when active tab changes
   useEffect(() => {
     // When switching to execute tab, ensure proper panel sizes
     if (activeTab === "execute" && dataPanelSize <= 0) {
-      setDataPanelSize(100);
-      setSchemaPanelSize(0);
+      expandDataPanel();
     }
-  }, [activeTab, dataPanelSize, setSchemaPanelSize, setDataPanelSize]);
-
-  // Handle row click to toggle edit panel
-  const handleRowClick = useCallback(
-    (row: SqlValue[], index: number) => {
-      setIsInserting(false);
-      setSelectedRow({ data: row, index: index });
-      if (isMobile) {
-        setTopPanelSize(100);
-        setBottomPanelSize(0);
-        setDataPanelSize(0);
-        setSchemaPanelSize(100);
-      } else {
-        setTopPanelSize(75);
-        setBottomPanelSize(25);
-      }
-    },
-    [
-      isMobile,
-      setBottomPanelSize,
-      setDataPanelSize,
-      setSchemaPanelSize,
-      setTopPanelSize,
-    ]
-  );
-
-  // Handle insert row button click
-  const handleInsert = useCallback(() => {
-    setSelectedRow(null);
-    setIsInserting(true);
-    if (isMobile) {
-      setTopPanelSize(100);
-      setBottomPanelSize(0);
-      setDataPanelSize(0);
-      setSchemaPanelSize(100);
-    } else {
-      setTopPanelSize(75);
-      setBottomPanelSize(25);
-    }
-  }, [
-    isMobile,
-    setBottomPanelSize,
-    setDataPanelSize,
-    setSchemaPanelSize,
-    setTopPanelSize,
-  ]);
+  }, [activeTab, dataPanelSize, expandDataPanel]);
 
   // Handle when user updates the edit inputs
   const handlEditInputChange = useCallback(
@@ -231,13 +180,10 @@ export default function App() {
   const schemaSection = useMemo(
     () => (
       <div className="h-full overflow-y-auto">
-        <DBSchemaTree
-          tablesSchema={tablesSchema}
-          indexesSchema={indexesSchema}
-        />
+        <DBSchemaTree />
       </div>
     ),
-    [tablesSchema, indexesSchema]
+    []
   );
 
   const schemaTab = useMemo(
@@ -283,14 +229,7 @@ export default function App() {
                 size="sm"
                 variant="outline"
                 className="text-xs md:hidden"
-                onClick={() => {
-                  setIsInserting(false);
-                  setSelectedRow(null);
-                  setTopPanelSize(0);
-                  setBottomPanelSize(100);
-                  setDataPanelSize(100);
-                  setSchemaPanelSize(0);
-                }}
+                onClick={goBackToData}
               >
                 <ChevronLeftIcon className="h-3 w-3 mr-1" />
                 Go back
@@ -322,7 +261,7 @@ export default function App() {
                 variant="outline"
                 className="text-xs w-full"
                 onClick={() =>
-                  handleEditSubmit("insert", editValues, selectedRow)
+                  handleEditSubmit("insert", editValues, selectedRowData)
                 }
               >
                 <PlusIcon className="h-3 w-3 mr-1" />
@@ -336,7 +275,7 @@ export default function App() {
                 variant="outline"
                 className="text-xs rounded-none grow"
                 onClick={() =>
-                  handleEditSubmit("update", editValues, selectedRow)
+                  handleEditSubmit("update", editValues, selectedRowData)
                 }
                 // TODO: disable it if the data is the same as the current row and didn't change
                 title="Update this row"
@@ -349,7 +288,7 @@ export default function App() {
                 variant="destructive"
                 className="text-xs rounded-none"
                 onClick={() =>
-                  handleEditSubmit("delete", editValues, selectedRow)
+                  handleEditSubmit("delete", editValues, selectedRowData)
                 }
                 title="Delete this row"
               >
@@ -368,11 +307,8 @@ export default function App() {
       handlEditInputChange,
       handleEditSubmit,
       isInserting,
-      selectedRow,
-      setBottomPanelSize,
-      setDataPanelSize,
-      setSchemaPanelSize,
-      setTopPanelSize,
+      selectedRowData,
+      goBackToData,
     ]
   );
 
@@ -575,7 +511,7 @@ export default function App() {
                 key={i}
                 onClick={() => handleRowClick(row, i)}
                 className={`cursor-pointer hover:bg-primary/5 text-xs ${
-                  selectedRow?.index === i ? "bg-primary/5" : ""
+                  selectedRowData?.index === i ? "bg-primary/5" : ""
                 }`}
               >
                 {row.map((value, j) => (
@@ -641,7 +577,7 @@ export default function App() {
       data,
       filters,
       handleQueryFilter,
-      selectedRow,
+      selectedRowData,
       sorterButton,
       columns,
       currentTable,
@@ -691,7 +627,7 @@ export default function App() {
             </Button>
           </div>
           <div className="md:hidden">
-            <ActionsDropdown handleInsert={handleInsert} isInserting />
+            <ActionsDropdown />
           </div>
           {(isDataLoading || isDatabaseLoading) && (
             <span className="text-xs ml-2 text-gray-500 flex items-center">
@@ -715,7 +651,7 @@ export default function App() {
                 id="dataSection"
               >
                 {dataTable}
-                <PaginationControls handleInsert={handleInsert} isInserting />
+                <PaginationControls />
               </div>
             </ResizablePanel>
 
@@ -735,12 +671,16 @@ export default function App() {
                   key={`top-${topPanelSize}`}
                   defaultSize={topPanelSize}
                   onResize={setTopPanelSize}
-                  className={`${selectedRow || isInserting ? "" : "hidden"}`}
+                  className={`${
+                    selectedRowData || isInserting ? "" : "hidden"
+                  }`}
                 >
                   {editSection}
                 </ResizablePanel>
                 <ResizableHandle
-                  className={`${selectedRow || isInserting ? "" : "hidden"}`}
+                  className={`${
+                    selectedRowData || isInserting ? "" : "hidden"
+                  }`}
                   withHandle
                 />
                 <ResizablePanel
@@ -761,7 +701,7 @@ export default function App() {
       dataTable,
       filters,
       sorters,
-      selectedRow,
+      selectedRowData,
       isDataLoading,
       isDatabaseLoading,
       schemaSection,
@@ -778,16 +718,12 @@ export default function App() {
       setSchemaPanelSize,
       setTopPanelSize,
       setBottomPanelSize,
-      handleInsert,
     ]
   );
 
   return (
     <main className="flex flex-col h-screen overflow-hidden bg-primary/5">
-      <TopBar
-        handleFileChange={handleFileChange}
-        handleDownload={handleDownload}
-      />
+      <TopBar />
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
+import { usePanelManager } from "@/providers/PanelProvider";
 
 import {
   DropdownMenu,
@@ -18,16 +19,9 @@ import {
   PlusIcon,
 } from "lucide-react";
 
-interface ActionsDropdownProps {
-  handleInsert: () => void;
-  isInserting: boolean;
-}
-
-const ActionsDropdown = ({
-  handleInsert,
-  isInserting,
-}: ActionsDropdownProps) => {
+const ActionsDropdown = () => {
   const { handleExport } = useDatabaseWorker();
+  const { isInserting, handleInsert } = usePanelManager();
   const { filters, setFilters, sorters, setSorters } = useDatabaseStore();
 
   const dropDownActions = useMemo(
