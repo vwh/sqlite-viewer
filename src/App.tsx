@@ -96,15 +96,6 @@ export default function App() {
 
   const [editValues, setEditValues] = useState<string[]>([]);
 
-  // Update formValues when selectedRow changes
-  useEffect(() => {
-    if (selectedRowData) {
-      setEditValues(
-        selectedRowData.data.map((value) => value?.toString() ?? "null")
-      );
-    }
-  }, [selectedRowData]);
-
   // Update formValues when isInserting or selectedRow changes
   useEffect(() => {
     if (isInserting) {
