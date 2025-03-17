@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDatabaseWorker } from "./providers/DatabaseWorkerProvider";
 import { useDatabaseStore } from "./store/useDatabaseStore";
 import { usePanelStore } from "./store/usePanelStore";
-import useMediaQuery from "./hooks/useMediaQuery";
 
 import type { SqlValue } from "sql.js";
 
@@ -85,15 +84,15 @@ export default function App() {
     setBottomPanelSize,
     setSchemaPanelSize,
     setDataPanelSize,
+    isMobile,
   } = usePanelStore();
 
   const [activeTab, setActiveTab] = useState("data");
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Set panel sizes when device type changes
+  // Set panel sizes when page loads
   useEffect(() => {
-    setPanelsForDevice(isMobile);
-  }, [isMobile, setPanelsForDevice]);
+    setPanelsForDevice();
+  }, [setPanelsForDevice]);
 
   const [query, setQuery] = useState("");
 

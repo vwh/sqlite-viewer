@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { SqlValue } from "sql.js";
 
+import type { SqlValue } from "sql.js";
 interface PanelState {
   schemaPanelSize: number;
   dataPanelSize: number;
@@ -8,10 +8,10 @@ interface PanelState {
   bottomPanelSize: number;
 
   query: string;
-
   editValues: string[];
   selectedRow: { data: SqlValue[]; index: number } | null;
   isInserting: boolean;
+  isMobile: boolean;
 
   setSchemaPanelSize: (size: number) => void;
   setDataPanelSize: (size: number) => void;
@@ -21,13 +21,12 @@ interface PanelState {
   setEditValues: (values: string[]) => void;
   setSelectedRow: (row: { data: SqlValue[]; index: number } | null) => void;
   setIsInserting: (inserting: boolean) => void;
-
-  resetEditSection: (isMobile: boolean) => void;
-  setPanelsForDevice: (isMobile: boolean) => void;
+  setIsMobile: (isMobile: boolean) => void;
+  resetEditSection: () => void;
+  setPanelsForDevice: () => void;
 }
 
-export const usePanelStore = create<PanelState>((set) => ({
-  // Initial state
+export const usePanelStore = create<PanelState>((set, get) => ({
   schemaPanelSize: 0,
   dataPanelSize: 100,
   topPanelSize: 0,
@@ -36,6 +35,7 @@ export const usePanelStore = create<PanelState>((set) => ({
   editValues: [],
   selectedRow: null,
   isInserting: false,
+  isMobile: window.matchMedia("(max-width: 768px)").matches,
 
   setSchemaPanelSize: (size) => set({ schemaPanelSize: size }),
   setDataPanelSize: (size) => set({ dataPanelSize: size }),
@@ -45,9 +45,11 @@ export const usePanelStore = create<PanelState>((set) => ({
   setEditValues: (values) => set({ editValues: values }),
   setSelectedRow: (row) => set({ selectedRow: row }),
   setIsInserting: (inserting) => set({ isInserting: inserting }),
+  setIsMobile: (isMobile) => set({ isMobile }),
 
-  resetEditSection: (isMobile: boolean) =>
+  resetEditSection: () =>
     set(() => {
+      const isMobile = get().isMobile;
       const updates: Partial<PanelState> = {
         isInserting: false,
         selectedRow: null,
@@ -61,17 +63,11 @@ export const usePanelStore = create<PanelState>((set) => ({
       return updates;
     }),
 
-  setPanelsForDevice: (isMobile: boolean) =>
+  setPanelsForDevice: () =>
     set(() => {
-      if (!isMobile) {
-        return {
-          schemaPanelSize: 25,
-          dataPanelSize: 75,
-        };
-      }
-      return {
-        schemaPanelSize: 0,
-        dataPanelSize: 100,
-      };
+      const isMobile = get().isMobile;
+      return isMobile
+        ? { schemaPanelSize: 0, dataPanelSize: 100 }
+        : { schemaPanelSize: 25, dataPanelSize: 75 };
     }),
 }));

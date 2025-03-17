@@ -8,7 +8,6 @@ import {
 } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { usePanelStore } from "@/store/usePanelStore";
-import useMediaQuery from "@/hooks/useMediaQuery";
 
 import { toast } from "sonner";
 
@@ -71,7 +70,6 @@ export const DatabaseWorkerProvider = ({
 
   const { resetEditSection } = usePanelStore();
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Initialize worker and send initial "init" message
   useEffect(() => {
@@ -131,11 +129,11 @@ export const DatabaseWorkerProvider = ({
         toast.success("Database schema updated successfully");
       } else if (action === "updateComplete") {
         setErrorMessage(null);
-        resetEditSection(isMobile);
+        resetEditSection();
         toast.success(`Row ${payload.type} successfully`);
       } else if (action === "insertComplete") {
         setErrorMessage(null);
-        resetEditSection(isMobile);
+        resetEditSection();
         toast.success("Row inserted successfully");
       }
       // When the database is downloaded
@@ -193,7 +191,6 @@ export const DatabaseWorkerProvider = ({
     setFilters,
     setSorters,
     resetEditSection,
-    isMobile,
   ]);
 
   // When fetching data, ask the worker for new data
