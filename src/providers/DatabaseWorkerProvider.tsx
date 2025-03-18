@@ -320,12 +320,17 @@ export const DatabaseWorkerProvider = ({
   // Handle when user updates the sorter
   const handleQuerySorter = useCallback(
     (column: string) => {
+      const isMutableColumns = false; // TODO: in settings tab user can change this
+
       const currentSorters = useDatabaseStore.getState().sorters || {};
-      const newSorters = {
-        ...currentSorters,
-        [column]: currentSorters[column] === "asc" ? "desc" : "asc"
-      } as Sorters;
-      setSorters(newSorters);
+      const currentSortOrder = currentSorters[column] || "asc";
+      const newSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+
+      const newSorters = isMutableColumns
+        ? { ...currentSorters, [column]: newSortOrder }
+        : { [column]: newSortOrder };
+
+      setSorters(newSorters as Sorters);
     },
     [setSorters]
   );
