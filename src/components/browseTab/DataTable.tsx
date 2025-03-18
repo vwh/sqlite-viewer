@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import { usePanelManager } from "@/providers/PanelProvider";
@@ -16,67 +16,15 @@ import { Span } from "@/components/ui/span";
 import ColumnIcon from "@/components/table/ColumnIcon";
 import FilterInput from "@/components/table/FilterInput";
 
-import {
-  ArrowDownNarrowWideIcon,
-  ArrowUpDownIcon,
-  ArrowUpNarrowWideIcon,
-  FilterXIcon,
-} from "lucide-react";
+import { FilterXIcon } from "lucide-react";
+import SorterButton from "../table/SorterButton";
 
 const DataTable = () => {
-  const {
-    data,
-    columns,
-    currentTable,
-    tablesSchema,
-    filters,
-    sorters,
-    setFilters,
-  } = useDatabaseStore();
+  const { data, columns, currentTable, tablesSchema, filters, setFilters } =
+    useDatabaseStore();
 
-  const { handleQuerySorter, handleQueryFilter } = useDatabaseWorker();
+  const { handleQueryFilter } = useDatabaseWorker();
   const { handleRowClick, selectedRowObject } = usePanelManager();
-
-  const sorterButton = useCallback(
-    (column: string) => (
-      <>
-        {sorters?.[column] ? (
-          sorters?.[column] === "asc" ? (
-            <button
-              title="Sort column in descending order"
-              type="button"
-              aria-label="Sort Descending"
-              disabled={false}
-              onClick={() => handleQuerySorter(column)}
-            >
-              <ArrowDownNarrowWideIcon className="h-4 w-3" />
-            </button>
-          ) : (
-            <button
-              title="Sort column in ascending order"
-              type="button"
-              aria-label="Sort Ascending"
-              disabled={false}
-              onClick={() => handleQuerySorter(column)}
-            >
-              <ArrowUpNarrowWideIcon className="h-3 w-3" />
-            </button>
-          )
-        ) : (
-          <button
-            title="Sort column in ascending order"
-            type="button"
-            aria-label="Sort Column"
-            disabled={false}
-            onClick={() => handleQuerySorter(column)}
-          >
-            <ArrowUpDownIcon className="h-3 w-3" />
-          </button>
-        )}
-      </>
-    ),
-    [sorters, handleQuerySorter]
-  );
 
   const emptyDataContent = useMemo(
     () => (
@@ -109,6 +57,17 @@ const DataTable = () => {
     [filters, setFilters]
   );
 
+  const memoizedFilterInput = useMemo(() => {
+    return (columns || []).map((column) => (
+      <FilterInput
+        key={column}
+        column={column}
+        value={filters?.[column] || ""}
+        onChange={handleQueryFilter}
+      />
+    ));
+  }, [columns, filters, handleQueryFilter]);
+
   return useMemo(
     () => (
       <Table>
@@ -118,7 +77,7 @@ const DataTable = () => {
               columns.map((column, index) => (
                 <TableHead key={column} className="p-1 text-xs">
                   <div className="flex items-center py-[1.5px] gap-1">
-                    {sorterButton(column)}
+                    <SorterButton column={column} />
                     <Span className="capitalize font-medium text-foreground">
                       {column}
                     </Span>
@@ -126,11 +85,7 @@ const DataTable = () => {
                       columnSchema={tablesSchema[currentTable].schema[index]}
                     />
                   </div>
-                  <FilterInput
-                    column={column}
-                    value={filters?.[column] || ""}
-                    onChange={handleQueryFilter}
-                  />
+                  {memoizedFilterInput?.[index]}
                 </TableHead>
               ))
             ) : (
@@ -189,12 +144,10 @@ const DataTable = () => {
       columns,
       currentTable,
       tablesSchema,
-      filters,
-      sorterButton,
-      handleQueryFilter,
       handleRowClick,
       selectedRowObject,
       emptyDataContent,
+      memoizedFilterInput,
     ]
   );
 };

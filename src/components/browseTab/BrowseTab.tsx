@@ -57,10 +57,9 @@ const BrowseDataTab = memo(() => {
     []
   );
 
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-1 py-2 px-1 border-b ">
-        <TableSelector />
+  const actionButtons = useMemo(() => {
+    return (
+      <>
         <div className="md:flex items-center gap-1 hidden">
           <Button
             size="sm"
@@ -98,6 +97,15 @@ const BrowseDataTab = memo(() => {
         <div className="md:hidden">
           <ActionsDropdown />
         </div>
+      </>
+    );
+  }, [filters, sorters, setFilters, setSorters, handleExport]);
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-1 py-2 px-1 border-b ">
+        <TableSelector />
+        {actionButtons}
         {(isDataLoading || isDatabaseLoading) && (
           <LoadingIndicator text="Loading data" />
         )}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDatabaseStore } from "./store/useDatabaseStore";
 import { usePanelStore } from "./store/usePanelStore";
 import { usePanelManager } from "./providers/PanelProvider";
@@ -19,6 +19,11 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState("data");
 
+  // Handles when user changes tabs
+  const handleTabChange = useCallback((value: string) => {
+    setActiveTab(value);
+  }, []);
+
   // Update panel sizes when active tab changes
   useEffect(() => {
     // When switching to execute tab, ensure proper panel sizes
@@ -32,7 +37,7 @@ export default function App() {
       <TopBar />
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange} // Use memoized callback here
         className="flex-1 flex flex-col"
       >
         <TabsList className="mt-2 bg-primary/5 w-full justify-start border-b rounded-none h-9">

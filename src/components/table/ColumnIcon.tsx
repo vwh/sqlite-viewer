@@ -21,6 +21,15 @@ import {
   HelpCircleIcon,
 } from "lucide-react";
 
+const MemoizedKeyRoundIcon = memo(KeyRoundIcon);
+const MemoizedKeySquareIcon = memo(KeySquareIcon);
+const MemoizedCuboidIcon = memo(CuboidIcon);
+const MemoizedCalendarIcon = memo(CalendarIcon);
+const MemoizedTypeIcon = memo(TypeIcon);
+const MemoizedHashIcon = memo(HashIcon);
+const MemoizedToggleLeftIcon = memo(ToggleLeftIcon);
+const MemoizedHelpCircleIcon = memo(HelpCircleIcon);
+
 const ColumnIcon = memo(
   ({ columnSchema }: { columnSchema: TableSchemaRow | null }) => {
     if (!columnSchema) return null;
@@ -30,24 +39,28 @@ const ColumnIcon = memo(
     let typeIcon = null;
     if (type) {
       typeIcon = isBlob(type) ? (
-        <CuboidIcon className="h-4 w-4 text-green-500" />
+        <MemoizedCuboidIcon className="h-4 w-4 text-green-500" />
       ) : isDate(type) ? (
-        <CalendarIcon className="h-4 w-4 text-blue-500" />
+        <MemoizedCalendarIcon className="h-4 w-4 text-blue-500" />
       ) : isText(type) ? (
-        <TypeIcon className="h-4 w-4 text-indigo-500" />
+        <MemoizedTypeIcon className="h-4 w-4 text-indigo-500" />
       ) : isNumber(type) ? (
-        <HashIcon className="h-4 w-4 text-red-500" />
+        <MemoizedHashIcon className="h-4 w-4 text-red-500" />
       ) : isBoolean(type) ? (
-        <ToggleLeftIcon className="h-4 w-4 text-pink-500" />
+        <MemoizedToggleLeftIcon className="h-4 w-4 text-pink-500" />
       ) : (
-        <HelpCircleIcon className="h-4 w-4 text-gray-500" />
+        <MemoizedHelpCircleIcon className="h-4 w-4 text-gray-500" />
       );
     }
 
     return (
       <div className="flex items-center gap-[2px]">
-        {isPrimaryKey && <KeyRoundIcon className="h-4 w-4 text-yellow-500" />}
-        {isForeignKey && <KeySquareIcon className="h-4 w-4 text-purple-500" />}
+        {isPrimaryKey && (
+          <MemoizedKeyRoundIcon className="h-4 w-4 text-yellow-500" />
+        )}
+        {isForeignKey && (
+          <MemoizedKeySquareIcon className="h-4 w-4 text-purple-500" />
+        )}
         {typeIcon}
       </div>
     );
