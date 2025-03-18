@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import { usePanelManager } from "@/providers/PanelProvider";
