@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import { usePanelManager } from "@/providers/PanelProvider";
@@ -25,6 +25,14 @@ const DataTable = () => {
 
   const { handleQueryFilter } = useDatabaseWorker();
   const { handleRowClick, selectedRowObject } = usePanelManager();
+
+  // Memoize filter handlers to prevent recreating functions on each render
+  const getFilterHandler = useCallback(
+    (column: string) => (value: string) => {
+      handleQueryFilter(column, value);
+    },
+    [handleQueryFilter]
+  );
 
   const emptyDataContent = useMemo(
     () => (
@@ -58,15 +66,17 @@ const DataTable = () => {
   );
 
   const memoizedFilterInput = useMemo(() => {
-    return (columns || []).map((column) => (
+    if (!columns) return [];
+
+    return columns.map((column) => (
       <FilterInput
         key={column}
         column={column}
         value={filters?.[column] || ""}
-        onChange={handleQueryFilter}
+        onChange={getFilterHandler(column)}
       />
     ));
-  }, [columns, filters, handleQueryFilter]);
+  }, [columns, filters, getFilterHandler]);
 
   return useMemo(
     () => (

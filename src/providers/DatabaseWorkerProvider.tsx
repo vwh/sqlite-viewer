@@ -24,10 +24,7 @@ interface DatabaseWorkerContextProps {
   handlePageChange: (type: "next" | "prev" | "first" | "last" | number) => void;
   handleExport: (exportType: "table" | "current") => void;
   handleQueryExecute: () => void;
-  handleEditSubmit: (
-    type: "insert" | "update" | "delete",
-    editValues: string[]
-  ) => void;
+  handleEditSubmit: (type: "insert" | "update" | "delete") => void;
 }
 
 const DatabaseWorkerContext = createContext<
@@ -413,14 +410,14 @@ export const DatabaseWorkerProvider = ({
 
   // Handle when user submits the edit form
   const handleEditSubmit = useCallback(
-    (type: "insert" | "update" | "delete", editValues: string[]) => {
+    (type: "insert" | "update" | "delete") => {
       setIsDataLoading(true);
       workerRef.current?.postMessage({
         action: type,
         payload: {
           table: currentTable,
           columns: useDatabaseStore.getState().columns,
-          values: editValues,
+          values: usePanelStore.getState().editValues,
           whereValues: selectedRowObject?.data
         }
       });
