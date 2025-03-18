@@ -20,6 +20,7 @@ interface DatabaseState {
   limit: number;
   offset: number;
 
+  customQuery?: string;
   customQueryObject: {
     data: SqlValue[][];
     columns: string[];
@@ -38,6 +39,8 @@ interface DatabaseState {
   setSorters: (sorters: Sorters | null) => void;
   setLimit: (limit: number) => void;
   setOffset: (offset: number) => void;
+
+  setCustomQuery: (query: string) => void;
   setCustomQueryObject: (
     obj: { data: SqlValue[][]; columns: string[] } | null
   ) => void;
@@ -60,6 +63,8 @@ export const useDatabaseStore = create<DatabaseState>((set) => ({
   sorters: null,
   limit: 50,
   offset: 0,
+
+  customQuery: undefined,
   customQueryObject: null,
 
   setTablesSchema: (schema: TableSchema) => set({ tablesSchema: schema }),
@@ -76,6 +81,8 @@ export const useDatabaseStore = create<DatabaseState>((set) => ({
   setSorters: (sorters: Sorters | null) => set({ sorters }),
   setLimit: (limit: number) => set({ limit }),
   setOffset: (offset: number) => set({ offset }),
+
+  setCustomQuery: (query: string) => set({ customQuery: query }),
   setCustomQueryObject: (
     customQueryObject: { data: SqlValue[][]; columns: string[] } | null
   ) => set({ customQueryObject }),

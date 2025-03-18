@@ -4,7 +4,6 @@ import { useDatabaseStore } from "./store/useDatabaseStore";
 import { usePanelStore } from "./store/usePanelStore";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,34 +33,26 @@ import {
   ArrowDownNarrowWideIcon,
   ArrowUpDownIcon,
   ArrowUpNarrowWideIcon,
-  ChevronLeftIcon,
   FilterXIcon,
   ListRestartIcon,
   PlayIcon,
   FolderOutputIcon,
-  PlusIcon,
   LoaderCircleIcon,
-  Trash2Icon,
-  SquarePenIcon,
 } from "lucide-react";
+
 import { usePanelManager } from "./providers/PanelProvider";
+import EditSection from "./components/editTab/editSection";
 
 export default function App() {
   const {
     handleQueryExecute,
     handleQuerySorter,
     handleExport,
-    handleEditSubmit,
     handleQueryFilter,
   } = useDatabaseWorker();
 
-  const {
-    handleRowClick,
-    selectedRowData,
-    isInserting,
-    goBackToData,
-    expandDataPanel,
-  } = usePanelManager();
+  const { handleRowClick, selectedRowData, isInserting, expandDataPanel } =
+    usePanelManager();
 
   const {
     tablesSchema,
@@ -92,23 +83,6 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState("data");
 
-  const [query, setQuery] = useState("");
-
-  const [editValues, setEditValues] = useState<string[]>([]);
-
-  // Update formValues when isInserting or selectedRow changes
-  useEffect(() => {
-    if (isInserting) {
-      // When inserting, initialize with empty strings or default values
-      setEditValues(columns?.map(() => "") || []);
-    } else if (selectedRowData) {
-      // When editing, set values from the selected row
-      setEditValues(
-        selectedRowData.data.map((value) => value?.toString() ?? "")
-      );
-    }
-  }, [isInserting, selectedRowData, columns]);
-
   // Update panel sizes when active tab changes
   useEffect(() => {
     // When switching to execute tab, ensure proper panel sizes
@@ -116,16 +90,6 @@ export default function App() {
       expandDataPanel();
     }
   }, [activeTab, dataPanelSize, expandDataPanel]);
-
-  // Handle when user updates the edit inputs
-  const handlEditInputChange = useCallback(
-    (index: number, newValue: string) => {
-      const newEditValues = [...editValues];
-      newEditValues[index] = newValue;
-      setEditValues(newEditValues);
-    },
-    [editValues]
-  );
 
   const sorterButton = useCallback(
     (column: string) => (
@@ -195,112 +159,6 @@ export default function App() {
       </div>
     ),
     [schemaSection]
-  );
-
-  const editSection = useMemo(
-    () => (
-      <div className="h-full overflow-auto">
-        <div className="flex flex-col w-full h-full">
-          <div className="overflow-auto">
-            <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1 justify-between">
-              <div className="flex items-center gap-1">
-                {isInserting ? (
-                  <>
-                    <PlusIcon className="h-4 w-4" />
-                    <Span className="whitespace-nowrap">Inserting row</Span>
-                  </>
-                ) : (
-                  <>
-                    <SquarePenIcon className="h-4 w-4" />
-                    <Span className="whitespace-nowrap">Updating row</Span>
-                  </>
-                )}
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs md:hidden"
-                onClick={goBackToData}
-              >
-                <ChevronLeftIcon className="h-3 w-3 mr-1" />
-                Go back
-              </Button>
-            </div>
-            {columns?.map((column, index) => (
-              <div key={column}>
-                <div className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm">
-                  <ColumnIcon
-                    columnSchema={tablesSchema[currentTable!]?.schema[index]}
-                  />
-                  <Span className="capitalize font-medium text-xs">
-                    {column}
-                  </Span>
-                </div>
-                <Input
-                  name={column}
-                  className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
-                  value={editValues[index] || ""}
-                  onChange={(e) => handlEditInputChange(index, e.target.value)}
-                />
-              </div>
-            ))}
-          </div>
-          {isInserting ? (
-            <div className="flex w-full">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs w-full"
-                onClick={() =>
-                  handleEditSubmit("insert", editValues, selectedRowData)
-                }
-              >
-                <PlusIcon className="h-3 w-3 mr-1" />
-                Insert row
-              </Button>
-            </div>
-          ) : (
-            <div className="flex w-full">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-xs rounded-none grow"
-                onClick={() =>
-                  handleEditSubmit("update", editValues, selectedRowData)
-                }
-                // TODO: disable it if the data is the same as the current row and didn't change
-                title="Update this row"
-              >
-                <SquarePenIcon className="h-3 w-3 mr-1" />
-                Apply changes
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                className="text-xs rounded-none"
-                onClick={() =>
-                  handleEditSubmit("delete", editValues, selectedRowData)
-                }
-                title="Delete this row"
-              >
-                <Trash2Icon className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
-    ),
-    [
-      currentTable,
-      tablesSchema,
-      columns,
-      editValues,
-      handlEditInputChange,
-      handleEditSubmit,
-      isInserting,
-      selectedRowData,
-      goBackToData,
-    ]
   );
 
   const customQueryDataTable = useMemo(
@@ -374,9 +232,7 @@ export default function App() {
             size="sm"
             variant="outline"
             className="text-xs"
-            onClick={() => {
-              handleQueryExecute(query);
-            }}
+            onClick={handleQueryExecute}
             title="Execute SQL"
           >
             <PlayIcon className="h-3 w-3 mr-1" />
@@ -418,11 +274,7 @@ export default function App() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   /> */}
-                  <CustomSQLTextarea
-                    query={query}
-                    setQuery={setQuery}
-                    tableSchema={tablesSchema}
-                  />
+                  <CustomSQLTextarea />
                 </ResizablePanel>
                 <ResizableHandle withHandle />
 
@@ -448,7 +300,6 @@ export default function App() {
       </div>
     ),
     [
-      query,
       handleQueryExecute,
       errorMessage,
       customQueryDataTable,
@@ -458,7 +309,6 @@ export default function App() {
       isDatabaseLoading,
       dataPanelSize,
       schemaPanelSize,
-      tablesSchema,
       setDataPanelSize,
       setSchemaPanelSize,
     ]
@@ -550,7 +400,6 @@ export default function App() {
                     </>
                   ) : (
                     <>
-                      {" "}
                       <h3 className="text-md font-medium">No Data To Show</h3>
                       <p className="text-sm">
                         This table does not have any data to display
@@ -666,7 +515,7 @@ export default function App() {
                     selectedRowData || isInserting ? "" : "hidden"
                   }`}
                 >
-                  {editSection}
+                  <EditSection />
                 </ResizablePanel>
                 <ResizableHandle
                   className={`${
@@ -696,7 +545,6 @@ export default function App() {
       isDataLoading,
       isDatabaseLoading,
       schemaSection,
-      editSection,
       handleExport,
       isInserting,
       dataPanelSize,

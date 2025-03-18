@@ -10,6 +10,7 @@ import {
 } from "@codemirror/autocomplete";
 
 import type { TableSchema } from "@/types";
+import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 // SQLlite Keywords used for autocompletion
 const SQLITE_KEYWORDS = [
@@ -166,27 +167,18 @@ const BUILT_IN_FUNCTIONS = [
   "UPPER",
 ];
 
-interface CustomSQLTextareaProps {
-  query: string;
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
-  tableSchema: TableSchema;
-}
-
-export default function CustomSQLTextarea({
-  query,
-  setQuery,
-  tableSchema,
-}: CustomSQLTextareaProps) {
+export default function CustomSQLTextarea() {
   const { theme } = useTheme();
+  const { customQuery, setCustomQuery, tablesSchema } = useDatabaseStore();
 
   const { tableNames, columnNames } = useMemo(() => {
-    const tableNames = Object.keys(tableSchema);
+    const tableNames = Object.keys(tablesSchema);
     const columnNames = tableNames.flatMap((table) =>
-      tableSchema[table].schema.map((col) => col.name)
+      tablesSchema[table].schema.map((col) => col.name)
     );
 
     return { tableNames, columnNames };
-  }, [tableSchema]);
+  }, [tablesSchema]);
 
   const completionOptions = useMemo(
     () => [
@@ -217,9 +209,9 @@ export default function CustomSQLTextarea({
 
   const handleChange = useCallback(
     (newValue: string) => {
-      setQuery(newValue);
+      setCustomQuery(newValue);
     },
-    [setQuery]
+    [setCustomQuery]
   );
 
   const extensions = useMemo(
@@ -229,7 +221,7 @@ export default function CustomSQLTextarea({
 
   return (
     <CodeMirror
-      value={query}
+      value={customQuery}
       height="100%"
       extensions={extensions}
       onChange={handleChange}

@@ -8,10 +8,10 @@ import {
 } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { usePanelStore } from "@/store/usePanelStore";
+import { usePanelManager } from "./PanelProvider";
 
 import { toast } from "sonner";
 
-import type { SqlValue } from "sql.js";
 import type { Sorters } from "@/types";
 
 interface DatabaseWorkerContextProps {
@@ -23,11 +23,10 @@ interface DatabaseWorkerContextProps {
   handleQuerySorter: (column: string) => void;
   handlePageChange: (type: "next" | "prev" | "first" | "last" | number) => void;
   handleExport: (exportType: "table" | "current") => void;
-  handleQueryExecute: (query: string) => void;
+  handleQueryExecute: () => void;
   handleEditSubmit: (
     type: "insert" | "update" | "delete",
-    editValues: string[],
-    selectedRow?: { data: SqlValue[]; index: number } | null
+    editValues: string[]
   ) => void;
 }
 
@@ -66,9 +65,12 @@ export const DatabaseWorkerProvider = ({
     setLimit,
     resetPagination,
     setCustomQueryObject,
+    customQuery,
   } = useDatabaseStore();
 
   const { resetEditSection } = usePanelStore();
+  const { selectedRowData } = usePanelManager();
+
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
 
   // Initialize worker and send initial "init" message
@@ -353,42 +355,45 @@ export const DatabaseWorkerProvider = ({
   );
 
   // Handle SQL statement execution by sending it to the worker
-  const handleQueryExecute = useCallback(
-    (query: string) => {
-      // Remove SQL comments before processing
-      const cleanedQuery = query
-        .replace(/--.*$/gm, "")
-        .replace(/\/\*[\s\S]*?\*\//g, "");
-      // Split the query into multiple statements
-      const statements = cleanedQuery
-        .split(";")
-        .map((stmt) => stmt.trim())
-        .filter((stmt) => stmt !== "");
-      for (const stmt of statements) {
-        setIsDataLoading(true);
-        workerRef.current?.postMessage({
-          action: "exec",
-          payload: {
-            query: stmt,
-            currentTable,
-            filters,
-            sorters,
-            limit,
-            offset,
-          },
-        });
-      }
-    },
-    [currentTable, filters, sorters, limit, offset, setIsDataLoading]
-  );
+  const handleQueryExecute = useCallback(() => {
+    const query = customQuery;
+    if (!query) return;
+    // Remove SQL comments before processing
+    const cleanedQuery = query
+      .replace(/--.*$/gm, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "");
+    // Split the query into multiple statements
+    const statements = cleanedQuery
+      .split(";")
+      .map((stmt) => stmt.trim())
+      .filter((stmt) => stmt !== "");
+    for (const stmt of statements) {
+      setIsDataLoading(true);
+      workerRef.current?.postMessage({
+        action: "exec",
+        payload: {
+          query: stmt,
+          currentTable,
+          filters,
+          sorters,
+          limit,
+          offset,
+        },
+      });
+    }
+  }, [
+    currentTable,
+    filters,
+    sorters,
+    limit,
+    offset,
+    setIsDataLoading,
+    customQuery,
+  ]);
 
   // Handle when user submits the edit form
   const handleEditSubmit = useCallback(
-    (
-      type: "insert" | "update" | "delete",
-      editValues: string[],
-      selectedRow?: { data: SqlValue[]; index: number } | null
-    ) => {
+    (type: "insert" | "update" | "delete", editValues: string[]) => {
       setIsDataLoading(true);
       workerRef.current?.postMessage({
         action: type,
@@ -396,7 +401,7 @@ export const DatabaseWorkerProvider = ({
           table: currentTable,
           columns: useDatabaseStore.getState().columns,
           values: editValues,
-          whereValues: selectedRow?.data,
+          whereValues: selectedRowData?.data,
         },
       });
       // Refresh the data
@@ -411,7 +416,15 @@ export const DatabaseWorkerProvider = ({
         },
       });
     },
-    [currentTable, filters, sorters, offset, limit, setIsDataLoading]
+    [
+      currentTable,
+      filters,
+      sorters,
+      offset,
+      limit,
+      setIsDataLoading,
+      selectedRowData,
+    ]
   );
 
   const value = {
