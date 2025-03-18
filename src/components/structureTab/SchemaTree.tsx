@@ -40,12 +40,15 @@ const TableColumn = memo(
   }
 );
 
+const MemoizedChevronDownIcon = memo(ChevronDownIcon);
+const MemoizedChevronRightIcon = memo(ChevronRightIcon);
+
 const ToggleChevron = memo(
   ({ expanded, size = 4 }: { expanded: boolean; size?: number }) => {
     return expanded ? (
-      <ChevronDownIcon className={`h-${size} w-${size}`} />
+      <MemoizedChevronDownIcon className={`h-${size} w-${size}`} />
     ) : (
-      <ChevronRightIcon className={`h-${size} w-${size}`} />
+      <MemoizedChevronRightIcon className={`h-${size} w-${size}`} />
     );
   }
 );
