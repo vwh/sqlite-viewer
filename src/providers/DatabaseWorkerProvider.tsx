@@ -69,7 +69,8 @@ export const DatabaseWorkerProvider = ({
   } = useDatabaseStore();
 
   const { resetEditSection } = usePanelStore();
-  const { selectedRowObject } = usePanelManager();
+  const { selectedRowObject, setSelectedRowObject, setIsInserting } =
+    usePanelManager();
 
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
 
@@ -92,6 +93,8 @@ export const DatabaseWorkerProvider = ({
         setCurrentTable(payload.currentTable);
         setFilters(null);
         setSorters(null);
+        setSelectedRowObject(null);
+        setIsInserting(false);
         setIsDatabaseLoading(false);
       }
       // When the query is executed and returns results
@@ -193,6 +196,8 @@ export const DatabaseWorkerProvider = ({
     setFilters,
     setSorters,
     resetEditSection,
+    setSelectedRowObject,
+    setIsInserting,
   ]);
 
   // When fetching data, ask the worker for new data
@@ -287,9 +292,19 @@ export const DatabaseWorkerProvider = ({
       setSorters(null);
       resetPagination();
       setMaxSize(0);
+      setSelectedRowObject(null);
+      setIsInserting(false);
       setCurrentTable(selectedTable);
     },
-    [setFilters, setSorters, resetPagination, setMaxSize, setCurrentTable]
+    [
+      setFilters,
+      setSorters,
+      resetPagination,
+      setMaxSize,
+      setCurrentTable,
+      setSelectedRowObject,
+      setIsInserting,
+    ]
   );
 
   // Handle when user updates the filter
@@ -332,8 +347,9 @@ export const DatabaseWorkerProvider = ({
       } else if (type === "last") {
         setOffset(maxSize - limit);
       }
+      setSelectedRowObject(null);
     },
-    [maxSize, limit, setOffset]
+    [maxSize, limit, setOffset, setSelectedRowObject]
   );
 
   // Handle when user exports the data
