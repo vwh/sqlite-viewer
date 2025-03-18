@@ -2,13 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
     <link rel="manifest" href="site.webmanifest" />
     <meta name="msapplication-TileColor" content="#0E0E10" />
     <meta name="theme-color" content="#18181B" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://sqlite3.online/" />
-    <title>SQLite Viewer</title>
+    <title>SQLite Online</title>
     <!-- Favicon and icons -->
     <link rel="icon" href="./icons/favicon.ico" type="image/x-icon" />
     <link
@@ -43,18 +46,18 @@
     <!-- Meta Data -->
     <meta
       name="description"
-      content="View and query SQLite databases in the browser"
+      content="Lightweight, secure, and WebAssembly-powered SQLite viewer and editor—works entirely in your browser."
     />
     <meta
       name="keywords"
-      content="SQLite, Database, Viewer, Browser, Web App, SQL, Database Management, SQLite Browser, SQLite Online, SQLite Query, Web Database, Online Database Viewer, Data Analysis, SQLite Editor, SQLite Management"
+      content="SQLite Viewer, SQLite Editor, WebAssembly SQLite, In-Browser SQLite, Client-Side SQLite, Secure SQLite Editor, Lightweight SQLite Tool, SQL.js, React, Offline SQLite Editor, Browser-Based Database Tool, Fast SQLite Editor, WASM-Powered SQLite, SQLite Management"
     />
     <meta property="og:title" content="SQLite Viewer" />
     <meta property="og:site_name" content="SQLite Viewer" />
     <meta property="og:locale" content="en_US" />
     <meta
       property="og:description"
-      content="View and query SQLite databases in the browser"
+      content="Lightweight, secure, and WebAssembly-powered SQLite viewer and editor—works entirely in your browser."
     />
     <meta property="og:image" content="https://sqlite3.online/preview.png" />
     <meta property="og:url" content="https://sqlite3.online/" />
@@ -63,7 +66,7 @@
     <meta name="twitter:title" content="SQLite Viewer" />
     <meta
       name="twitter:description"
-      content="View and query SQLite databases in the browser"
+      content="Lightweight, secure, and WebAssembly-powered SQLite viewer and editor—works entirely in your browser."
     />
     <meta name="twitter:image" content="https://sqlite3.online/preview.png" />
     <meta name="author" content="vwh" />
@@ -93,47 +96,38 @@
         font-size: 2rem;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CJW3O9dS.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/attr-accept-DSH7EMVE.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-D3M8TY1j.js">
-    <link rel="modulepreload" crossorigin href="/assets/scheduler-CzFDRTuY.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-dom-BmarRHPO.js">
-    <link rel="modulepreload" crossorigin href="/assets/use-sync-external-store-VneTDiFH.js">
-    <link rel="modulepreload" crossorigin href="/assets/zustand-CtzhvQNp.js">
-    <link rel="modulepreload" crossorigin href="/assets/sql.js-CuHZ-FvZ.js">
-    <link rel="modulepreload" crossorigin href="/assets/file-saver-F0T0zIVO.js">
-    <link rel="modulepreload" crossorigin href="/assets/nearley-BSN8dlhD.js">
-    <link rel="modulepreload" crossorigin href="/assets/sql-formatter-DiuGdjS8.js">
+    <script type="module" crossorigin src="/assets/index-BDdZIzEN.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-Cbey2zwD.js">
+    <link rel="modulepreload" crossorigin href="/assets/scheduler-BNqrtbQi.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-dom-Bahpv_eZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/next-themes-BnU968HI.js">
+    <link rel="modulepreload" crossorigin href="/assets/sonner-BNb8UgIc.js">
+    <link rel="modulepreload" crossorigin href="/assets/zustand-DQwkjSPQ.js">
     <link rel="modulepreload" crossorigin href="/assets/aria-hidden-DQ5UC2Eg.js">
-    <link rel="modulepreload" crossorigin href="/assets/tslib-eMSY344_.js">
+    <link rel="modulepreload" crossorigin href="/assets/tslib-CDuPK5Eb.js">
     <link rel="modulepreload" crossorigin href="/assets/get-nonce-C-Z93AgS.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-style-singleton-CwOSn0xs.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-remove-scroll-bar-ltbdJw3o.js">
-    <link rel="modulepreload" crossorigin href="/assets/use-sidecar-D5kLLNSR.js">
-    <link rel="modulepreload" crossorigin href="/assets/use-callback-ref-D6xm71oD.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-remove-scroll-B-0e9Fff.js">
-    <link rel="modulepreload" crossorigin href="/assets/@floating-ui-CKQJRgKf.js">
-    <link rel="modulepreload" crossorigin href="/assets/@radix-ui-DaOuI3kJ.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-style-singleton-CUIzRnLb.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-remove-scroll-bar-D6sioXcm.js">
+    <link rel="modulepreload" crossorigin href="/assets/use-sidecar-2cM-wPzK.js">
+    <link rel="modulepreload" crossorigin href="/assets/use-callback-ref-D81gfTH3.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-remove-scroll-Chf2DkHF.js">
+    <link rel="modulepreload" crossorigin href="/assets/@floating-ui-syThYpGD.js">
+    <link rel="modulepreload" crossorigin href="/assets/@radix-ui-DQJwUSQx.js">
     <link rel="modulepreload" crossorigin href="/assets/clsx-B-dksMZM.js">
-    <link rel="modulepreload" crossorigin href="/assets/tailwind-merge-D696Ktp4.js">
-    <link rel="modulepreload" crossorigin href="/assets/lucide-react-C-w2aG6B.js">
+    <link rel="modulepreload" crossorigin href="/assets/tailwind-merge-AdmevC4f.js">
     <link rel="modulepreload" crossorigin href="/assets/class-variance-authority-Dp3B9jqt.js">
-    <link rel="modulepreload" crossorigin href="/assets/sonner-VQOJD9pj.js">
-    <link rel="modulepreload" crossorigin href="/assets/vaul-ciw04mCd.js">
-    <link rel="modulepreload" crossorigin href="/assets/date-fns-BAPXOope.js">
-    <link rel="modulepreload" crossorigin href="/assets/@lezer-C0lltmwB.js">
+    <link rel="modulepreload" crossorigin href="/assets/lucide-react-DULzjv9a.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-resizable-panels-C-QGln0U.js">
+    <link rel="modulepreload" crossorigin href="/assets/@babel-Cv5OCJ0e.js">
+    <link rel="modulepreload" crossorigin href="/assets/@lezer-E7PapBHi.js">
     <link rel="modulepreload" crossorigin href="/assets/crelt-C8TCjufn.js">
     <link rel="modulepreload" crossorigin href="/assets/@marijn-DXwl3gUT.js">
     <link rel="modulepreload" crossorigin href="/assets/style-mod-Bc2inJdb.js">
     <link rel="modulepreload" crossorigin href="/assets/w3c-keyname-Vcq4gwWv.js">
-    <link rel="modulepreload" crossorigin href="/assets/@codemirror-C4AsP_wl.js">
-    <link rel="modulepreload" crossorigin href="/assets/@babel-BjXSgPXB.js">
-    <link rel="modulepreload" crossorigin href="/assets/@uiw-D8zmkeY9.js">
-    <link rel="modulepreload" crossorigin href="/assets/prop-types-C70NJO-m.js">
-    <link rel="modulepreload" crossorigin href="/assets/file-selector-Bf0AE8ON.js">
-    <link rel="modulepreload" crossorigin href="/assets/react-dropzone-B3KUhKXm.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-D3MCn9Ox.css">
-  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+    <link rel="modulepreload" crossorigin href="/assets/@codemirror-BjKk2IdN.js">
+    <link rel="modulepreload" crossorigin href="/assets/@uiw-HyYrqtSm.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-BaYea7AE.css">
+  </head>
   <body>
     <div id="root"></div>
     <noscript>
