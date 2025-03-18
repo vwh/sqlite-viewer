@@ -10,7 +10,6 @@ export function ModeToggle() {
   return (
     <Button
       variant="outline"
-      size="icon"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label={
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"

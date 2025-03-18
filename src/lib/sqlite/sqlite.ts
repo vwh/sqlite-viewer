@@ -115,7 +115,6 @@ export default class Sqlite {
 
   // Get the schema of the database
   // This includes tables, indexes, and foreign keys
-  // TODO: Add foreign keys
   private getDatabaseSchema() {
     // Reset the schema
     this.tablesSchema = {};
