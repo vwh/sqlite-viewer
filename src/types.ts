@@ -1,23 +1,28 @@
-import type { SqlValue } from "sql.js";
+// ---- Schema ----
 
-export interface TableInfo {
-  [key: string]: {
-    [columnName: string]: {
-      type: string;
-      isPrimaryKey: boolean;
-      isForeignKey: boolean;
-      nullable: boolean;
-    };
-  };
-}
+export type TableSchema = Record<
+  string, // Table name
+  {
+    schema: TableSchemaRow[];
+  }
+>;
 
-export interface TableRow {
-  [key: string]: SqlValue;
-}
+export type TableSchemaRow = {
+  name: string; // Column name
+  cid: number;
+  type: string | null;
+  dflt_value: string;
+  IsNullable: boolean;
+  isPrimaryKey: boolean;
+  isForeignKey: boolean;
+};
 
-export interface ColumnSchema {
-  isPrimaryKey?: boolean;
-  isForeignKey?: boolean;
-  type?: string;
-  nullable?: boolean;
-}
+export type IndexSchema = {
+  name: string;
+  tableName: string;
+};
+
+// ---- State ----
+
+export type Sorters = Record<string, "asc" | "desc">;
+export type Filters = Record<string, string>;

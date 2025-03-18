@@ -1,26 +1,47 @@
-import * as React from "react";
+import type * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import type { VariantProps } from "class-variance-authority";
-import { buttonVariants } from "@/components/ui/buttonVariants";
 import { cn } from "@/lib/utils";
+import buttonVariants from "./buttonVariants";
+import { memo, useCallback, useMemo } from "react";
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-}
+type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  };
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+const ButtonComponent = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  onClick,
+  ...props
+}: ButtonProps) => {
+  const Comp = asChild ? Slot : "button";
 
-Button.displayName = "Button";
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (onClick) {
+        onClick(event);
+      }
+    },
+    [onClick]
+  );
+
+  const computedClassName = useMemo(
+    () => cn(buttonVariants({ variant, size, className })),
+    [variant, size, className]
+  );
+
+  return (
+    <Comp
+      data-slot="button"
+      className={computedClassName}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+};
+
+export const Button = memo(ButtonComponent);
