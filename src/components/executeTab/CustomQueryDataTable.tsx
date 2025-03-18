@@ -1,0 +1,81 @@
+import { useMemo } from "react";
+import { useDatabaseStore } from "@/store/useDatabaseStore";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Span } from "@/components/ui/span";
+
+const CustomQueryDataTable = () => {
+  const { customQueryObject } = useDatabaseStore();
+
+  return useMemo(
+    () => (
+      <>
+        {customQueryObject ? (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-primary/5">
+                {customQueryObject.columns.map((column) => (
+                  <TableHead key={column} className="p-1 text-xs">
+                    <div className="flex items-center gap-1">
+                      <Span className="capitalize font-medium text-foreground">
+                        {column}
+                      </Span>
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {customQueryObject.data && customQueryObject.data.length > 0 ? (
+                customQueryObject.data.map((row, i) => (
+                  <TableRow key={i} className="hover:bg-primary/5 text-xs">
+                    {row.map((value, j) => (
+                      <TableCell key={j} className="p-2">
+                        {value ? (
+                          <Span>{value}</Span>
+                        ) : (
+                          <span className="text-muted-foreground italic">
+                            NULL
+                          </span>
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={customQueryObject?.columns?.length || 1}
+                    className="h-32 text-center"
+                  >
+                    <div className="flex flex-col items-center justify-center gap-1 h-full">
+                      <h3 className="text-md font-medium">No Data To Show</h3>
+                      <p className="text-sm">
+                        Seems like there is no data to display
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-1 h-full">
+            <h3 className="text-md font-medium">No Data To Show</h3>
+            <p className="text-sm">Execute a query to view data</p>
+          </div>
+        )}
+      </>
+    ),
+    [customQueryObject]
+  );
+};
+
+export default CustomQueryDataTable;

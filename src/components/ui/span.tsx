@@ -1,6 +1,6 @@
 import { memo, type ReactNode } from "react";
 
-const Span = memo(function Span({
+export const Span = memo(function Span({
   children,
   className,
 }: {
@@ -17,5 +17,3 @@ const Span = memo(function Span({
     </span>
   );
 });
-
-export default Span;

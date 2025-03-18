@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Span from "./Span";
+import { Span } from "@/components/ui/span";
 
 const TableSelector = () => {
   const { tablesSchema, currentTable } = useDatabaseStore();

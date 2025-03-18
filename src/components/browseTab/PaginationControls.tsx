@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
+import { usePanelManager } from "@/providers/PanelProvider";
 
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 import {
   ChevronFirstIcon,
@@ -12,7 +13,6 @@ import {
   FolderOutputIcon,
   PlusIcon,
 } from "lucide-react";
-import { usePanelManager } from "@/providers/PanelProvider";
 
 const PaginationControls = () => {
   const { handlePageChange, handleExport } = useDatabaseWorker();

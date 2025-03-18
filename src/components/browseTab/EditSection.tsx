@@ -5,7 +5,7 @@ import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Span from "@/components/Span";
+import { Span } from "@/components/ui/span";
 import ColumnIcon from "@/components/table/ColumnIcon";
 
 import {
@@ -16,9 +16,7 @@ import {
 } from "lucide-react";
 const EditSection = () => {
   const { handleEditSubmit } = useDatabaseWorker();
-
   const { selectedRowObject, isInserting, goBackToData } = usePanelManager();
-
   const { tablesSchema, currentTable, columns } = useDatabaseStore();
 
   const [editValues, setEditValues] = useState<string[]>([]);

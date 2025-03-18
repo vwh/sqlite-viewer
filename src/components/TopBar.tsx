@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { ModeToggle } from "./theme/modeToggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ModeToggle } from "@/components/theme/ModeToggle";
 
 import { DatabaseIcon, SaveIcon } from "lucide-react";
 

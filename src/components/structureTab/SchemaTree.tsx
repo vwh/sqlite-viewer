@@ -1,7 +1,15 @@
 import { memo, useMemo, useState } from "react";
 import { useSchemaStore } from "@/store/useSchemaStore";
+import { useDatabaseStore } from "@/store/useDatabaseStore";
+
+import { cn } from "@/lib/utils";
 
 import type { TableSchema, IndexSchema, TableSchemaRow } from "@/types";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
+import ColumnIcon from "@/components/table/ColumnIcon";
 
 import {
   ChevronRightIcon,
@@ -13,13 +21,6 @@ import {
   SearchIcon,
   DatabaseIcon,
 } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import ColumnIcon from "@/components/table/ColumnIcon";
-import Span from "./Span";
-import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 const TableItem = memo(
   ({ name, table }: { name: string; table: { schema: TableSchemaRow[] } }) => {
@@ -246,8 +247,7 @@ const SchemaSearch = memo(
   }
 );
 
-// Main DBSchemaTree component
-const DBSchemaTree = () => {
+const SchemaTree = () => {
   const [filter, setFilter] = useState("");
   const { tablesSchema, indexesSchema } = useDatabaseStore();
 
@@ -305,4 +305,4 @@ const DBSchemaTree = () => {
   );
 };
 
-export default DBSchemaTree;
+export default SchemaTree;

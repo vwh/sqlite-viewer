@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 
 interface FilterInputProps {
   column: string;

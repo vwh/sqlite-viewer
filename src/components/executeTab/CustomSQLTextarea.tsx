@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { useTheme } from "./theme/themeProvider";
+import { useDatabaseStore } from "@/store/useDatabaseStore";
+import { useTheme } from "@/providers/ThemeProvider";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { darcula } from "@uiw/codemirror-theme-darcula";
@@ -8,8 +9,6 @@ import {
   autocompletion,
   type CompletionContext,
 } from "@codemirror/autocomplete";
-
-import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 // SQLlite Keywords used for autocompletion
 const SQLITE_KEYWORDS = [
