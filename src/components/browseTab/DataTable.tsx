@@ -26,14 +26,6 @@ const DataTable = () => {
   const { handleQueryFilter } = useDatabaseWorker();
   const { handleRowClick, selectedRowObject } = usePanelManager();
 
-  // Memoize filter handlers to prevent recreating functions on each render
-  const getFilterHandler = useCallback(
-    (column: string) => (value: string) => {
-      handleQueryFilter(column, value);
-    },
-    [handleQueryFilter]
-  );
-
   const emptyDataContent = useMemo(
     () => (
       <div className="flex h-full flex-col items-center justify-center gap-1">
@@ -66,17 +58,15 @@ const DataTable = () => {
   );
 
   const memoizedFilterInput = useMemo(() => {
-    if (!columns) return [];
-
-    return columns.map((column) => (
+    return (columns || []).map((column) => (
       <FilterInput
         key={column}
         column={column}
         value={filters?.[column] || ""}
-        onChange={getFilterHandler(column)}
+        onChange={handleQueryFilter}
       />
     ));
-  }, [columns, filters, getFilterHandler]);
+  }, [columns, filters, handleQueryFilter]);
 
   return useMemo(
     () => (
