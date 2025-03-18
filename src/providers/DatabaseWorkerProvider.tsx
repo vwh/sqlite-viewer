@@ -65,9 +65,13 @@ export const DatabaseWorkerProvider = ({
     customQuery
   } = useDatabaseStore();
 
-  const { resetEditSection } = usePanelStore();
-  const { selectedRowObject, setSelectedRowObject, setIsInserting } =
-    usePanelManager();
+  const { resetEditSection, isMobile } = usePanelStore();
+  const {
+    selectedRowObject,
+    setSelectedRowObject,
+    setIsInserting,
+    goBackToData
+  } = usePanelManager();
 
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
 
@@ -291,6 +295,9 @@ export const DatabaseWorkerProvider = ({
       setSelectedRowObject(null);
       setIsInserting(false);
       setCurrentTable(selectedTable);
+      if (isMobile) {
+        goBackToData();
+      }
     },
     [
       setFilters,
@@ -299,7 +306,9 @@ export const DatabaseWorkerProvider = ({
       setMaxSize,
       setCurrentTable,
       setSelectedRowObject,
-      setIsInserting
+      setIsInserting,
+      isMobile,
+      goBackToData
     ]
   );
 
