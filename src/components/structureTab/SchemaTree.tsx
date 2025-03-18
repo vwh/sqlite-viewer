@@ -22,6 +22,34 @@ import {
   DatabaseIcon,
 } from "lucide-react";
 
+const TableColumn = memo(
+  ({ columnSchema }: { columnSchema: TableSchemaRow }) => {
+    return (
+      <div className="flex items-center gap-1 justify-between">
+        <div className="flex items-center">
+          <ColumnIcon columnSchema={columnSchema} />
+          <span className="ml-1 text-xs text-primary/60">
+            {columnSchema.name}
+          </span>
+        </div>
+        <Span className="text-xs text-primary/60 whitespace-nowrap">
+          {columnSchema.type}
+        </Span>
+      </div>
+    );
+  }
+);
+
+const ToggleChevron = memo(
+  ({ expanded, size = 4 }: { expanded: boolean; size?: number }) => {
+    return expanded ? (
+      <ChevronDownIcon className={`h-${size} w-${size}`} />
+    ) : (
+      <ChevronRightIcon className={`h-${size} w-${size}`} />
+    );
+  }
+);
+
 const TableItem = memo(
   ({ name, table }: { name: string; table: { schema: TableSchemaRow[] } }) => {
     const { expandedTables, toggleTable } = useSchemaStore();
@@ -36,7 +64,7 @@ const TableItem = memo(
     };
 
     return (
-      <div>
+      <article>
         <div
           className={cn(
             "flex items-center py-1 cursor-pointer hover:ml-2 transition-all rounded px-1.5",
@@ -44,13 +72,10 @@ const TableItem = memo(
           )}
           onClick={handleToggle}
           onKeyDown={handleKeyDown}
+          aria-expanded={expanded}
         >
           <div className="flex items-center justify-center w-5 h-5">
-            {expanded ? (
-              <ChevronDownIcon className="h-4 w-4" />
-            ) : (
-              <ChevronRightIcon className="h-4 w-4" />
-            )}
+            <ToggleChevron expanded={expanded} />
           </div>
           <span className="capitalize flex gap-1 items-center">
             <span className="text-sm">{name}</span>
@@ -63,29 +88,57 @@ const TableItem = memo(
         {expanded && (
           <div className="border-l-2 border-primary/20 ml-4 pl-2 mt-1 space-y-0.5 flex flex-col gap-1 mb-2">
             {table.schema.map((columnSchema, idx) => (
-              <div
-                className="flex items-center gap-1 justify-between"
-                key={idx}
-              >
-                <div className="flex items-center">
-                  <ColumnIcon columnSchema={columnSchema} />
-                  <span className="ml-1 text-xs text-primary/60">
-                    {columnSchema.name}
-                  </span>
-                </div>
-                <Span className="text-xs text-primary/60 whitespace-nowrap">
-                  {columnSchema.type}
-                </Span>
-              </div>
+              <TableColumn key={idx} columnSchema={columnSchema} />
             ))}
           </div>
         )}
-      </div>
+      </article>
     );
   }
 );
 
-// Tables section with expandable header
+const SectionHeader = memo(
+  ({
+    title,
+    expanded,
+    icon,
+    onToggle,
+    children,
+  }: {
+    title: string;
+    expanded: boolean;
+    icon: React.ReactNode;
+    onToggle: () => void;
+    children?: React.ReactNode;
+  }) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onToggle();
+      }
+    };
+
+    return (
+      <header
+        className={cn(
+          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/5 bg-primary/7 transition-colors",
+          !expanded && "mb-0"
+        )}
+        onClick={onToggle}
+        onKeyDown={handleKeyDown}
+        aria-expanded={expanded}
+      >
+        <div className="flex items-center justify-center w-5 h-5">
+          <ToggleChevron expanded={expanded} size={5} />
+        </div>
+        {icon}
+        <span>{title}</span>
+        {children}
+      </header>
+    );
+  }
+);
+
 const TablesSection = memo(
   ({ tablesSchema }: { tablesSchema: TableSchema }) => {
     const {
@@ -95,14 +148,6 @@ const TablesSection = memo(
       collapseAllTables,
     } = useSchemaStore();
     const [isExpanded, setIsExpanded] = useState(false);
-
-    const handleToggleSection = () => toggleTableSection();
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        toggleTableSection();
-      }
-    };
 
     const handleExpandAll = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -116,50 +161,42 @@ const TablesSection = memo(
       setIsExpanded(false);
     };
 
-    return (
-      <div>
-        <div
-          className={cn(
-            "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/5 bg-primary/7 transition-colors",
-            !expandedTableSection && "mb-0"
-          )}
-          onClick={handleToggleSection}
-          onKeyDown={handleKeyDown}
-        >
-          <div className="flex items-center justify-center w-5 h-5">
-            {expandedTableSection ? (
-              <ChevronDownIcon className="h-5 w-5" />
-            ) : (
-              <ChevronRightIcon className="h-5 w-5" />
-            )}
-          </div>
-          <DatabaseIcon className="h-4 w-4 mr-2" />
-          <span>Tables</span>
+    const expandControls = expandedTableSection && (
+      <div className="ml-auto flex">
+        {isExpanded ? (
+          <Button
+            className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
+            variant="ghost"
+            size="icon"
+            onClick={handleCollapseAll}
+            aria-label="Collapse all tables"
+          >
+            <ChevronsDownUpIcon className="w-4 h-4" />
+          </Button>
+        ) : (
+          <Button
+            className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
+            variant="ghost"
+            size="icon"
+            onClick={handleExpandAll}
+            aria-label="Expand all tables"
+          >
+            <ChevronsUpDownIcon className="w-4 h-4" />
+          </Button>
+        )}
+      </div>
+    );
 
-          {expandedTableSection && (
-            <div className="ml-auto flex">
-              {isExpanded ? (
-                <Button
-                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCollapseAll}
-                >
-                  <ChevronsDownUpIcon className="w-4 h-4" />
-                </Button>
-              ) : (
-                <Button
-                  className="text-xs px-2 py-0.5 h-7 text-primary hover:bg-primary/5 rounded transition-colors"
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleExpandAll}
-                >
-                  <ChevronsUpDownIcon className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+    return (
+      <section>
+        <SectionHeader
+          title="Tables"
+          expanded={expandedTableSection}
+          icon={<DatabaseIcon className="h-4 w-4 mr-2" />}
+          onToggle={toggleTableSection}
+        >
+          {expandControls}
+        </SectionHeader>
 
         {expandedTableSection && (
           <div className="pl-2 space-y-0.5 overflow-y-auto pr-1">
@@ -168,70 +205,51 @@ const TablesSection = memo(
             ))}
           </div>
         )}
-      </div>
+      </section>
     );
   }
 );
 
-// Indexes section with expandable header
-const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
-  const { expandedIndexSection, toggleIndexSection } = useSchemaStore();
-  const handleToggleSection = () => toggleIndexSection();
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggleIndexSection();
-    }
-  };
-
+// Index item component
+const IndexItem = memo(({ index }: { index: IndexSchema }) => {
   return (
-    <div>
-      <div
-        className={cn(
-          "flex items-center py-2 px-2 cursor-pointer hover:bg-primary/5 bg-primary/7 transition-colors",
-          !expandedIndexSection && "mb-0"
-        )}
-        onClick={handleToggleSection}
-        onKeyDown={handleKeyDown}
-      >
-        <div className="flex items-center justify-center w-5 h-5">
-          {expandedIndexSection ? (
-            <ChevronDownIcon className="h-5 w-5" />
-          ) : (
-            <ChevronRightIcon className="h-5 w-5" />
-          )}
+    <article>
+      <div className="flex items-center py-1 cursor-pointer hover:ml-2 rounded px-1.5 transition-all">
+        <div className="flex gap-1 items-center justify-between w-full">
+          <span className="text-sm">{index.name}</span>
+          <Span className="text-xs text-primary/60 font-medium whitespace-nowrap">
+            {index.tableName}
+          </Span>
         </div>
-        <TagIcon className="h-4 w-4 mr-2" />
-        <span>Indexes</span>
       </div>
-
-      {expandedIndexSection && (
-        <div className="pl-2 space-y-0.5 overflow-y-auto pr-1">
-          {indexes.map((index, idx) => {
-            return (
-              <div key={idx}>
-                <div
-                  className={cn(
-                    "flex items-center py-1 cursor-pointer hover:ml-2 rounded px-1.5 transition-all"
-                  )}
-                >
-                  <div className="flex gap-1 items-center justify-between w-full">
-                    <span className="text-sm">{index.name}</span>
-                    <Span className="text-xs text-primary/60 font-medium whitespace-nowrap">
-                      {index.tableName}
-                    </Span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    </article>
   );
 });
 
-// Search component for filtering tables/indexes
+// Indexes section with expandable header
+const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
+  const { expandedIndexSection, toggleIndexSection } = useSchemaStore();
+
+  return (
+    <section>
+      <SectionHeader
+        title="Indexes"
+        expanded={expandedIndexSection}
+        icon={<TagIcon className="h-4 w-4 mr-2" />}
+        onToggle={toggleIndexSection}
+      />
+
+      {expandedIndexSection && (
+        <div className="pl-2 space-y-0.5 overflow-y-auto pr-1">
+          {indexes.map((index, idx) => (
+            <IndexItem key={idx} index={index} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+});
+
 const SchemaSearch = memo(
   ({ onFilterChange }: { onFilterChange: (value: string) => void }) => {
     return (
@@ -241,8 +259,30 @@ const SchemaSearch = memo(
           placeholder="Search tables and indexes"
           className="pl-8 h-8 text-sm w-full text-[0.8rem]! border-primary/20"
           onChange={(e) => onFilterChange(e.target.value)}
+          aria-label="Search tables and indexes"
         />
       </div>
+    );
+  }
+);
+
+const SchemaFooter = memo(
+  ({ tableCount, indexCount }: { tableCount: number; indexCount: number }) => {
+    return (
+      <footer className="p-2 bg-primary/5 border-t flex justify-between items-center text-xs text-primary/60 gap-2">
+        <div className="flex items-center">
+          <TableIcon className="h-3 w-3 mr-1 text-wrap" />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {tableCount} Tables
+          </span>
+        </div>
+        <div className="flex items-center">
+          <TagIcon className="h-3 w-3 mr-1" />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+            {indexCount} Indexes
+          </span>
+        </div>
+      </footer>
     );
   }
 );
@@ -277,31 +317,21 @@ const SchemaTree = () => {
   }, [indexesSchema, filter]);
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden">
+    <main className="w-full h-full flex flex-col overflow-hidden">
       <div className="p-2 bg-primary/5 border-b">
         <SchemaSearch onFilterChange={setFilter} />
       </div>
-      <div className="flex-1 overflow-auto ">
+      <nav className="flex-1 overflow-auto">
         <TablesSection tablesSchema={filteredTables} />
         {indexesSchema.length > 0 && (
           <IndexesSection indexes={filteredIndexes} />
         )}
-      </div>
-      <div className="p-2 bg-primary/5 border-t flex justify-between items-center text-xs text-primary/60 gap-2">
-        <div className="flex items-center">
-          <TableIcon className="h-3 w-3 mr-1 text-wrap" />
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {Object.keys(tablesSchema).length} Tables
-          </span>
-        </div>
-        <div className="flex items-center">
-          <TagIcon className="h-3 w-3 mr-1" />
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {indexesSchema.length} Indexes
-          </span>
-        </div>
-      </div>
-    </div>
+      </nav>
+      <SchemaFooter
+        tableCount={Object.keys(tablesSchema).length}
+        indexCount={indexesSchema.length}
+      />
+    </main>
   );
 };
 

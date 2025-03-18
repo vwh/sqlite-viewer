@@ -1,23 +1,21 @@
+// Store file: useSchemaStore.ts
 import { create } from "zustand";
 import type { TableSchema } from "@/types";
 
 interface SchemaState {
   expandedTables: string[];
   expandedTableSection: boolean;
+  expandedIndexSection: boolean;
   toggleTable: (tableName: string) => void;
   toggleTableSection: () => void;
+  toggleIndexSection: () => void;
   expandAllTables: (tableSchema: TableSchema) => void;
   collapseAllTables: () => void;
-
-  expandedIndexSection: boolean;
-  toggleIndexSection: () => void;
-
   resetState: () => void;
 }
 
 export const useSchemaStore = create<SchemaState>((set) => ({
   expandedTables: [],
-  expandedIndexes: [],
   expandedTableSection: true, // Tables section expanded by default
   expandedIndexSection: true, // Indexes section expanded by default
 
