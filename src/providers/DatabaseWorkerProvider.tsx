@@ -4,7 +4,7 @@ import {
   useEffect,
   useRef,
   useCallback,
-  useState,
+  useState
 } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { usePanelStore } from "@/store/usePanelStore";
@@ -39,7 +39,7 @@ interface DatabaseWorkerProviderProps {
 }
 
 export const DatabaseWorkerProvider = ({
-  children,
+  children
 }: DatabaseWorkerProviderProps) => {
   const workerRef = useRef<Worker | null>(null);
 
@@ -65,7 +65,7 @@ export const DatabaseWorkerProvider = ({
     setLimit,
     resetPagination,
     setCustomQueryObject,
-    customQuery,
+    customQuery
   } = useDatabaseStore();
 
   const { resetEditSection } = usePanelStore();
@@ -117,7 +117,7 @@ export const DatabaseWorkerProvider = ({
         if (data.length !== 0) {
           setCustomQueryObject({
             data: payload.results?.[0]?.values || [],
-            columns: payload.results?.[0]?.columns || [],
+            columns: payload.results?.[0]?.columns || []
           });
         } else {
           setCustomQueryObject(null);
@@ -144,7 +144,7 @@ export const DatabaseWorkerProvider = ({
       // When the database is downloaded
       else if (action === "downloadComplete") {
         const blob = new Blob([payload.bytes], {
-          type: "application/octet-stream",
+          type: "application/octet-stream"
         });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -153,7 +153,7 @@ export const DatabaseWorkerProvider = ({
         link.click();
       } else if (action === "exportComplete") {
         const blob = new Blob([payload.results], {
-          type: "text/csv",
+          type: "text/csv"
         });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -197,7 +197,7 @@ export const DatabaseWorkerProvider = ({
     setSorters,
     resetEditSection,
     setSelectedRowObject,
-    setIsInserting,
+    setIsInserting
   ]);
 
   // When fetching data, ask the worker for new data
@@ -246,7 +246,7 @@ export const DatabaseWorkerProvider = ({
 
       workerRef.current?.postMessage({
         action: "getTableData",
-        payload: { currentTable, filters, sorters, limit, offset },
+        payload: { currentTable, filters, sorters, limit, offset }
       });
     }, 100);
 
@@ -258,7 +258,7 @@ export const DatabaseWorkerProvider = ({
     isFirstTimeLoading,
     offset,
     setLimit,
-    setIsDataLoading,
+    setIsDataLoading
   ]);
 
   // Handle file upload by sending the file to the worker
@@ -271,7 +271,7 @@ export const DatabaseWorkerProvider = ({
         const arrayBuffer = e.target?.result as ArrayBuffer;
         workerRef.current?.postMessage({
           action: "openFile",
-          payload: { file: arrayBuffer },
+          payload: { file: arrayBuffer }
         });
       };
       reader.readAsArrayBuffer(file);
@@ -302,7 +302,7 @@ export const DatabaseWorkerProvider = ({
       setMaxSize,
       setCurrentTable,
       setSelectedRowObject,
-      setIsInserting,
+      setIsInserting
     ]
   );
 
@@ -323,7 +323,7 @@ export const DatabaseWorkerProvider = ({
       const currentSorters = useDatabaseStore.getState().sorters || {};
       const newSorters = {
         ...currentSorters,
-        [column]: currentSorters[column] === "asc" ? "desc" : "asc",
+        [column]: currentSorters[column] === "asc" ? "desc" : "asc"
       } as Sorters;
       setSorters(newSorters);
     },
@@ -362,8 +362,8 @@ export const DatabaseWorkerProvider = ({
           limit,
           filters,
           sorters,
-          exportType: exportType,
-        },
+          exportType: exportType
+        }
       });
     },
     [currentTable, filters, sorters, offset, limit]
@@ -392,8 +392,8 @@ export const DatabaseWorkerProvider = ({
           filters,
           sorters,
           limit,
-          offset,
-        },
+          offset
+        }
       });
     }
   }, [
@@ -403,7 +403,7 @@ export const DatabaseWorkerProvider = ({
     limit,
     offset,
     setIsDataLoading,
-    customQuery,
+    customQuery
   ]);
 
   // Handle when user submits the edit form
@@ -416,8 +416,8 @@ export const DatabaseWorkerProvider = ({
           table: currentTable,
           columns: useDatabaseStore.getState().columns,
           values: editValues,
-          whereValues: selectedRowObject?.data,
-        },
+          whereValues: selectedRowObject?.data
+        }
       });
       // Refresh the data
       workerRef.current?.postMessage({
@@ -427,8 +427,8 @@ export const DatabaseWorkerProvider = ({
           offset,
           limit,
           filters,
-          sorters,
-        },
+          sorters
+        }
       });
     },
     [
@@ -438,7 +438,7 @@ export const DatabaseWorkerProvider = ({
       offset,
       limit,
       setIsDataLoading,
-      selectedRowObject,
+      selectedRowObject
     ]
   );
 
@@ -452,7 +452,7 @@ export const DatabaseWorkerProvider = ({
     handlePageChange,
     handleExport,
     handleQueryExecute,
-    handleEditSubmit,
+    handleEditSubmit
   };
 
   return (

@@ -7,7 +7,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { Span } from "@/components/ui/span";
 
@@ -21,7 +21,7 @@ const TableSelector = () => {
         onValueChange={handleTableChange}
         value={currentTable || undefined}
       >
-        <SelectTrigger className="w-30 sm:w-48 h-8 text-sm border border-primary/20">
+        <SelectTrigger className="border-primary/20 h-8 w-30 border text-sm sm:w-48">
           <SelectValue placeholder="Select Table" />
         </SelectTrigger>
         <SelectContent>

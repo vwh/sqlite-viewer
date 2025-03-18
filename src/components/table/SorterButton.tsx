@@ -5,7 +5,7 @@ import { useDatabaseStore } from "@/store/useDatabaseStore";
 import {
   ArrowDownNarrowWideIcon,
   ArrowUpDownIcon,
-  ArrowUpNarrowWideIcon,
+  ArrowUpNarrowWideIcon
 } from "lucide-react";
 
 const MemoizedArrowUpDownIcon = memo(ArrowUpDownIcon);

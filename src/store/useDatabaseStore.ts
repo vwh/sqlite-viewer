@@ -88,5 +88,5 @@ export const useDatabaseStore = create<DatabaseState>((set) => ({
   ) => set({ customQueryObject }),
 
   resetPagination: () => set({ offset: 0 }),
-  resetFiltersAndSorters: () => set({ filters: null, sorters: null }),
+  resetFiltersAndSorters: () => set({ filters: null, sorters: null })
 }));

@@ -7,7 +7,7 @@ import { darcula } from "@uiw/codemirror-theme-darcula";
 import { sql, SQLite } from "@codemirror/lang-sql";
 import {
   autocompletion,
-  type CompletionContext,
+  type CompletionContext
 } from "@codemirror/autocomplete";
 
 // SQLlite Keywords used for autocompletion
@@ -135,7 +135,7 @@ const SQLITE_KEYWORDS = [
   "WHEN",
   "WHERE",
   "WITH",
-  "WITHOUT",
+  "WITHOUT"
 ];
 
 // SQLite functions used for autocompletion
@@ -162,7 +162,7 @@ const BUILT_IN_FUNCTIONS = [
   "SQRT",
   "TAN",
   "TRIM",
-  "UPPER",
+  "UPPER"
 ];
 
 export default function CustomSQLTextarea() {
@@ -182,11 +182,11 @@ export default function CustomSQLTextarea() {
     () => [
       ...SQLITE_KEYWORDS.map((keyword) => ({
         label: keyword,
-        type: "keyword",
+        type: "keyword"
       })),
       ...BUILT_IN_FUNCTIONS.map((fn) => ({ label: fn, type: "function" })),
       ...tableNames.map((table) => ({ label: table, type: "table" })),
-      ...columnNames.map((column) => ({ label: column, type: "column" })),
+      ...columnNames.map((column) => ({ label: column, type: "column" }))
     ],
     [tableNames, columnNames]
   );
@@ -199,7 +199,7 @@ export default function CustomSQLTextarea() {
       return {
         from: word.from,
         to: word.to,
-        options: completionOptions,
+        options: completionOptions
       };
     },
     [completionOptions]
@@ -223,7 +223,7 @@ export default function CustomSQLTextarea() {
       height="100%"
       extensions={extensions}
       onChange={handleChange}
-      className="w-full h-full"
+      className="h-full w-full"
       theme={theme === "dark" ? darcula : "light"}
     />
   );

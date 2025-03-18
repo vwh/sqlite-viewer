@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { Span } from "@/components/ui/span";
 
@@ -24,7 +24,7 @@ const CustomQueryDataTable = () => {
                 {customQueryObject.columns.map((column) => (
                   <TableHead key={column} className="p-1 text-xs">
                     <div className="flex items-center gap-1">
-                      <Span className="capitalize font-medium text-foreground">
+                      <Span className="text-foreground font-medium capitalize">
                         {column}
                       </Span>
                     </div>
@@ -55,7 +55,7 @@ const CustomQueryDataTable = () => {
                     colSpan={customQueryObject?.columns?.length || 1}
                     className="h-32 text-center"
                   >
-                    <div className="flex flex-col items-center justify-center gap-1 h-full">
+                    <div className="flex h-full flex-col items-center justify-center gap-1">
                       <h3 className="text-md font-medium">No Data To Show</h3>
                       <p className="text-sm">
                         Seems like there is no data to display
@@ -67,7 +67,7 @@ const CustomQueryDataTable = () => {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-1 h-full">
+          <div className="flex h-full flex-col items-center justify-center gap-1">
             <h3 className="text-md font-medium">No Data To Show</h3>
             <p className="text-sm">Execute a query to view data</p>
           </div>

@@ -23,33 +23,33 @@ export const useSchemaStore = create<SchemaState>((set) => ({
     set((state) => ({
       expandedTables: state.expandedTables.includes(tableName)
         ? state.expandedTables.filter((name) => name !== tableName)
-        : [...state.expandedTables, tableName],
+        : [...state.expandedTables, tableName]
     })),
 
   toggleTableSection: () =>
     set((state) => ({
-      expandedTableSection: !state.expandedTableSection,
+      expandedTableSection: !state.expandedTableSection
     })),
 
   toggleIndexSection: () =>
     set((state) => ({
-      expandedIndexSection: !state.expandedIndexSection,
+      expandedIndexSection: !state.expandedIndexSection
     })),
 
   expandAllTables: (tableSchema: TableSchema) =>
     set({
-      expandedTables: Object.keys(tableSchema),
+      expandedTables: Object.keys(tableSchema)
     }),
 
   collapseAllTables: () =>
     set({
-      expandedTables: [],
+      expandedTables: []
     }),
 
   resetState: () =>
     set({
       expandedTables: [],
       expandedTableSection: true,
-      expandedIndexSection: true,
-    }),
+      expandedIndexSection: true
+    })
 }));

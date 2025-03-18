@@ -6,7 +6,7 @@ import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
 import {
   ResizableHandle,
   ResizablePanel,
-  ResizablePanelGroup,
+  ResizablePanelGroup
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import CustomSQLTextarea from "./CustomSQLTextarea";
@@ -23,7 +23,7 @@ const ExecuteTab = () => {
     dataPanelSize,
     schemaPanelSize,
     setDataPanelSize,
-    setSchemaPanelSize,
+    setSchemaPanelSize
   } = usePanelStore();
 
   const { handleQueryExecute } = useDatabaseWorker();
@@ -38,8 +38,8 @@ const ExecuteTab = () => {
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-1 py-2 px-1 border-b ">
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-1 border-b px-1 py-2">
         <Button
           size="sm"
           variant="outline"
@@ -47,7 +47,7 @@ const ExecuteTab = () => {
           onClick={handleQueryExecute}
           title="Execute SQL"
         >
-          <PlayIcon className="h-3 w-3 mr-1" />
+          <PlayIcon className="mr-1 h-3 w-3" />
           Execute SQL
         </Button>
         <Button
@@ -56,18 +56,18 @@ const ExecuteTab = () => {
           className="text-xs"
           disabled={!customQueryObject?.data}
         >
-          <FolderOutputIcon className="h-3 w-3 mr-1" />
+          <FolderOutputIcon className="mr-1 h-3 w-3" />
           Export data
         </Button>
         {(isDataLoading || isDatabaseLoading) && (
-          <span className="text-xs ml-2 text-gray-500 flex items-center">
-            <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
+          <span className="ml-2 flex items-center text-xs text-gray-500">
+            <LoaderCircleIcon className="mr-1 h-3 w-3 animate-spin" />
             Loading data
           </span>
         )}
       </div>
 
-      <div className="overflow-hidden h-full">
+      <div className="h-full overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="h-full">
           <ResizablePanel
             defaultSize={dataPanelSize}
@@ -83,7 +83,7 @@ const ExecuteTab = () => {
               <ResizableHandle withHandle />
 
               <ResizablePanel defaultSize={75}>
-                <div className="flex flex-col h-full justify-between border">
+                <div className="flex h-full flex-col justify-between border">
                   <CustomQueryDataTable />
                 </div>
               </ResizablePanel>

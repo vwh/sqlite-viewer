@@ -120,8 +120,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
       payload: {
         tableSchema: instance.tablesSchema,
         indexSchema: instance.indexesSchema,
-        currentTable: instance.firstTable,
-      },
+        currentTable: instance.firstTable
+      }
     });
 
     return;
@@ -131,7 +131,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
   if (instance === null) {
     self.postMessage({
       action: "queryError",
-      payload: "Database not initialized",
+      payload: "Database not initialized"
     });
     return;
   }
@@ -146,8 +146,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
           payload: {
             tableSchema: instance.tablesSchema,
             indexSchema: instance.indexesSchema,
-            currentTable: instance.firstTable,
-          },
+            currentTable: instance.firstTable
+          }
         });
         break;
       }
@@ -164,7 +164,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         );
         self.postMessage({
           action: "queryComplete",
-          payload: { results, maxSize },
+          payload: { results, maxSize }
         });
         break;
       }
@@ -181,8 +181,8 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               action: "updateInstance",
               payload: {
                 tableSchema: instance.tablesSchema,
-                indexSchema: instance.indexesSchema,
-              },
+                indexSchema: instance.indexesSchema
+              }
             });
           } else {
             // Check if custom query returned results
@@ -190,7 +190,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
             if (results.length > 0) {
               self.postMessage({
                 action: "customQueryComplete",
-                payload: { results },
+                payload: { results }
               });
             }
             // If not return the table data
@@ -205,7 +205,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
               );
               self.postMessage({
                 action: "queryComplete",
-                payload: { results, maxSize },
+                payload: { results, maxSize }
               });
             }
           }
@@ -231,7 +231,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         );
         self.postMessage({
           action: "queryComplete",
-          payload: { results, maxSize },
+          payload: { results, maxSize }
         });
         break;
       }
@@ -240,7 +240,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         const bytes = instance.download();
         self.postMessage({
           action: "downloadComplete",
-          payload: { bytes },
+          payload: { bytes }
         });
         break;
       }
@@ -251,7 +251,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         instance.update(table, columns, values, whereValues);
         self.postMessage({
           action: "updateComplete",
-          payload: { type: "updated" },
+          payload: { type: "updated" }
         });
         break;
       }
@@ -261,7 +261,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         instance.delete(table, columns, values);
         self.postMessage({
           action: "updateComplete",
-          payload: { type: "deleted" },
+          payload: { type: "deleted" }
         });
         break;
       }
@@ -270,7 +270,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         const { table, columns, values } = payload as InsertEvent["payload"];
         instance.insert(table, columns, values);
         self.postMessage({
-          action: "insertComplete",
+          action: "insertComplete"
         });
         break;
       }
@@ -294,7 +294,7 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         }
         self.postMessage({
           action: "exportComplete",
-          payload: { results },
+          payload: { results }
         });
         break;
       }
@@ -309,16 +309,16 @@ self.onmessage = async (event: MessageEvent<WorkerEvent>) => {
         payload: {
           error: {
             message: error.message,
-            isCustomQueryError: error instanceof CustomQueryError,
-          },
-        },
+            isCustomQueryError: error instanceof CustomQueryError
+          }
+        }
       });
     } else {
       self.postMessage({
         action: "queryError",
         payload: {
-          error: { message: "Unknown error", isCustomQueryError: false },
-        },
+          error: { message: "Unknown error", isCustomQueryError: false }
+        }
       });
     }
   }

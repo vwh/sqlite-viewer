@@ -13,7 +13,7 @@ const DatabaseStructureTab = () => {
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* <div className="flex items-center gap-1 p-2">
         <Button size="sm" variant="outline" className="text-xs">
           Create Table

@@ -7,7 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
@@ -16,7 +16,7 @@ import {
   FilterXIcon,
   FolderOutputIcon,
   ListRestartIcon,
-  PlusIcon,
+  PlusIcon
 } from "lucide-react";
 
 const ActionsDropdown = () => {
@@ -37,12 +37,12 @@ const ActionsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs w-full justify-start"
+              className="h-8 w-full justify-start text-xs"
               onClick={() => setFilters(null)}
               disabled={filters == null}
               title="Clear applied filters"
             >
-              <FilterXIcon className="h-3 w-3 mr-1" />
+              <FilterXIcon className="mr-1 h-3 w-3" />
               Clear filters
             </Button>
           </DropdownMenuItem>
@@ -50,12 +50,12 @@ const ActionsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs w-full justify-start"
+              className="h-8 w-full justify-start text-xs"
               onClick={() => setSorters(null)}
               disabled={sorters == null}
               title="Reset sorting"
             >
-              <ListRestartIcon className="h-3 w-3 mr-1" />
+              <ListRestartIcon className="mr-1 h-3 w-3" />
               Reset sorting
             </Button>
           </DropdownMenuItem>
@@ -63,12 +63,12 @@ const ActionsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs w-full justify-start"
+              className="h-8 w-full justify-start text-xs"
               onClick={handleInsert}
               disabled={isInserting}
               title="Insert a new row"
             >
-              <PlusIcon className="h-3 w-3 mr-1" />
+              <PlusIcon className="mr-1 h-3 w-3" />
               Insert row
             </Button>
           </DropdownMenuItem>
@@ -76,11 +76,11 @@ const ActionsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs w-full justify-start"
+              className="h-8 w-full justify-start text-xs"
               onClick={() => handleExport("table")}
               title="Export the current table as CSV"
             >
-              <FolderOutputIcon className="h-3 w-3 mr-1" />
+              <FolderOutputIcon className="mr-1 h-3 w-3" />
               Export table
             </Button>
           </DropdownMenuItem>
@@ -88,11 +88,11 @@ const ActionsDropdown = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-xs w-full justify-start"
+              className="h-8 w-full justify-start text-xs"
               onClick={() => handleExport("current")}
               title="Export the current data as CSV"
             >
-              <FolderOutputIcon className="h-3 w-3 mr-1" />
+              <FolderOutputIcon className="mr-1 h-3 w-3" />
               Export data
             </Button>
           </DropdownMenuItem>
@@ -106,7 +106,7 @@ const ActionsDropdown = () => {
       handleInsert,
       isInserting,
       setFilters,
-      setSorters,
+      setSorters
     ]
   );
 

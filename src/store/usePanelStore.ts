@@ -54,7 +54,7 @@ export const usePanelStore = create<PanelState>((set, get) => ({
         isInserting: false,
         selectedRow: null,
         topPanelSize: 0,
-        bottomPanelSize: 100,
+        bottomPanelSize: 100
       };
       if (isMobile) {
         updates.schemaPanelSize = 0;
@@ -69,5 +69,5 @@ export const usePanelStore = create<PanelState>((set, get) => ({
       return isMobile
         ? { schemaPanelSize: 0, dataPanelSize: 100 }
         : { schemaPanelSize: 25, dataPanelSize: 75 };
-    }),
+    })
 }));

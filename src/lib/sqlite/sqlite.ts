@@ -8,7 +8,7 @@ import type {
   IndexSchema,
   Sorters,
   TableSchema,
-  TableSchemaRow,
+  TableSchemaRow
 } from "@/types";
 
 export default class Sqlite {
@@ -35,7 +35,7 @@ export default class Sqlite {
   private static async initSQLjs(): Promise<SqlJsStatic> {
     if (Sqlite.sqlJsStatic) return Sqlite.sqlJsStatic;
     return await initSqlJs({
-      locateFile: (file) => `/wasm/${file}`,
+      locateFile: (file) => `/wasm/${file}`
     });
   }
 
@@ -103,7 +103,7 @@ export default class Sqlite {
           dflt_value: dflt_value as string,
           IsNullable: (notnull as number) === 0,
           isPrimaryKey: (pk as number) === 1,
-          isForeignKey: foreignKeys[name as string] ?? false,
+          isForeignKey: foreignKeys[name as string] ?? false
         });
       }
     } else {
@@ -132,12 +132,12 @@ export default class Sqlite {
       if (type === "table") {
         const tableSchema = this.getTableInfo(tableName as string);
         this.tablesSchema[tableName as string] = {
-          schema: tableSchema,
+          schema: tableSchema
         };
       } else if (type === "index") {
         this.indexesSchema.push({
           name: name as string,
-          tableName: tableName as string,
+          tableName: tableName as string
         });
       }
     }
@@ -238,7 +238,7 @@ export default class Sqlite {
     offset,
     limit,
     filters,
-    sorters,
+    sorters
   }: {
     table: string;
     offset?: number;

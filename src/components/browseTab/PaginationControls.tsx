@@ -11,7 +11,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   FolderOutputIcon,
-  PlusIcon,
+  PlusIcon
 } from "lucide-react";
 
 const PaginationControls = () => {
@@ -22,10 +22,10 @@ const PaginationControls = () => {
   const paginationControls = useMemo(
     () => (
       <footer
-        className="flex items-center justify-between bg-background border-t w-full"
+        className="bg-background flex w-full items-center justify-between border-t"
         id="paginationControls"
       >
-        <section className="flex items-center gap-1 grow bg-primary/10 p-2">
+        <section className="bg-primary/10 flex grow items-center gap-1 p-2">
           <Button
             onClick={() => handlePageChange("first")}
             disabled={offset === 0 || isDataLoading}
@@ -46,7 +46,7 @@ const PaginationControls = () => {
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          <span className="text-xs px-2 whitespace-nowrap">
+          <span className="px-2 text-xs whitespace-nowrap">
             {offset + 1}
             {" -> "}
             {offset + limit > maxSize ? maxSize : offset + limit} of {maxSize}
@@ -72,7 +72,7 @@ const PaginationControls = () => {
             <ChevronLastIcon className="h-4 w-4" />
           </Button>
         </section>
-        <section className="md:flex items-center gap-1 hidden bg-primary/10 p-2">
+        <section className="bg-primary/10 hidden items-center gap-1 p-2 md:flex">
           <Button
             size="sm"
             variant="outline"
@@ -80,7 +80,7 @@ const PaginationControls = () => {
             onClick={handleInsert}
             disabled={isInserting}
           >
-            <PlusIcon className="h-3 w-3 mr-1" />
+            <PlusIcon className="mr-1 h-3 w-3" />
             Insert row
           </Button>
           <Button
@@ -90,7 +90,7 @@ const PaginationControls = () => {
             className="h-7 text-xs"
             title="Export current data as CSV"
           >
-            <FolderOutputIcon className="h-3 w-3 mr-1" />
+            <FolderOutputIcon className="mr-1 h-3 w-3" />
             Export data
           </Button>
         </section>
@@ -104,7 +104,7 @@ const PaginationControls = () => {
       isInserting,
       offset,
       limit,
-      handleInsert,
+      handleInsert
     ]
   );
 

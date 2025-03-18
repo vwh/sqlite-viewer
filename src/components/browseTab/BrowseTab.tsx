@@ -7,7 +7,7 @@ import { usePanelManager } from "@/providers/PanelProvider";
 import {
   ResizableHandle,
   ResizablePanel,
-  ResizablePanelGroup,
+  ResizablePanelGroup
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import TableSelector from "./TableSelector";
@@ -21,7 +21,7 @@ import {
   LoaderCircleIcon,
   FilterXIcon,
   ListRestartIcon,
-  FolderOutputIcon,
+  FolderOutputIcon
 } from "lucide-react";
 
 const BrowseDataTab = memo(() => {
@@ -31,7 +31,7 @@ const BrowseDataTab = memo(() => {
     setFilters,
     setSorters,
     isDataLoading,
-    isDatabaseLoading,
+    isDatabaseLoading
   } = useDatabaseStore();
 
   const {
@@ -42,7 +42,7 @@ const BrowseDataTab = memo(() => {
     setDataPanelSize,
     setSchemaPanelSize,
     setTopPanelSize,
-    setBottomPanelSize,
+    setBottomPanelSize
   } = usePanelStore();
 
   const { handleExport } = useDatabaseWorker();
@@ -60,7 +60,7 @@ const BrowseDataTab = memo(() => {
   const actionButtons = useMemo(() => {
     return (
       <>
-        <div className="md:flex items-center gap-1 hidden">
+        <div className="hidden items-center gap-1 md:flex">
           <Button
             size="sm"
             variant="outline"
@@ -69,7 +69,7 @@ const BrowseDataTab = memo(() => {
             disabled={filters == null}
             title="Clear applied filters"
           >
-            <FilterXIcon className="h-3 w-3 mr-1" />
+            <FilterXIcon className="mr-1 h-3 w-3" />
             Clear filters
           </Button>
           <Button
@@ -80,7 +80,7 @@ const BrowseDataTab = memo(() => {
             disabled={sorters == null}
             title="Reset sorting"
           >
-            <ListRestartIcon className="h-3 w-3 mr-1" />
+            <ListRestartIcon className="mr-1 h-3 w-3" />
             Reset sorting
           </Button>
           <Button
@@ -90,7 +90,7 @@ const BrowseDataTab = memo(() => {
             onClick={() => handleExport("table")}
             title="Export the current table as CSV"
           >
-            <FolderOutputIcon className="h-3 w-3 mr-1" />
+            <FolderOutputIcon className="mr-1 h-3 w-3" />
             Export table
           </Button>
         </div>
@@ -102,8 +102,8 @@ const BrowseDataTab = memo(() => {
   }, [filters, sorters, setFilters, setSorters, handleExport]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-1 py-2 px-1 border-b ">
+    <div className="flex h-full flex-col">
+      <div className="flex items-center gap-1 border-b px-1 py-2">
         <TableSelector />
         {actionButtons}
         {(isDataLoading || isDatabaseLoading) && (
@@ -111,7 +111,7 @@ const BrowseDataTab = memo(() => {
         )}
       </div>
 
-      <div className="overflow-hidden h-full">
+      <div className="h-full overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Left Panel - Data Table */}
           <ResizablePanel
@@ -121,7 +121,7 @@ const BrowseDataTab = memo(() => {
             onResize={setDataPanelSize}
           >
             <div
-              className="flex flex-col h-full justify-between border-l"
+              className="flex h-full flex-col justify-between border-l"
               id="dataSection"
             >
               <DataTable />
@@ -173,8 +173,8 @@ const BrowseDataTab = memo(() => {
 });
 
 const LoadingIndicator = ({ text }: { text: string }) => (
-  <span className="text-xs ml-2 text-gray-500 flex items-center">
-    <LoaderCircleIcon className="h-3 w-3 mr-1 animate-spin" />
+  <span className="ml-2 flex items-center text-xs text-gray-500">
+    <LoaderCircleIcon className="mr-1 h-3 w-3 animate-spin" />
     {text}
   </span>
 );

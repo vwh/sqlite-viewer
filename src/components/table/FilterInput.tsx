@@ -18,7 +18,7 @@ const FilterInput = memo(({ column, value, onChange }: FilterInputProps) => {
   return (
     <Input
       type="text"
-      className="rounded px-2 py-1 max-h-6 w-full text-[0.8rem]! border-primary/20"
+      className="border-primary/20 max-h-6 w-full rounded px-2 py-1 text-[0.8rem]!"
       value={value}
       onChange={handleChange}
       placeholder="Filter"

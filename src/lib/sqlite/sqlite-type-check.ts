@@ -5,7 +5,7 @@ const TYPE_PATTERNS = {
   INTEGER: /INT/i,
   REAL: /REAL|FLOAT|DOUBLE|DECIMAL/i,
   NUMERIC: /NUMERIC/i,
-  BOOLEAN: /BOOL/i,
+  BOOLEAN: /BOOL/i
 };
 
 type SQLiteType = keyof typeof TYPE_PATTERNS;

@@ -5,7 +5,7 @@ import {
   isNumber,
   isText,
   isBlob,
-  isBoolean,
+  isBoolean
 } from "@/lib/sqlite/sqlite-type-check";
 
 import type { TableSchemaRow } from "@/types";
@@ -18,7 +18,7 @@ import {
   TypeIcon,
   HashIcon,
   ToggleLeftIcon,
-  HelpCircleIcon,
+  HelpCircleIcon
 } from "lucide-react";
 
 const MemoizedKeyRoundIcon = memo(KeyRoundIcon);

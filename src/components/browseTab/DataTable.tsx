@@ -9,7 +9,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Span } from "@/components/ui/span";
@@ -28,7 +28,7 @@ const DataTable = () => {
 
   const emptyDataContent = useMemo(
     () => (
-      <div className="flex flex-col items-center justify-center gap-1 h-full">
+      <div className="flex h-full flex-col items-center justify-center gap-1">
         {filters ? (
           <>
             <p className="text-md font-medium">
@@ -76,9 +76,9 @@ const DataTable = () => {
             {columns && currentTable ? (
               columns.map((column, index) => (
                 <TableHead key={column} className="p-1 text-xs">
-                  <div className="flex items-center py-[1.5px] gap-1">
+                  <div className="flex items-center gap-1 py-[1.5px]">
                     <SorterButton column={column} />
-                    <Span className="capitalize font-medium text-foreground">
+                    <Span className="text-foreground font-medium capitalize">
                       {column}
                     </Span>
                     <ColumnIcon
@@ -101,7 +101,7 @@ const DataTable = () => {
               <TableRow
                 key={i}
                 onClick={() => handleRowClick(row, i)}
-                className={`cursor-pointer hover:bg-primary/5 text-xs ${
+                className={`hover:bg-primary/5 cursor-pointer text-xs ${
                   selectedRowObject?.index === i ? "bg-primary/5" : ""
                 }`}
               >
@@ -147,7 +147,7 @@ const DataTable = () => {
       handleRowClick,
       selectedRowObject,
       emptyDataContent,
-      memoizedFilterInput,
+      memoizedFilterInput
     ]
   );
 };

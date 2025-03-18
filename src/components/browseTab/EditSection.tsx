@@ -12,7 +12,7 @@ import {
   ChevronLeftIcon,
   PlusIcon,
   SquarePenIcon,
-  Trash2Icon,
+  Trash2Icon
 } from "lucide-react";
 const EditSection = () => {
   const { handleEditSubmit } = useDatabaseWorker();
@@ -49,9 +49,9 @@ const EditSection = () => {
   const editSection = useMemo(
     () => (
       <section className="h-full overflow-auto">
-        <div className="flex flex-col w-full h-full">
+        <div className="flex h-full w-full flex-col">
           <div className="overflow-auto">
-            <div className="text-sm p-2 bg-primary/5 w-full border-b flex items-center gap-1 justify-between">
+            <div className="bg-primary/5 flex w-full items-center justify-between gap-1 border-b p-2 text-sm">
               <div className="flex items-center gap-1">
                 {isInserting ? (
                   <>
@@ -72,7 +72,7 @@ const EditSection = () => {
                 onClick={goBackToData}
                 aria-label="Go back to data"
               >
-                <ChevronLeftIcon className="h-3 w-3 mr-1" />
+                <ChevronLeftIcon className="mr-1 h-3 w-3" />
                 Go back
               </Button>
             </div>
@@ -81,19 +81,19 @@ const EditSection = () => {
               <div key={column}>
                 <label
                   htmlFor={column}
-                  className="flex items-center gap-1 bg-primary/5 p-2 rounded-sm"
+                  className="bg-primary/5 flex items-center gap-1 rounded-sm p-2"
                 >
                   <ColumnIcon
                     columnSchema={tablesSchema[currentTable!]?.schema[index]}
                   />
-                  <Span className="capitalize font-medium text-xs">
+                  <Span className="text-xs font-medium capitalize">
                     {column}
                   </Span>
                 </label>
                 <Input
                   id={column}
                   name={column}
-                  className="h-8 text-sm border-primary/20 text-[0.8rem]! rounded-none"
+                  className="border-primary/20 h-8 rounded-none text-sm text-[0.8rem]!"
                   value={editValues[index] || ""}
                   onChange={(e) => handleEditInputChange(index, e.target.value)}
                 />
@@ -105,7 +105,7 @@ const EditSection = () => {
             <Button
               size="sm"
               variant="outline"
-              className="text-xs w-full"
+              className="w-full text-xs"
               onClick={() =>
                 handleEditSubmit(isInserting ? "insert" : "update", editValues)
               }
@@ -113,12 +113,12 @@ const EditSection = () => {
             >
               {isInserting ? (
                 <>
-                  <PlusIcon className="h-3 w-3 mr-1" />
+                  <PlusIcon className="mr-1 h-3 w-3" />
                   Insert row
                 </>
               ) : (
                 <>
-                  <SquarePenIcon className="h-3 w-3 mr-1" />
+                  <SquarePenIcon className="mr-1 h-3 w-3" />
                   Apply changes
                 </>
               )}
@@ -127,7 +127,7 @@ const EditSection = () => {
               <Button
                 size="sm"
                 variant="destructive"
-                className="text-xs rounded-none"
+                className="rounded-none text-xs"
                 onClick={() => handleEditSubmit("delete", editValues)}
                 aria-label="Delete row"
               >
@@ -146,7 +146,7 @@ const EditSection = () => {
       handleEditInputChange,
       handleEditSubmit,
       isInserting,
-      goBackToData,
+      goBackToData
     ]
   );
 

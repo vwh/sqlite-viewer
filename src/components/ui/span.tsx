@@ -2,7 +2,7 @@ import { memo, type ReactNode } from "react";
 
 export const Span = memo(function Span({
   children,
-  className,
+  className
 }: {
   children: ReactNode;
   className?: string;

@@ -3,7 +3,7 @@ import {
   useContext,
   useEffect,
   useCallback,
-  useState,
+  useState
 } from "react";
 import { usePanelStore } from "@/store/usePanelStore";
 
@@ -37,7 +37,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setBottomPanelSize,
     setSchemaPanelSize,
     setDataPanelSize,
-    isMobile,
+    isMobile
   } = usePanelStore();
 
   const [selectedRowObject, setSelectedRowObject] = useState<{
@@ -75,7 +75,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
       setBottomPanelSize,
       setDataPanelSize,
       setSchemaPanelSize,
-      setTopPanelSize,
+      setTopPanelSize
     ]
   );
 
@@ -98,7 +98,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setBottomPanelSize,
     setDataPanelSize,
     setSchemaPanelSize,
-    setTopPanelSize,
+    setTopPanelSize
   ]);
 
   // Handle resetting edit panel
@@ -119,7 +119,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setTopPanelSize,
     setBottomPanelSize,
     setDataPanelSize,
-    setSchemaPanelSize,
+    setSchemaPanelSize
   ]);
 
   // Switch to execute tab and adjust panels
@@ -140,7 +140,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setIsInserting,
     setSelectedRowObject,
     goBackToData,
-    expandDataPanel,
+    expandDataPanel
   };
 
   return (

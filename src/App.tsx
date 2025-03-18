@@ -33,20 +33,20 @@ export default function App() {
   }, [activeTab, dataPanelSize, expandDataPanel]);
 
   return (
-    <main className="flex flex-col h-screen overflow-hidden bg-primary/5">
+    <main className="bg-primary/5 flex h-screen flex-col overflow-hidden">
       <TopBar />
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange} // Use memoized callback here
-        className="flex-1 flex flex-col"
+        className="flex flex-1 flex-col"
       >
-        <TabsList className="mt-2 bg-primary/5 w-full justify-start border-b rounded-none h-9">
+        <TabsList className="bg-primary/5 mt-2 h-9 w-full justify-start rounded-none border-b">
           <TabsTrigger
             id="structure"
             key="structure"
             disabled={isDatabaseLoading}
             value="structure"
-            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            className="data-[state=active]: data-[state=active]:border-primary h-8 rounded-none text-xs data-[state=active]:border-b-2"
           >
             Database Structure
           </TabsTrigger>
@@ -55,7 +55,7 @@ export default function App() {
             key="data"
             disabled={isDatabaseLoading}
             value="data"
-            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            className="data-[state=active]: data-[state=active]:border-primary h-8 rounded-none text-xs data-[state=active]:border-b-2"
           >
             Browse Data
           </TabsTrigger>
@@ -64,7 +64,7 @@ export default function App() {
             id="execute"
             key="execute"
             value="execute"
-            className="text-xs h-8 data-[state=active]: data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+            className="data-[state=active]: data-[state=active]:border-primary h-8 rounded-none text-xs data-[state=active]:border-b-2"
             onClick={() => {
               if (isMobile) {
                 setDataPanelSize(100);
@@ -76,20 +76,20 @@ export default function App() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 max-h-custom-dvh overflow-hidden">
-          <TabsContent value="data" className="h-full m-0 p-0 border-none">
+        <div className="max-h-custom-dvh flex-1 overflow-hidden">
+          <TabsContent value="data" className="m-0 h-full border-none p-0">
             {isDatabaseLoading ? (
               <LoadingIndicator message="Loading Database" />
             ) : (
               <BrowseTab />
             )}
           </TabsContent>
-          <TabsContent value="structure" className="h-full m-0 p-0 border-none">
+          <TabsContent value="structure" className="m-0 h-full border-none p-0">
             <StructureTab />
           </TabsContent>
           <TabsContent
             value="execute"
-            className="h-full m-0 p-0 border-none border"
+            className="m-0 h-full border border-none p-0"
           >
             <ExecuteTab />
           </TabsContent>
@@ -100,8 +100,8 @@ export default function App() {
 }
 
 const LoadingIndicator = ({ message }: { message: string }) => (
-  <div className="flex items-center justify-center h-full">
-    <LoaderCircleIcon className="h-4 w-4 mr-2 animate-spin" />
+  <div className="flex h-full items-center justify-center">
+    <LoaderCircleIcon className="mr-2 h-4 w-4 animate-spin" />
     <span className="text-xl">{message}</span>
   </div>
 );

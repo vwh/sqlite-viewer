@@ -133,6 +133,6 @@ export {
   TableFooter,
   TableHead,
   TableRow,
-  TableCell,
+  TableCell
   // TableCaption,
 };
