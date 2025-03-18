@@ -268,7 +268,6 @@ export const DatabaseWorkerProvider = ({
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (e) => {
-        setIsDatabaseLoading(true);
         const arrayBuffer = e.target?.result as ArrayBuffer;
         workerRef.current?.postMessage({
           action: "openFile",
@@ -277,7 +276,7 @@ export const DatabaseWorkerProvider = ({
       };
       reader.readAsArrayBuffer(file);
     },
-    [setIsDatabaseLoading]
+    []
   );
 
   // Handle when user downloads the database
