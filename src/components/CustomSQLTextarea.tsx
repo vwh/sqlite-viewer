@@ -9,7 +9,6 @@ import {
   type CompletionContext,
 } from "@codemirror/autocomplete";
 
-import type { TableSchema } from "@/types";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 
 // SQLlite Keywords used for autocompletion

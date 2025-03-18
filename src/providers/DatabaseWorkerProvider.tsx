@@ -69,7 +69,7 @@ export const DatabaseWorkerProvider = ({
   } = useDatabaseStore();
 
   const { resetEditSection } = usePanelStore();
-  const { selectedRowData } = usePanelManager();
+  const { selectedRowObject } = usePanelManager();
 
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
 
@@ -401,7 +401,7 @@ export const DatabaseWorkerProvider = ({
           table: currentTable,
           columns: useDatabaseStore.getState().columns,
           values: editValues,
-          whereValues: selectedRowData?.data,
+          whereValues: selectedRowObject?.data,
         },
       });
       // Refresh the data
@@ -423,7 +423,7 @@ export const DatabaseWorkerProvider = ({
       offset,
       limit,
       setIsDataLoading,
-      selectedRowData,
+      selectedRowObject,
     ]
   );
 

@@ -17,7 +17,7 @@ import {
 const EditSection = () => {
   const { handleEditSubmit } = useDatabaseWorker();
 
-  const { selectedRowData, isInserting, goBackToData } = usePanelManager();
+  const { selectedRowObject, isInserting, goBackToData } = usePanelManager();
 
   const { tablesSchema, currentTable, columns } = useDatabaseStore();
 
@@ -28,13 +28,13 @@ const EditSection = () => {
     if (isInserting) {
       // When inserting, initialize with empty strings or default values
       setEditValues(columns?.map(() => "") || []);
-    } else if (selectedRowData) {
+    } else if (selectedRowObject) {
       // When editing, set values from the selected row
       setEditValues(
-        selectedRowData.data.map((value) => value?.toString() ?? "")
+        selectedRowObject.data.map((value) => value?.toString() ?? "")
       );
     }
-  }, [isInserting, selectedRowData, columns]);
+  }, [isInserting, selectedRowObject, columns]);
 
   // Handle when user updates the edit inputs
   const handleEditInputChange = useCallback(

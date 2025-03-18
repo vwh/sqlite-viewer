@@ -51,7 +51,7 @@ export default function App() {
     handleQueryFilter,
   } = useDatabaseWorker();
 
-  const { handleRowClick, selectedRowData, isInserting, expandDataPanel } =
+  const { handleRowClick, selectedRowObject, isInserting, expandDataPanel } =
     usePanelManager();
 
   const {
@@ -352,7 +352,7 @@ export default function App() {
                 key={i}
                 onClick={() => handleRowClick(row, i)}
                 className={`cursor-pointer hover:bg-primary/5 text-xs ${
-                  selectedRowData?.index === i ? "bg-primary/5" : ""
+                  selectedRowObject?.index === i ? "bg-primary/5" : ""
                 }`}
               >
                 {row.map((value, j) => (
@@ -417,7 +417,7 @@ export default function App() {
       data,
       filters,
       handleQueryFilter,
-      selectedRowData,
+      selectedRowObject,
       sorterButton,
       columns,
       currentTable,
@@ -512,14 +512,14 @@ export default function App() {
                   defaultSize={topPanelSize}
                   onResize={setTopPanelSize}
                   className={`${
-                    selectedRowData || isInserting ? "" : "hidden"
+                    selectedRowObject || isInserting ? "" : "hidden"
                   }`}
                 >
                   <EditSection />
                 </ResizablePanel>
                 <ResizableHandle
                   className={`${
-                    selectedRowData || isInserting ? "" : "hidden"
+                    selectedRowObject || isInserting ? "" : "hidden"
                   }`}
                   withHandle
                 />
@@ -541,7 +541,7 @@ export default function App() {
       dataTable,
       filters,
       sorters,
-      selectedRowData,
+      selectedRowObject,
       isDataLoading,
       isDatabaseLoading,
       schemaSection,

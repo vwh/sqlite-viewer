@@ -14,10 +14,10 @@ interface PanelContextProps {
   handleInsert: () => void;
   handlePanelReset: () => void;
   isEditing: boolean;
-  selectedRowData: { data: SqlValue[]; index: number } | null;
+  selectedRowObject: { data: SqlValue[]; index: number } | null;
   isInserting: boolean;
   setIsInserting: (value: boolean) => void;
-  setSelectedRowData: (
+  setSelectedRowObject: (
     value: { data: SqlValue[]; index: number } | null
   ) => void;
   goBackToData: () => void;
@@ -40,14 +40,14 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     isMobile,
   } = usePanelStore();
 
-  const [selectedRowData, setSelectedRowData] = useState<{
+  const [selectedRowObject, setSelectedRowObject] = useState<{
     data: SqlValue[];
     index: number;
   } | null>(null);
   const [isInserting, setIsInserting] = useState(false);
 
   // Detect if in editing mode
-  const isEditing = selectedRowData !== null || isInserting;
+  const isEditing = selectedRowObject !== null || isInserting;
 
   // Set panel sizes when page loads
   useEffect(() => {
@@ -58,7 +58,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
   const handleRowClick = useCallback(
     (row: SqlValue[], index: number) => {
       setIsInserting(false);
-      setSelectedRowData({ data: row, index: index });
+      setSelectedRowObject({ data: row, index: index });
 
       if (isMobile) {
         setTopPanelSize(100);
@@ -81,7 +81,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
 
   // Handle insert row button click
   const handleInsert = useCallback(() => {
-    setSelectedRowData(null);
+    setSelectedRowObject(null);
     setIsInserting(true);
 
     if (isMobile) {
@@ -104,13 +104,13 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
   // Handle resetting edit panel
   const handlePanelReset = useCallback(() => {
     setIsInserting(false);
-    setSelectedRowData(null);
+    setSelectedRowObject(null);
   }, []);
 
   // Go back to data view on mobile
   const goBackToData = useCallback(() => {
     setIsInserting(false);
-    setSelectedRowData(null);
+    setSelectedRowObject(null);
     setTopPanelSize(0);
     setBottomPanelSize(100);
     setDataPanelSize(100);
@@ -135,10 +135,10 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     handleInsert,
     handlePanelReset,
     isEditing,
-    selectedRowData,
+    selectedRowObject,
     isInserting,
     setIsInserting,
-    setSelectedRowData,
+    setSelectedRowObject,
     goBackToData,
     expandDataPanel,
   };
