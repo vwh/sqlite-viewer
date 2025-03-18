@@ -62,7 +62,8 @@ export const DatabaseWorkerProvider = ({
     setLimit,
     resetPagination,
     setCustomQueryObject,
-    customQuery
+    customQuery,
+    tablesSchema
   } = useDatabaseStore();
 
   const { resetEditSection, isMobile } = usePanelStore();
@@ -92,6 +93,11 @@ export const DatabaseWorkerProvider = ({
         setTablesSchema(payload.tableSchema);
         setIndexesSchema(payload.indexSchema);
         setCurrentTable(payload.currentTable);
+        setColumns(
+          payload.tableSchema[payload.currentTable]?.schema?.map(
+            (column: { name: string }) => column.name
+          )
+        );
         setFilters(null);
         setSorters(null);
         setSelectedRowObject(null);
@@ -106,7 +112,6 @@ export const DatabaseWorkerProvider = ({
         // To be able to cache the columns
         if (data.length !== 0) {
           setData(payload.results?.[0]?.values || []);
-          setColumns(payload.results?.[0]?.columns || []);
         } else {
           setData(null);
         }
@@ -295,6 +300,7 @@ export const DatabaseWorkerProvider = ({
       setSelectedRowObject(null);
       setIsInserting(false);
       setCurrentTable(selectedTable);
+      setColumns(tablesSchema[selectedTable].schema.map((col) => col.name));
       if (isMobile) {
         goBackToData();
       }
@@ -308,7 +314,9 @@ export const DatabaseWorkerProvider = ({
       setSelectedRowObject,
       setIsInserting,
       isMobile,
-      goBackToData
+      goBackToData,
+      tablesSchema,
+      setColumns
     ]
   );
 
