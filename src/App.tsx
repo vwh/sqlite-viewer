@@ -1,5 +1,4 @@
 import { useDatabaseStore } from "./store/useDatabaseStore";
-import { usePanelStore } from "./store/usePanelStore";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TopBar from "./components/TopBar";
@@ -13,9 +12,6 @@ export default function App() {
   const isDatabaseLoading = useDatabaseStore(
     (state) => state.isDatabaseLoading
   );
-  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
-  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
-
   return (
     <main className="bg-primary/5 flex h-screen flex-col overflow-hidden">
       <TopBar />
@@ -45,12 +41,6 @@ export default function App() {
             key="execute"
             value="execute"
             className="data-[state=active]: data-[state=active]:border-primary h-8 rounded-none text-xs data-[state=active]:border-b-2"
-            onClick={() => {
-              if (usePanelStore.getState().isMobile) {
-                setDataPanelSize(100);
-                setSchemaPanelSize(0);
-              }
-            }}
           >
             Execute SQL
           </TabsTrigger>
