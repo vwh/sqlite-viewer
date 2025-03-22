@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useDatabaseStore } from "@/store/useDatabaseStore";
 import { usePanelStore } from "@/store/usePanelStore";
 import { useDatabaseWorker } from "@/providers/DatabaseWorkerProvider";
@@ -31,15 +30,6 @@ const ExecuteTab = () => {
   const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
 
   const { handleQueryExecute } = useDatabaseWorker();
-
-  const schemaSection = useMemo(
-    () => (
-      <div className="h-full overflow-y-auto">
-        <SchemaTree />
-      </div>
-    ),
-    []
-  );
 
   return (
     <div className="flex h-full flex-col">
@@ -101,7 +91,11 @@ const ExecuteTab = () => {
             onResize={setSchemaPanelSize}
             className=""
           >
-            <div className="h-full overflow-hidden">{schemaSection}</div>
+            <div className="h-full overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                <SchemaTree />
+              </div>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

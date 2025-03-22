@@ -42,15 +42,6 @@ const BrowseDataTab = memo(() => {
   const { handleExport } = useDatabaseWorker();
   const { isEditing } = usePanelManager();
 
-  const schemaSection = useMemo(
-    () => (
-      <div className="h-full overflow-y-auto">
-        <SchemaTree />
-      </div>
-    ),
-    []
-  );
-
   const actionButtons = useMemo(() => {
     return (
       <>
@@ -130,7 +121,11 @@ const BrowseDataTab = memo(() => {
             onResize={setSchemaPanelSize}
             className={usePanelStore.getState().isMobile ? "" : "relative"}
           >
-            <div className="h-full overflow-hidden">{schemaSection}</div>
+            <div className="h-full overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                <SchemaTree />
+              </div>
+            </div>
             {/* TODO: Move this to a separate component as an edit section */}
             <div
               className={`bg-background absolute top-0 right-0 z-40 h-full w-full ${isEditing ? "block" : "hidden"}`}

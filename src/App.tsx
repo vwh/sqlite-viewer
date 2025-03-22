@@ -12,6 +12,7 @@ export default function App() {
   const isDatabaseLoading = useDatabaseStore(
     (state) => state.isDatabaseLoading
   );
+
   return (
     <main className="bg-primary/5 flex h-screen flex-col overflow-hidden">
       <TopBar />
