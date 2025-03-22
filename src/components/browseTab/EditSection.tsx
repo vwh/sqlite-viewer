@@ -18,7 +18,7 @@ import {
 
 const EditSection = () => {
   const { handleEditSubmit } = useDatabaseWorker();
-  const { selectedRowObject, isInserting, goBackToData } = usePanelManager();
+  const { selectedRowObject, isInserting, handleCloseEdit } = usePanelManager();
   const editValues = usePanelStore((state) => state.editValues);
   const setEditValues = usePanelStore((state) => state.setEditValues);
   const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
@@ -130,7 +130,7 @@ const EditSection = () => {
           size="sm"
           variant="outline"
           className="text-xs md:hidden"
-          onClick={goBackToData}
+          onClick={handleCloseEdit}
           aria-label="Go back to data"
         >
           <ChevronLeftIcon className="mr-1 h-3 w-3" />
@@ -138,7 +138,7 @@ const EditSection = () => {
         </Button>
       </div>
     ),
-    [isInserting, goBackToData]
+    [isInserting, handleCloseEdit]
   );
 
   return (

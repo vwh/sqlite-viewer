@@ -1,7 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
 import { useDatabaseStore } from "./store/useDatabaseStore";
 import { usePanelStore } from "./store/usePanelStore";
-import { usePanelManager } from "./providers/PanelProvider";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TopBar from "./components/TopBar";
@@ -15,34 +13,13 @@ export default function App() {
   const isDatabaseLoading = useDatabaseStore(
     (state) => state.isDatabaseLoading
   );
-  const dataPanelSize = usePanelStore((state) => state.dataPanelSize);
   const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
   const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
-  const { expandDataPanel } = usePanelManager();
-
-  const [activeTab, setActiveTab] = useState("data");
-
-  // Handles when user changes tabs
-  const handleTabChange = useCallback((value: string) => {
-    setActiveTab(value);
-  }, []);
-
-  // Update panel sizes when active tab changes
-  useEffect(() => {
-    // When switching to execute tab, ensure proper panel sizes
-    if (activeTab === "execute" && dataPanelSize <= 0) {
-      expandDataPanel();
-    }
-  }, [activeTab, dataPanelSize, expandDataPanel]);
 
   return (
     <main className="bg-primary/5 flex h-screen flex-col overflow-hidden">
       <TopBar />
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange} // Use memoized callback here
-        className="flex flex-1 flex-col"
-      >
+      <Tabs defaultValue="data" className="flex flex-1 flex-col">
         <TabsList className="bg-primary/5 mt-2 h-9 w-full justify-start rounded-none border-b">
           <TabsTrigger
             id="structure"

@@ -36,15 +36,11 @@ const BrowseDataTab = memo(() => {
 
   const dataPanelSize = usePanelStore((state) => state.dataPanelSize);
   const schemaPanelSize = usePanelStore((state) => state.schemaPanelSize);
-  const topPanelSize = usePanelStore((state) => state.topPanelSize);
-  const bottomPanelSize = usePanelStore((state) => state.bottomPanelSize);
   const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
   const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
-  const setTopPanelSize = usePanelStore((state) => state.setTopPanelSize);
-  const setBottomPanelSize = usePanelStore((state) => state.setBottomPanelSize);
 
   const { handleExport } = useDatabaseWorker();
-  const { selectedRowObject, isInserting } = usePanelManager();
+  const { isEditing } = usePanelManager();
 
   const schemaSection = useMemo(
     () => (
@@ -109,12 +105,11 @@ const BrowseDataTab = memo(() => {
         )}
       </div>
 
-      <div className="h-full overflow-hidden">
+      <div className="relative h-full overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Left Panel - Data Table */}
           <ResizablePanel
             id="dataPanel"
-            key={`data-${dataPanelSize}`}
             defaultSize={dataPanelSize}
             onResize={setDataPanelSize}
           >
@@ -131,38 +126,19 @@ const BrowseDataTab = memo(() => {
 
           <ResizablePanel
             id="schemaPanel"
-            key={`schema-${schemaPanelSize}`}
             defaultSize={schemaPanelSize}
             onResize={setSchemaPanelSize}
-            className=""
+            className={usePanelStore.getState().isMobile ? "" : "relative"}
           >
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel
-                id="topPanel"
-                key={`top-${topPanelSize}`}
-                defaultSize={topPanelSize}
-                onResize={setTopPanelSize}
-                className={`${
-                  selectedRowObject || isInserting ? "" : "hidden"
-                }`}
-              >
+            <div className="h-full overflow-hidden">{schemaSection}</div>
+            {/* TODO: Move this to a separate component as an edit section */}
+            <div
+              className={`bg-background absolute top-0 right-0 z-40 h-full w-full ${isEditing ? "block" : "hidden"}`}
+            >
+              <section className="bg-primary/5 h-full">
                 <EditSection />
-              </ResizablePanel>
-              <ResizableHandle
-                className={`${
-                  selectedRowObject || isInserting ? "" : "hidden"
-                }`}
-                withHandle
-              />
-              <ResizablePanel
-                id="bottomPanel"
-                key={`bottom-${bottomPanelSize}`}
-                defaultSize={bottomPanelSize}
-                onResize={setBottomPanelSize}
-              >
-                <div className="h-full overflow-hidden">{schemaSection}</div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
+              </section>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

@@ -20,8 +20,7 @@ interface PanelContextProps {
   setSelectedRowObject: (
     value: { data: SqlValue[]; index: number } | null
   ) => void;
-  goBackToData: () => void;
-  expandDataPanel: () => void;
+  handleCloseEdit: () => void;
 }
 
 const PanelContext = createContext<PanelContextProps | undefined>(undefined);
@@ -32,10 +31,6 @@ interface PanelProviderProps {
 
 export const PanelProvider = ({ children }: PanelProviderProps) => {
   const setPanelsForDevice = usePanelStore((state) => state.setPanelsForDevice);
-  const setTopPanelSize = usePanelStore((state) => state.setTopPanelSize);
-  const setBottomPanelSize = usePanelStore((state) => state.setBottomPanelSize);
-  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
-  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
 
   const [selectedRowObject, setSelectedRowObject] = useState<{
     data: SqlValue[];
@@ -52,44 +47,16 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
   }, [setPanelsForDevice]);
 
   // Handle row click to toggle edit panel
-  const handleRowClick = useCallback(
-    (row: SqlValue[], index: number) => {
-      setIsInserting(false);
-      setSelectedRowObject({ data: row, index: index });
-
-      if (usePanelStore.getState().isMobile) {
-        setTopPanelSize(100);
-        setBottomPanelSize(0);
-        setDataPanelSize(0);
-        setSchemaPanelSize(100);
-      } else {
-        setTopPanelSize(75);
-        setBottomPanelSize(25);
-      }
-    },
-    [setBottomPanelSize, setDataPanelSize, setSchemaPanelSize, setTopPanelSize]
-  );
+  const handleRowClick = useCallback((row: SqlValue[], index: number) => {
+    setIsInserting(false);
+    setSelectedRowObject({ data: row, index: index });
+  }, []);
 
   // Handle insert row button click
   const handleInsert = useCallback(() => {
     setSelectedRowObject(null);
     setIsInserting(true);
-
-    if (usePanelStore.getState().isMobile) {
-      setTopPanelSize(100);
-      setBottomPanelSize(0);
-      setDataPanelSize(0);
-      setSchemaPanelSize(100);
-    } else {
-      setTopPanelSize(75);
-      setBottomPanelSize(25);
-    }
-  }, [
-    setBottomPanelSize,
-    setDataPanelSize,
-    setSchemaPanelSize,
-    setTopPanelSize
-  ]);
+  }, []);
 
   // Handle resetting edit panel
   const handlePanelReset = useCallback(() => {
@@ -97,28 +64,19 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setSelectedRowObject(null);
   }, []);
 
-  // Go back to data view on mobile
-  const goBackToData = useCallback(() => {
+  // Handle closing edit panel
+  const handleCloseEdit = useCallback(() => {
     setIsInserting(false);
     setSelectedRowObject(null);
-    setTopPanelSize(0);
-    setBottomPanelSize(100);
-    setDataPanelSize(100);
-    setSchemaPanelSize(0);
-  }, [
-    setTopPanelSize,
-    setBottomPanelSize,
-    setDataPanelSize,
-    setSchemaPanelSize
-  ]);
+  }, []);
 
   // Switch to execute tab and adjust panels
-  const expandDataPanel = useCallback(() => {
-    if (usePanelStore.getState().isMobile) {
-      setDataPanelSize(100);
-      setSchemaPanelSize(0);
-    }
-  }, [setDataPanelSize, setSchemaPanelSize]);
+  // const expandDataPanel = useCallback(() => {
+  //   if (usePanelStore.getState().isMobile) {
+  //     setDataPanelSize(100);
+  //     setSchemaPanelSize(0);
+  //   }
+  // }, [setDataPanelSize, setSchemaPanelSize]);
 
   const value = {
     handleRowClick,
@@ -129,8 +87,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     isInserting,
     setIsInserting,
     setSelectedRowObject,
-    goBackToData,
-    expandDataPanel
+    handleCloseEdit
   };
 
   return (

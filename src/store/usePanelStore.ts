@@ -1,12 +1,10 @@
 import { create } from "zustand";
-import { debounce, throttle } from "lodash";
+import { debounce } from "lodash";
 import type { SqlValue } from "sql.js";
 
 interface PanelState {
   schemaPanelSize: number;
   dataPanelSize: number;
-  topPanelSize: number;
-  bottomPanelSize: number;
   query: string;
   editValues: string[];
   selectedRow: { data: SqlValue[]; index: number } | null;
@@ -15,8 +13,6 @@ interface PanelState {
 
   setSchemaPanelSize: (size: number) => void;
   setDataPanelSize: (size: number) => void;
-  setTopPanelSize: (size: number) => void;
-  setBottomPanelSize: (size: number) => void;
   setQuery: (query: string) => void;
   setEditValues: (values: string[]) => void;
   setSelectedRow: (row: { data: SqlValue[]; index: number } | null) => void;
@@ -27,22 +23,12 @@ interface PanelState {
 }
 
 export const usePanelStore = create<PanelState>((set, get) => {
-  // Create debounced functions for panels that may have more noisy updates
   const debouncedSetSchemaPanelSize = debounce((size: number) => {
     set({ schemaPanelSize: size });
   }, 200);
 
   const debouncedSetDataPanelSize = debounce((size: number) => {
     set({ dataPanelSize: size });
-  }, 200);
-
-  // Use throttle to ensure updates are limited during continuous events
-  const throttledSetTopPanelSize = throttle((size: number) => {
-    set({ topPanelSize: size });
-  }, 200);
-
-  const throttledSetBottomPanelSize = throttle((size: number) => {
-    set({ bottomPanelSize: size });
   }, 200);
 
   return {
@@ -59,8 +45,6 @@ export const usePanelStore = create<PanelState>((set, get) => {
     // Use the debounced/throttled setters here
     setSchemaPanelSize: debouncedSetSchemaPanelSize,
     setDataPanelSize: debouncedSetDataPanelSize,
-    setTopPanelSize: throttledSetTopPanelSize,
-    setBottomPanelSize: throttledSetBottomPanelSize,
 
     setQuery: (query) => set({ query }),
     setEditValues: (values) => set({ editValues: values }),
@@ -70,17 +54,10 @@ export const usePanelStore = create<PanelState>((set, get) => {
 
     resetEditSection: () =>
       set(() => {
-        const isMobile = get().isMobile;
         const updates: Partial<PanelState> = {
           isInserting: false,
-          selectedRow: null,
-          topPanelSize: 0,
-          bottomPanelSize: 100
+          selectedRow: null
         };
-        if (isMobile) {
-          updates.schemaPanelSize = 0;
-          updates.dataPanelSize = 100;
-        }
         return updates;
       }),
 

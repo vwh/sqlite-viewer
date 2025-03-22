@@ -75,7 +75,7 @@ export const DatabaseWorkerProvider = ({
     selectedRowObject,
     setSelectedRowObject,
     setIsInserting,
-    goBackToData
+    handleCloseEdit
   } = usePanelManager();
 
   const [isFirstTimeLoading, setIsFirstTimeLoading] = useState(true);
@@ -141,14 +141,17 @@ export const DatabaseWorkerProvider = ({
         setIndexesSchema(payload.indexSchema);
         setIsDataLoading(false);
         setErrorMessage(null);
+
         toast.success("Database schema updated successfully");
       } else if (action === "updateComplete") {
         setErrorMessage(null);
         resetEditSection();
+        handleCloseEdit();
         toast.success(`Row ${payload.type} successfully`);
       } else if (action === "insertComplete") {
         setErrorMessage(null);
         resetEditSection();
+        handleCloseEdit();
         toast.success("Row inserted successfully");
       }
       // When the database is downloaded
@@ -305,9 +308,6 @@ export const DatabaseWorkerProvider = ({
       setIsInserting(false);
       setCurrentTable(selectedTable);
       setColumns(tablesSchema[selectedTable].schema.map((col) => col.name));
-      if (usePanelStore.getState().isMobile) {
-        goBackToData();
-      }
     },
     [
       setFilters,
@@ -317,7 +317,6 @@ export const DatabaseWorkerProvider = ({
       setCurrentTable,
       setSelectedRowObject,
       setIsInserting,
-      goBackToData,
       tablesSchema,
       setColumns
     ]
