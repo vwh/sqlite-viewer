@@ -129,12 +129,12 @@ const EditSection = () => {
         <Button
           size="sm"
           variant="outline"
-          className="text-xs md:hidden"
+          className="text-xs"
           onClick={handleCloseEdit}
+          title="Go back to data"
           aria-label="Go back to data"
         >
-          <ChevronLeftIcon className="mr-1 h-3 w-3" />
-          Go back
+          <ChevronLeftIcon className="h-3 w-3" />
         </Button>
       </div>
     ),
