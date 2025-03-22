@@ -8,18 +8,15 @@
 
 A fast, secure, and client-side SQLite editor that runs entirely in your browser—no server required. Powered by WebAssembly and built with sql.js and ReactJS, allows you to create, search, and edit SQLite databases effortlessly.
 
-[![License](https://img.shields.io/github/license/vwh/sqlite-viewer?label=License)](https://github.com/vwh/sqlite-viewer/blob/main/LICENSE)
-[![Security Score](https://img.shields.io/badge/Security%20Score-A%20%7C%20Good-brightgreen)](https://snyk.io/test/github/vwh/sqlite-viewer)
-[![Codacy Badge](https://img.shields.io/codacy/grade/1a8379b2399b45278a710145f92eab5d)](https://app.codacy.com/gh/vwh/sqlite-viewer/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![CodeQL](https://github.com/vwh/sqlite-viewer/actions/workflows/codeql.yml/badge.svg)](https://github.com/vwh/sqlite-viewer/actions/workflows/codeql.yml)
-[![Format Check](https://github.com/vwh/sqlite-viewer/actions/workflows/format.yml/badge.svg)](https://github.com/vwh/sqlite-viewer/actions/workflows/format.yml)
-[![Lint](https://github.com/vwh/sqlite-viewer/actions/workflows/lint.yml/badge.svg)](https://github.com/vwh/sqlite-viewer/actions/workflows/lint.yml)
+[![License](https://img.shields.io/github/license/vwh/sqlite-online?label=License)](https://github.com/vwh/sqlite-online/blob/main/LICENSE)
+[![Format Check](https://github.com/vwh/sqlite-online/actions/workflows/format.yml/badge.svg)](https://github.com/vwh/sqlite-online/actions/workflows/format.yml)
+[![Lint](https://github.com/vwh/sqlite-online/actions/workflows/lint.yml/badge.svg)](https://github.com/vwh/sqlite-online/actions/workflows/lint.yml)
 
 </div>
 
 <div align="center">
   <a href="https://sqlite3.online/" target="_blank">
-      <img src="https://github.com/user-attachments/assets/3d605950-0675-4748-bea8-69bd329731af" alt="SQLite Viewer Preview">
+      <img src="https://github.com/user-attachments/assets/3d605950-0675-4748-bea8-69bd329731af" alt="SQLite Online Preview">
   </a>
 </div>
 
@@ -72,4 +69,4 @@ Contributions are welcome! Feel free to open a pull request with your improvemen
 
 ## License
 
-Under the MIT License. See [License](https://github.com/vwh/sqlite-viewer/blob/main/LICENSE) for more information.
+Under the MIT License. See [License](https://github.com/vwh/sqlite-online/blob/main/LICENSE) for more information.
