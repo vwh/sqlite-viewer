@@ -66,10 +66,6 @@ A fast, secure, and client-side SQLite editor that runs entirely in your browser
   </tr>
 </table>
 
-> [!NOTE]
-> SQLite Viewer supports loading databases directly from a URL. Use the `url` parameter. <br>
-> Example: [`https://sqlite3.online/?url=...db_examples/chinook.db`](https://sqlite3.online/?url=https://github.com/vwh/sqlite-viewer/raw/main/db_examples/chinook.db)
-
 ## Contributing
 
 Contributions are welcome! Feel free to open a pull request with your improvements or fixes.
