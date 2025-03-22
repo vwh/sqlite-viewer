@@ -90,8 +90,8 @@ const TableItem = memo(
 
         {expanded && (
           <div className="border-primary/20 mt-1 mb-2 ml-4 flex flex-col gap-1 space-y-0.5 border-l-2 pl-2">
-            {table.schema.map((columnSchema, idx) => (
-              <TableColumn key={idx} columnSchema={columnSchema} />
+            {table.schema.map((columnSchema) => (
+              <TableColumn key={columnSchema.cid} columnSchema={columnSchema} />
             ))}
           </div>
         )}
@@ -244,8 +244,8 @@ const IndexesSection = memo(({ indexes }: { indexes: IndexSchema[] }) => {
 
       {expandedIndexSection && (
         <div className="space-y-0.5 overflow-y-auto pr-1 pl-2">
-          {indexes.map((index, idx) => (
-            <IndexItem key={idx} index={index} />
+          {indexes.map((index) => (
+            <IndexItem key={index.name} index={index} />
           ))}
         </div>
       )}
