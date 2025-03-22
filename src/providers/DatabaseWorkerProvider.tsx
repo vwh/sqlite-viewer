@@ -210,6 +210,7 @@ export const DatabaseWorkerProvider = ({
     setSorters,
     resetEditSection,
     setSelectedRowObject,
+    handleCloseEdit,
     setIsInserting
   ]);
 
@@ -237,10 +238,10 @@ export const DatabaseWorkerProvider = ({
       if (isFirstTimeLoading) {
         setIsFirstTimeLoading(false);
         if (dataSectionHight && paginationControlsHight) {
-          // 53 is hight of tableHeader and 33 is hight of tableRow
+          // 51.5 is hight of tableHeader and 33 is hight of tableRow
           // They are hardcoded because they not loaded yet
           limit = Math.floor(
-            (dataSectionHight - paginationControlsHight - 53) / 33
+            (dataSectionHight - paginationControlsHight - 51.5) / 33
           );
         }
       } else {

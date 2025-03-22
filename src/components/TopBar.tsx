@@ -11,8 +11,11 @@ const TopBar = () => {
 
   return (
     <header className="flex items-center justify-between gap-1 border-b p-1">
-      <section className="flex items-center gap-1">
-        <label htmlFor="file-upload" className="relative w-full cursor-pointer">
+      <section className="flex w-full items-center gap-1">
+        <label
+          htmlFor="file-upload"
+          className="relative w-full cursor-pointer md:w-[300px]"
+        >
           <Input
             id="file-upload"
             type="file"

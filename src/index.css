@@ -205,12 +205,12 @@ body {
 
 @supports (height: 100dvh) {
   .max-h-custom-dvh {
-    max-height: calc(100dvh - 5.4rem);
+    max-height: calc(100dvh - 5.3rem);
   }
 }
 
 @supports not (height: 100dvh) {
   .max-h-custom-dvh {
-    max-height: calc(100vh - 5.4rem);
+    max-height: calc(100vh - 5.3rem);
   }
 }
