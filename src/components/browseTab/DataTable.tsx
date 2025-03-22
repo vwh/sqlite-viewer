@@ -32,7 +32,7 @@ const DataTable = () => {
 
   const emptyDataContent = useMemo(
     () => (
-      <div className="flex h-full flex-col items-center justify-center gap-1">
+      <div className="flex h-full flex-col items-center justify-center gap-1 px-4">
         {filters ? (
           <>
             <p className="text-md font-medium">
@@ -50,7 +50,7 @@ const DataTable = () => {
           </>
         ) : (
           <>
-            <h3 className="text-md font-medium">No Data To Show</h3>
+            <p className="text-md font-medium">No Data To Show</p>
             <p className="text-sm">
               This table does not have any data to display
             </p>

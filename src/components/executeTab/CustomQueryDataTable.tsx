@@ -57,9 +57,11 @@ const CustomQueryDataTable = () => {
                     colSpan={customQueryObject?.columns?.length || 1}
                     className="h-32 text-center"
                   >
-                    <div className="flex h-full flex-col items-center justify-center gap-1">
-                      <h3 className="text-md font-medium">No Data To Show</h3>
-                      <p className="text-sm">
+                    <div className="flex h-full flex-col items-center justify-center gap-1 px-4">
+                      <p className="text-md whitespace-nowrap">
+                        No Data To Show
+                      </p>
+                      <p className="text-sm whitespace-nowrap">
                         Seems like there is no data to display
                       </p>
                     </div>
@@ -69,9 +71,11 @@ const CustomQueryDataTable = () => {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-1">
-            <h3 className="text-md font-medium">No Data To Show</h3>
-            <p className="text-sm">Execute a query to view data</p>
+          <div className="flex h-full flex-col items-center justify-center gap-1 px-4">
+            <p className="text-md whitespace-nowrap">No Data To Show</p>
+            <p className="text-sm whitespace-nowrap">
+              Execute a query to view data
+            </p>
           </div>
         )}
       </>
