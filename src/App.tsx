@@ -12,9 +12,12 @@ import ExecuteTab from "@/components/executeTab/ExecuteTab";
 import { LoaderCircleIcon } from "lucide-react";
 
 export default function App() {
-  const { isDatabaseLoading } = useDatabaseStore();
-  const { dataPanelSize, setSchemaPanelSize, setDataPanelSize, isMobile } =
-    usePanelStore();
+  const isDatabaseLoading = useDatabaseStore(
+    (state) => state.isDatabaseLoading
+  );
+  const dataPanelSize = usePanelStore((state) => state.dataPanelSize);
+  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
+  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
   const { expandDataPanel } = usePanelManager();
 
   const [activeTab, setActiveTab] = useState("data");
@@ -66,7 +69,7 @@ export default function App() {
             value="execute"
             className="data-[state=active]: data-[state=active]:border-primary h-8 rounded-none text-xs data-[state=active]:border-b-2"
             onClick={() => {
-              if (isMobile) {
+              if (usePanelStore.getState().isMobile) {
                 setDataPanelSize(100);
                 setSchemaPanelSize(0);
               }

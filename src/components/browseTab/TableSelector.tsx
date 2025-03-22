@@ -12,8 +12,9 @@ import {
 import { Span } from "@/components/ui/span";
 
 const TableSelector = () => {
-  const { tablesSchema, currentTable } = useDatabaseStore();
   const { handleTableChange } = useDatabaseWorker();
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
+  const currentTable = useDatabaseStore((state) => state.currentTable);
 
   const TableSelect = useMemo(
     () => (

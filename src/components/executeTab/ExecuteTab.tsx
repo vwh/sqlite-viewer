@@ -16,15 +16,19 @@ import CustomQueryDataTable from "./CustomQueryDataTable";
 import { PlayIcon, FolderOutputIcon, LoaderCircleIcon } from "lucide-react";
 
 const ExecuteTab = () => {
-  const { customQueryObject, errorMessage, isDataLoading, isDatabaseLoading } =
-    useDatabaseStore();
+  const customQueryObject = useDatabaseStore(
+    (state) => state.customQueryObject
+  );
+  const errorMessage = useDatabaseStore((state) => state.errorMessage);
+  const isDataLoading = useDatabaseStore((state) => state.isDataLoading);
+  const isDatabaseLoading = useDatabaseStore(
+    (state) => state.isDatabaseLoading
+  );
 
-  const {
-    dataPanelSize,
-    schemaPanelSize,
-    setDataPanelSize,
-    setSchemaPanelSize
-  } = usePanelStore();
+  const dataPanelSize = usePanelStore((state) => state.dataPanelSize);
+  const schemaPanelSize = usePanelStore((state) => state.schemaPanelSize);
+  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
+  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
 
   const { handleQueryExecute } = useDatabaseWorker();
 

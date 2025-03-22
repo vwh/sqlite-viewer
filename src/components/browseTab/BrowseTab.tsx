@@ -25,25 +25,23 @@ import {
 } from "lucide-react";
 
 const BrowseDataTab = memo(() => {
-  const {
-    filters,
-    sorters,
-    setFilters,
-    setSorters,
-    isDataLoading,
-    isDatabaseLoading
-  } = useDatabaseStore();
+  const filters = useDatabaseStore((state) => state.filters);
+  const sorters = useDatabaseStore((state) => state.sorters);
+  const setFilters = useDatabaseStore((state) => state.setFilters);
+  const setSorters = useDatabaseStore((state) => state.setSorters);
+  const isDataLoading = useDatabaseStore((state) => state.isDataLoading);
+  const isDatabaseLoading = useDatabaseStore(
+    (state) => state.isDatabaseLoading
+  );
 
-  const {
-    dataPanelSize,
-    schemaPanelSize,
-    topPanelSize,
-    bottomPanelSize,
-    setDataPanelSize,
-    setSchemaPanelSize,
-    setTopPanelSize,
-    setBottomPanelSize
-  } = usePanelStore();
+  const dataPanelSize = usePanelStore((state) => state.dataPanelSize);
+  const schemaPanelSize = usePanelStore((state) => state.schemaPanelSize);
+  const topPanelSize = usePanelStore((state) => state.topPanelSize);
+  const bottomPanelSize = usePanelStore((state) => state.bottomPanelSize);
+  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
+  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
+  const setTopPanelSize = usePanelStore((state) => state.setTopPanelSize);
+  const setBottomPanelSize = usePanelStore((state) => state.setBottomPanelSize);
 
   const { handleExport } = useDatabaseWorker();
   const { selectedRowObject, isInserting } = usePanelManager();

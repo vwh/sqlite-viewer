@@ -292,7 +292,8 @@ const SchemaFooter = memo(
 
 const SchemaTree = () => {
   const [filter, setFilter] = useState("");
-  const { tablesSchema, indexesSchema } = useDatabaseStore();
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
+  const indexesSchema = useDatabaseStore((state) => state.indexesSchema);
 
   // Filter tables and indexes based on search term
   const filteredTables = useMemo(() => {

@@ -13,7 +13,7 @@ const MemoizedArrowUpNarrowWideIcon = memo(ArrowUpNarrowWideIcon);
 const MemoizedArrowDownNarrowWideIcon = memo(ArrowDownNarrowWideIcon);
 
 const SorterButton = memo(({ column }: { column: string }) => {
-  const { sorters } = useDatabaseStore();
+  const sorters = useDatabaseStore((state) => state.sorters);
   const { handleQuerySorter } = useDatabaseWorker();
 
   return (

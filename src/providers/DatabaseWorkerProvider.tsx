@@ -40,33 +40,37 @@ export const DatabaseWorkerProvider = ({
 }: DatabaseWorkerProviderProps) => {
   const workerRef = useRef<Worker | null>(null);
 
-  const {
-    setTablesSchema,
-    setIndexesSchema,
-    setCurrentTable,
-    setData,
-    setColumns,
-    setMaxSize,
-    setIsDatabaseLoading,
-    setIsDataLoading,
-    setErrorMessage,
-    filters,
-    sorters,
-    limit,
-    offset,
-    currentTable,
-    maxSize,
-    setOffset,
-    setFilters,
-    setSorters,
-    setLimit,
-    resetPagination,
-    setCustomQueryObject,
-    customQuery,
-    tablesSchema
-  } = useDatabaseStore();
+  // Database Store
+  const setTablesSchema = useDatabaseStore((state) => state.setTablesSchema);
+  const setIndexesSchema = useDatabaseStore((state) => state.setIndexesSchema);
+  const setCurrentTable = useDatabaseStore((state) => state.setCurrentTable);
+  const setData = useDatabaseStore((state) => state.setData);
+  const setColumns = useDatabaseStore((state) => state.setColumns);
+  const setMaxSize = useDatabaseStore((state) => state.setMaxSize);
+  const setIsDatabaseLoading = useDatabaseStore(
+    (state) => state.setIsDatabaseLoading
+  );
+  const setIsDataLoading = useDatabaseStore((state) => state.setIsDataLoading);
+  const setErrorMessage = useDatabaseStore((state) => state.setErrorMessage);
+  const filters = useDatabaseStore((state) => state.filters);
+  const sorters = useDatabaseStore((state) => state.sorters);
+  const limit = useDatabaseStore((state) => state.limit);
+  const offset = useDatabaseStore((state) => state.offset);
+  const currentTable = useDatabaseStore((state) => state.currentTable);
+  const maxSize = useDatabaseStore((state) => state.maxSize);
+  const setOffset = useDatabaseStore((state) => state.setOffset);
+  const setFilters = useDatabaseStore((state) => state.setFilters);
+  const setSorters = useDatabaseStore((state) => state.setSorters);
+  const setLimit = useDatabaseStore((state) => state.setLimit);
+  const resetPagination = useDatabaseStore((state) => state.resetPagination);
+  const setCustomQueryObject = useDatabaseStore(
+    (state) => state.setCustomQueryObject
+  );
+  const customQuery = useDatabaseStore((state) => state.customQuery);
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
 
-  const { resetEditSection, isMobile } = usePanelStore();
+  const resetEditSection = usePanelStore((state) => state.resetEditSection);
+
   const {
     selectedRowObject,
     setSelectedRowObject,
@@ -301,7 +305,7 @@ export const DatabaseWorkerProvider = ({
       setIsInserting(false);
       setCurrentTable(selectedTable);
       setColumns(tablesSchema[selectedTable].schema.map((col) => col.name));
-      if (isMobile) {
+      if (usePanelStore.getState().isMobile) {
         goBackToData();
       }
     },
@@ -313,7 +317,6 @@ export const DatabaseWorkerProvider = ({
       setCurrentTable,
       setSelectedRowObject,
       setIsInserting,
-      isMobile,
       goBackToData,
       tablesSchema,
       setColumns

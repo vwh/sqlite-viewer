@@ -12,7 +12,9 @@ import {
 import { Span } from "@/components/ui/span";
 
 const CustomQueryDataTable = () => {
-  const { customQueryObject } = useDatabaseStore();
+  const customQueryObject = useDatabaseStore(
+    (state) => state.customQueryObject
+  );
 
   return useMemo(
     () => (

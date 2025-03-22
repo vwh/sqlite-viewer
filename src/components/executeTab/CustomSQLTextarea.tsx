@@ -167,7 +167,9 @@ const BUILT_IN_FUNCTIONS = [
 
 export default function CustomSQLTextarea() {
   const { theme } = useTheme();
-  const { customQuery, setCustomQuery, tablesSchema } = useDatabaseStore();
+  const customQuery = useDatabaseStore((state) => state.customQuery);
+  const setCustomQuery = useDatabaseStore((state) => state.setCustomQuery);
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
 
   const { tableNames, columnNames } = useMemo(() => {
     const tableNames = Object.keys(tablesSchema);

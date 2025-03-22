@@ -20,8 +20,12 @@ import { FilterXIcon } from "lucide-react";
 import SorterButton from "../table/SorterButton";
 
 const DataTable = () => {
-  const { data, columns, currentTable, tablesSchema, filters, setFilters } =
-    useDatabaseStore();
+  const data = useDatabaseStore((state) => state.data);
+  const columns = useDatabaseStore((state) => state.columns);
+  const currentTable = useDatabaseStore((state) => state.currentTable);
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
+  const filters = useDatabaseStore((state) => state.filters);
+  const setFilters = useDatabaseStore((state) => state.setFilters);
 
   const { handleQueryFilter } = useDatabaseWorker();
   const { handleRowClick, selectedRowObject } = usePanelManager();

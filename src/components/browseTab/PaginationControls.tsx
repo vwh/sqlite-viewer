@@ -17,7 +17,10 @@ import {
 const PaginationControls = () => {
   const { handlePageChange, handleExport } = useDatabaseWorker();
   const { isInserting, handleInsert } = usePanelManager();
-  const { offset, limit, maxSize, isDataLoading } = useDatabaseStore();
+  const offset = useDatabaseStore((state) => state.offset);
+  const limit = useDatabaseStore((state) => state.limit);
+  const maxSize = useDatabaseStore((state) => state.maxSize);
+  const isDataLoading = useDatabaseStore((state) => state.isDataLoading);
 
   const paginationControls = useMemo(
     () => (

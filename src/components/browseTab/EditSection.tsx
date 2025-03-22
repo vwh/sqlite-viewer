@@ -19,8 +19,11 @@ import {
 const EditSection = () => {
   const { handleEditSubmit } = useDatabaseWorker();
   const { selectedRowObject, isInserting, goBackToData } = usePanelManager();
-  const { editValues, setEditValues } = usePanelStore();
-  const { tablesSchema, currentTable, columns } = useDatabaseStore();
+  const editValues = usePanelStore((state) => state.editValues);
+  const setEditValues = usePanelStore((state) => state.setEditValues);
+  const tablesSchema = useDatabaseStore((state) => state.tablesSchema);
+  const currentTable = useDatabaseStore((state) => state.currentTable);
+  const columns = useDatabaseStore((state) => state.columns);
 
   // Update formValues when isInserting or selectedRow changes
   useEffect(() => {

@@ -22,7 +22,10 @@ import {
 const ActionsDropdown = () => {
   const { handleExport } = useDatabaseWorker();
   const { isInserting, handleInsert } = usePanelManager();
-  const { filters, setFilters, sorters, setSorters } = useDatabaseStore();
+  const filters = useDatabaseStore((state) => state.filters);
+  const setFilters = useDatabaseStore((state) => state.setFilters);
+  const sorters = useDatabaseStore((state) => state.sorters);
+  const setSorters = useDatabaseStore((state) => state.setSorters);
 
   const dropDownActions = useMemo(
     () => (

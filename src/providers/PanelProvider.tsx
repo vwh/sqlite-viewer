@@ -31,14 +31,11 @@ interface PanelProviderProps {
 }
 
 export const PanelProvider = ({ children }: PanelProviderProps) => {
-  const {
-    setPanelsForDevice,
-    setTopPanelSize,
-    setBottomPanelSize,
-    setSchemaPanelSize,
-    setDataPanelSize,
-    isMobile
-  } = usePanelStore();
+  const setPanelsForDevice = usePanelStore((state) => state.setPanelsForDevice);
+  const setTopPanelSize = usePanelStore((state) => state.setTopPanelSize);
+  const setBottomPanelSize = usePanelStore((state) => state.setBottomPanelSize);
+  const setSchemaPanelSize = usePanelStore((state) => state.setSchemaPanelSize);
+  const setDataPanelSize = usePanelStore((state) => state.setDataPanelSize);
 
   const [selectedRowObject, setSelectedRowObject] = useState<{
     data: SqlValue[];
@@ -60,7 +57,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
       setIsInserting(false);
       setSelectedRowObject({ data: row, index: index });
 
-      if (isMobile) {
+      if (usePanelStore.getState().isMobile) {
         setTopPanelSize(100);
         setBottomPanelSize(0);
         setDataPanelSize(0);
@@ -70,13 +67,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
         setBottomPanelSize(25);
       }
     },
-    [
-      isMobile,
-      setBottomPanelSize,
-      setDataPanelSize,
-      setSchemaPanelSize,
-      setTopPanelSize
-    ]
+    [setBottomPanelSize, setDataPanelSize, setSchemaPanelSize, setTopPanelSize]
   );
 
   // Handle insert row button click
@@ -84,7 +75,7 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
     setSelectedRowObject(null);
     setIsInserting(true);
 
-    if (isMobile) {
+    if (usePanelStore.getState().isMobile) {
       setTopPanelSize(100);
       setBottomPanelSize(0);
       setDataPanelSize(0);
@@ -94,7 +85,6 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
       setBottomPanelSize(25);
     }
   }, [
-    isMobile,
     setBottomPanelSize,
     setDataPanelSize,
     setSchemaPanelSize,
@@ -124,11 +114,11 @@ export const PanelProvider = ({ children }: PanelProviderProps) => {
 
   // Switch to execute tab and adjust panels
   const expandDataPanel = useCallback(() => {
-    if (isMobile) {
+    if (usePanelStore.getState().isMobile) {
       setDataPanelSize(100);
       setSchemaPanelSize(0);
     }
-  }, [isMobile, setDataPanelSize, setSchemaPanelSize]);
+  }, [setDataPanelSize, setSchemaPanelSize]);
 
   const value = {
     handleRowClick,
